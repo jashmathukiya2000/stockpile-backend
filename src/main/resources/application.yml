@@ -1,0 +1,11 @@
+server:
+  port: 5002
+spring:
+  main:
+    allow-circular-references: true
+  data:
+    mongodb:
+      uri: mongodb://localhost:27017/AuthModule
+  mvc:
+    pathmatch:
+      matching-strategy: ant_path_matcher
