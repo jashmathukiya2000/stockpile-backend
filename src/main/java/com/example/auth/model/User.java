@@ -1,6 +1,7 @@
 package com.example.auth.model;
 
 import com.amazonaws.services.devicefarm.model.ScheduleRunTest;
+import com.example.auth.decorator.UserResponse;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -12,7 +13,7 @@ import javax.validation.constraints.NotNull;
 @AllArgsConstructor
 @NoArgsConstructor
 @Document(collection = "auth")
-public class User {
+public class User  {
     String id;
     String name;
     String age;
