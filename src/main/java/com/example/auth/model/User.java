@@ -19,4 +19,6 @@ public class User {
     String occupation;
 String salary;
    Address address;
+   String email;
+   String phoneNumber;
 }
