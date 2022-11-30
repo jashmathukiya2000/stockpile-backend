@@ -20,9 +20,7 @@ public class Response {
     }
     public static Response getNotFoundResponse(String message){
         return  new Response(HttpStatus.OK, message);
-
     }
-
     public static Response getOkResponse(){
         return  new Response(HttpStatus.OK, ResponseConstant.OK_DESCRIPTION);
     }

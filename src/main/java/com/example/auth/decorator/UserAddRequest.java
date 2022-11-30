@@ -11,6 +11,7 @@ import lombok.NoArgsConstructor;
 
 @NoArgsConstructor
 public class UserAddRequest {
+
     String name;
     String age;
     String occupation;

@@ -9,10 +9,8 @@ import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 @Service
 public class UserServiceImpl implements UserService {
@@ -26,7 +24,7 @@ public class UserServiceImpl implements UserService {
     public UserResponse addUser(UserAddRequest userAddRequest) throws UserCollectionException {
         User user = modelMapper.map(userAddRequest, User.class);
         UserResponse userResponse1 = modelMapper.map(user, UserResponse.class);
-        user= userRepository.save(user);
+        user = userRepository.save(user);
 
         return userResponse1;
     }
@@ -38,18 +36,21 @@ public class UserServiceImpl implements UserService {
         if (users.size() > 0) {
             users.forEach(user -> {
                 UserResponse userResponse1 = modelMapper.map(user, UserResponse.class);
-                userResponseList.add(userResponse1);
+                if (userResponse1.isSoftDelete() == false) {
+                    userResponseList.add(userResponse1);
+                }
             });
         }
-        return  userResponseList;
+
+        return userResponseList;
     }
 
     @Override
     public UserResponse getUser(String id) throws UserCollectionException {
-        Optional<User> user = userRepository.findById(id);
+        User user = getUserModel(id);
 
-        if (user.isPresent()) {
-            UserResponse userResponse1 = modelMapper.map(user.get(), UserResponse.class);
+        if (user != null && user.isSoftDelete() == false) {
+            UserResponse userResponse1 = modelMapper.map(user, UserResponse.class);
             return userResponse1;
         } else {
             throw new UserCollectionException(UserCollectionException.NotFoundException(id));
@@ -58,19 +59,14 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public void updateUser(String id, UserAddRequest userAddRequest) throws UserCollectionException {
-        Optional<User> user1 = userRepository.findById(id);
-        Optional<User> user2 = userRepository.findById(userAddRequest.getName());
-        if (user1.isPresent()) {
-            if (user2.isPresent() && !user2.get().getId().equals(id)) {
-                throw new UserCollectionException(UserCollectionException.UserAlreadyExist());
-            }
-            User user3 = user1.get();
-            user3.setName(userAddRequest.getName());
-            user3.setAge(userAddRequest.getAge());
-            user3.setOccupation(userAddRequest.getOccupation());
-            user3.setSalary(userAddRequest.getSalary());
-            user3.setAddress(userAddRequest.getAddress());
-            userRepository.save(user3);
+        User user1 = getUserModel(id);
+        if (user1 != null && user1.isSoftDelete() == false) {
+            user1.setName(userAddRequest.getName());
+            user1.setAge(userAddRequest.getAge());
+            user1.setOccupation(userAddRequest.getOccupation());
+            user1.setSalary(userAddRequest.getSalary());
+            user1.setAddress(userAddRequest.getAddress());
+            userRepository.save(user1);
 
         } else {
             throw new UserCollectionException(UserCollectionException.NotFoundException(id));
@@ -80,13 +76,18 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public void deleteUser(String id) throws UserCollectionException {
-
-       Optional<User> user = userRepository.findById(id);
-        if (user.isPresent()) {
-         userRepository.deleteById(id);
+        User user = getUserModel(id);
+        if (user != null) {
+            user.setSoftDelete(true);
+            userRepository.save(user);
         } else {
+
             throw new UserCollectionException(UserCollectionException.NotFoundException(id));
         }
 
+    }
+
+    public User getUserModel(String id) {
+        return userRepository.findById(id).orElseThrow();
     }
 }

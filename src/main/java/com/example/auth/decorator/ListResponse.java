@@ -5,10 +5,11 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.util.List;
+
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 public class ListResponse<T> {
-   List<T> data;
-   Response status;
+    List<T> data;
+    Response status;
 }
