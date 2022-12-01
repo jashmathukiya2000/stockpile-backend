@@ -16,6 +16,8 @@ public class UserResponse {
     String occupation;
     String salary;
     Address address;
+    String email;
+    String phoneNumber;
     @JsonIgnore
     boolean softDelete = false;
 

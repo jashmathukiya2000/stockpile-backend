@@ -68,11 +68,10 @@ public class UserController {
 
     @RequestMapping(name = "deleteUser", value = "/delete/{id}", method = RequestMethod.DELETE)
     public DataResponse<Object> deleteUser(@PathVariable String id) {
-        DataResponse<Object> dataResponse = new DataResponse<>();
+           DataResponse<Object> dataResponse = new DataResponse<>();
         try {
             userService.deleteUser(id);
             dataResponse.setStatus(Response.getOkResponse("done"));
-
         } catch (UserCollectionException e) {
             dataResponse.setStatus(Response.getNotFoundResponse("not found"));
         }

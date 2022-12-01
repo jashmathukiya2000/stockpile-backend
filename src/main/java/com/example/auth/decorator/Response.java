@@ -6,6 +6,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
 import org.springframework.http.HttpStatus;
+
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
@@ -15,22 +16,28 @@ public class Response {
     String description;
 
 
-    public static Response getOkResponse(String message){
-        return  new Response(HttpStatus.OK, message);
+    public static Response getOkResponse(String message) {
+        return new Response(HttpStatus.OK, message);
     }
-    public static Response getNotFoundResponse(String message){
-        return  new Response(HttpStatus.OK, message);
+
+    public static Response getNotFoundResponse(String message) {
+        return new Response(HttpStatus.OK, message);
     }
-    public static Response getOkResponse(){
-        return  new Response(HttpStatus.OK, ResponseConstant.OK_DESCRIPTION);
+
+    public static Response getOkResponse() {
+        return new Response(HttpStatus.OK, ResponseConstant.OK_DESCRIPTION);
     }
-    public static Response getInternalServerErrorResponse(){
-        return  new Response(HttpStatus.OK, ResponseConstant.OK_DESCRIPTION);
+
+    public static Response getInternalServerErrorResponse() {
+        return new Response(HttpStatus.OK, ResponseConstant.OK_DESCRIPTION);
     }
-    public static Response getNotFoundResponse(){
-        return  new Response(HttpStatus.OK, ResponseConstant.NO_DESCRIPTION);
+
+    public static Response getNotFoundResponse() {
+        return new Response(HttpStatus.OK, ResponseConstant.NO_DESCRIPTION);
 
     }
-    public static Response getUpdateResponse(String message){
-        return  new Response(HttpStatus.OK, ResponseConstant.UPDATED);
-}}
+
+    public static Response getUpdateResponse(String message) {
+        return new Response(HttpStatus.OK, ResponseConstant.UPDATED);
+    }
+}
