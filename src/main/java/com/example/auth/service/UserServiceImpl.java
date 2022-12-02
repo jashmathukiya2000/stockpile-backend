@@ -1,8 +1,9 @@
 package com.example.auth.service;
 
-import com.example.auth.Exception.UserCollectionException;
 import com.example.auth.decorator.UserAddRequest;
+import com.example.auth.decorator.UserFilter;
 import com.example.auth.decorator.UserResponse;
+import com.example.auth.exception.UserCollectionException;
 import com.example.auth.model.User;
 import com.example.auth.repository.UserRepository;
 import org.modelmapper.ModelMapper;
@@ -85,6 +86,11 @@ public class UserServiceImpl implements UserService {
             throw new UserCollectionException(UserCollectionException.NotFoundException(id));
         }
 
+    }
+
+    @Override
+    public List<UserResponse> getUserByAge(UserFilter userFilter) {
+        return userRepository.findByAgeAndSoftDeleteFalse(userFilter);
     }
 
     public User getUserModel(String id) {

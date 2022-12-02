@@ -1,6 +1,7 @@
 package com.example.auth.service;
 
-import com.example.auth.Exception.UserCollectionException;
+import com.example.auth.decorator.UserFilter;
+import com.example.auth.exception.UserCollectionException;
 import com.example.auth.decorator.UserAddRequest;
 import com.example.auth.decorator.UserResponse;
 
@@ -19,7 +20,6 @@ public interface UserService {
 
 
 
-
-
-
+    List<UserResponse> getUserByAge(UserFilter userFilter
+    );
 }

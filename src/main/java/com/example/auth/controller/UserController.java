@@ -1,7 +1,8 @@
 package com.example.auth.controller;
 
-import com.example.auth.Exception.UserCollectionException;
+import com.example.auth.constant.ResponseConstant;
 import com.example.auth.decorator.*;
+import com.example.auth.exception.UserCollectionException;
 import com.example.auth.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -20,7 +21,7 @@ public class UserController {
         DataResponse<UserResponse> dataResponse = new DataResponse<>();
         try {
             dataResponse.setData(userService.addUser(userAddRequest));
-            dataResponse.setStatus(Response.getOkResponse("done"));
+            dataResponse.setStatus(Response.getOkResponse(ResponseConstant.SAVED_SUCCESSFULLY));
         } catch (Exception e) {
             dataResponse.setStatus(Response.getInternalServerErrorResponse());
         }
@@ -47,9 +48,9 @@ public class UserController {
         DataResponse<UserResponse> dataResponse = new DataResponse<>();
         try {
             dataResponse.setData(userService.getUser(id));
-            dataResponse.setStatus(Response.getOkResponse("ok"));
+            dataResponse.setStatus(Response.getOkResponse(ResponseConstant.OK_DESCRIPTION));
         } catch (Exception e) {
-            dataResponse.setStatus(Response.getNotFoundResponse("Not found"));
+            dataResponse.setStatus(Response.getNotFoundResponse(ResponseConstant.NOT_FOUND));
         }
         return dataResponse;
     }
@@ -59,23 +60,33 @@ public class UserController {
         DataResponse<UserResponse> dataResponse = new DataResponse<>();
         try {
             userService.updateUser(id, userAddRequest);
-            dataResponse.setStatus(Response.getUpdateResponse("updated successfully with given id" + " " + id));
+            dataResponse.setStatus(Response.getUpdateResponse(ResponseConstant.UPDATED_SUCCESSFULLY));
         } catch (UserCollectionException e) {
-            dataResponse.setStatus(Response.getNotFoundResponse(" id not found"));
+            dataResponse.setStatus(Response.getNotFoundResponse(ResponseConstant.NOT_FOUND));
         }
         return dataResponse;
     }
 
     @RequestMapping(name = "deleteUser", value = "/delete/{id}", method = RequestMethod.DELETE)
     public DataResponse<Object> deleteUser(@PathVariable String id) {
-           DataResponse<Object> dataResponse = new DataResponse<>();
+        DataResponse<Object> dataResponse = new DataResponse<>();
         try {
             userService.deleteUser(id);
-            dataResponse.setStatus(Response.getOkResponse("done"));
+            dataResponse.setStatus(Response.getOkResponse(ResponseConstant.DELETED_SUCCESSFULLY));
         } catch (UserCollectionException e) {
-            dataResponse.setStatus(Response.getNotFoundResponse("not found"));
+            dataResponse.setStatus(Response.getNotFoundResponse(ResponseConstant.NOT_FOUND));
         }
         return dataResponse;
+    }
+@RequestMapping(name = "getUserByAge", value = "get/Age", method = RequestMethod.POST)
+    public ListResponse<UserResponse> getUserByAge(@RequestBody UserFilter userFilter){
+        ListResponse<UserResponse> listResponse= new ListResponse<>();
+        try{
+            listResponse.setData(userService.getUserByAge(userFilter));
+        } catch (Exception e) {
+            listResponse.setStatus(Response.getNotFoundResponse(ResponseConstant.NOT_FOUND));
+        }
+        return listResponse;
     }
 
 }
