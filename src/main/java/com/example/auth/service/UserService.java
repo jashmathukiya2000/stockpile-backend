@@ -20,6 +20,5 @@ public interface UserService {
 
 
 
-    List<UserResponse> getUserByAge(UserFilter userFilter
-    );
+    List<UserResponse> getUserByAge(UserFilter userFilter)  ;
 }

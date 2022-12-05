@@ -89,7 +89,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public List<UserResponse> getUserByAge(UserFilter userFilter) {
+    public List<UserResponse> getUserByAge(UserFilter userFilter)   {
         return userRepository.findByAgeAndSoftDeleteFalse(userFilter);
     }
 
