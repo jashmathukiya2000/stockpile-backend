@@ -10,5 +10,6 @@ public class ResponseConstant {
     public static final String UPDATED_SUCCESSFULLY = "UPDATED";
     public static final String NOT_FOUND = "id  not found";
     public static final String DELETED_SUCCESSFULLY ="SUCCESSFULLY_DELETED" ;
+    public static final String DATA_NOT_FOUND ="DATA NOT FOUND" ;
 }
 

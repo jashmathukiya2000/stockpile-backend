@@ -1,6 +1,7 @@
 package com.example.auth.repository;
 
 import com.example.auth.decorator.CustomAggregationOperation;
+import com.example.auth.decorator.UserAggregationResponse;
 import com.example.auth.decorator.UserFilter;
 import com.example.auth.decorator.UserResponse;
 import org.apache.commons.lang3.StringUtils;
@@ -40,39 +41,26 @@ public class UserCustomRepositoryImpl implements UserCustomRepository {
         return mongoTemplate.find(query, UserResponse.class, "auth");
     }
 
-    public List<AggregationOperation> getUserByAggregation(UserFilter userFilter){
-        List<AggregationOperation> operations = new ArrayList<>();
-        Criteria criteria = new Criteria();
-        if (!StringUtils.isEmpty(userFilter.getSalary()))
-            criteria = criteria.and("SoftDelete").is(false);
-        criteria = criteria.and("salary").is(userFilter.getSalary());
-//          operations.add(Aggregation.match(criteria));
-        operations.add(match(criteria));
-
-        operations.add(new CustomAggregationOperation(new Document("$group",
-                new Document("_id", new Document("salary", "$salary")
-                        .append("auth", new Document("$push", new Document("name", "$name")
-                                .append("occupation", "$occupation")))))));
-
-        return operations;
+    @Override
+    public List<UserAggregationResponse> getUserByAggregation(UserFilter userFilter){
+        List<AggregationOperation> operations = getUserBySalaryAggregation(userFilter);
+        Aggregation aggregation =  newAggregation(operations);
+        return  mongoTemplate.aggregate(aggregation, "auth",UserAggregationResponse.class).getMappedResults();
     }
 
-    @Override
-    public List<UserResponse> groupBySalaryAndSoftDeleteFalse(UserFilter userFilter) {
+
+    public List<AggregationOperation> getUserBySalaryAggregation(UserFilter userFilter) {
         List<AggregationOperation> operations = new ArrayList<>();
         Criteria criteria = new Criteria();
         if (!StringUtils.isEmpty(userFilter.getSalary()))
             criteria = criteria.and("SoftDelete").is(false);
         criteria = criteria.and("salary").is(userFilter.getSalary());
-//          operations.add(Aggregation.match(criteria));
         operations.add(match(criteria));
 
         operations.add(new CustomAggregationOperation(new Document("$group",
-                new Document("_id", new Document("salary", "$salary")
+                new Document("_id", "$salary")
                         .append("auth", new Document("$push", new Document("name", "$name")
-                                .append("occupation", "$occupation")))))));
-
-        Aggregation aggregation =  newAggregation(operations);
-        return  mongoTemplate.aggregate(aggregation, "auth",UserResponse.class).getMappedResults();
+                                .append("occupation", "$occupation"))))));
+        return operations;
     }
 }

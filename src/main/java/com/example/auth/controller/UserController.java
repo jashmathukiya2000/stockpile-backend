@@ -5,7 +5,6 @@ import com.example.auth.decorator.*;
 import com.example.auth.exception.UserCollectionException;
 import com.example.auth.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.mongodb.core.aggregation.AggregationOperation;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -90,13 +89,13 @@ public class UserController {
         return listResponse;
     }
 
-    @RequestMapping(name = "getUserByGroup", value = "get/Group", method = RequestMethod.POST)
-    public ListResponse<UserResponse> groupBySalary(@RequestBody UserFilter userFilter){
-        ListResponse<UserResponse> listResponse= new ListResponse<>();
+    @RequestMapping(name = "getUserBySalaryAggregation", value = "get", method = RequestMethod.POST)
+    public ListResponse<UserAggregationResponse> getUserBySalary(@RequestBody UserFilter userFilter){
+        ListResponse<UserAggregationResponse> listResponse= new ListResponse<>();
         try{
-            listResponse.setData(userService.groupBySalary(userFilter));
+            listResponse.setData(userService.getUserBySalary(userFilter));
         } catch (Exception e) {
-            listResponse.setStatus(Response.getNotFoundResponse(ResponseConstant.NOT_FOUND));
+            listResponse.setStatus(Response.getNotFoundResponse(ResponseConstant.DATA_NOT_FOUND));
         }
         return listResponse;
     }

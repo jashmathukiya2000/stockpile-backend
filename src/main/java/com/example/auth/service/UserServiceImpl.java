@@ -1,6 +1,7 @@
 package com.example.auth.service;
 
 import com.example.auth.decorator.UserAddRequest;
+import com.example.auth.decorator.UserAggregationResponse;
 import com.example.auth.decorator.UserFilter;
 import com.example.auth.decorator.UserResponse;
 import com.example.auth.exception.UserCollectionException;
@@ -94,8 +95,8 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public List<UserResponse> groupBySalary(UserFilter userFilter) {
-        return userRepository.groupBySalaryAndSoftDeleteFalse(userFilter);
+    public List<UserAggregationResponse> getUserBySalary(UserFilter userFilter) {
+        return userRepository.getUserByAggregation(userFilter);
     }
 
     public User getUserModel(String id) {

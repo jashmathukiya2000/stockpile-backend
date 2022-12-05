@@ -34,10 +34,10 @@ public class Response {
 
     public static Response getNotFoundResponse() {
         return new Response(HttpStatus.OK, ResponseConstant.NO_DESCRIPTION);
-
     }
 
-    public static Response getUpdateResponse(String message) {
-        return new Response(HttpStatus.OK, ResponseConstant.UPDATED);
+        public static Response getUpdateResponse (String message){
+            return new Response(HttpStatus.OK, ResponseConstant.UPDATED);
+        }
     }
-}
+

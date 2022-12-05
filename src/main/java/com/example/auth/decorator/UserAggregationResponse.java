@@ -10,6 +10,6 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 public class UserAggregationResponse {
-    String salary;
+    String _id;
     List<Auth> auth;
 }

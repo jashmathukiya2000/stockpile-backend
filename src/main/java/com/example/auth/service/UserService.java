@@ -1,6 +1,7 @@
 package com.example.auth.service;
 
 import com.example.auth.decorator.UserAddRequest;
+import com.example.auth.decorator.UserAggregationResponse;
 import com.example.auth.decorator.UserFilter;
 import com.example.auth.decorator.UserResponse;
 import com.example.auth.exception.UserCollectionException;
@@ -21,5 +22,5 @@ public interface UserService {
 
     List<UserResponse> getUserByAge(UserFilter userFilter);
 
-    List<UserResponse> groupBySalary(UserFilter userFilter);
+    List<UserAggregationResponse> getUserBySalary(UserFilter userFilter);
 }
