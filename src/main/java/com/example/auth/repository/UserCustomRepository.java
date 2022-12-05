@@ -6,6 +6,6 @@ import com.example.auth.decorator.UserResponse;
 import java.util.List;
 
 public interface UserCustomRepository {
- List<UserResponse> findByAgeAndSoftDeleteFalse(UserFilter userFilter)  ;
-// List<UserResponse> findOccupationAndSoftDeleteFalse(UserFilter userFilter);
+ List<UserResponse> getByFilterAndSoftDeleteFalse(UserFilter userFilter)  ;
+List<UserResponse> groupBySalaryAndSoftDeleteFalse(UserFilter userFilter);
 }

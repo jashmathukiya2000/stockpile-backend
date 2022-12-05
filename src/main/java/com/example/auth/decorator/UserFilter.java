@@ -13,6 +13,7 @@ public class UserFilter {
     String name;
     String age;
     String occupation;
+    String salary;
     @JsonIgnore
     boolean softDelete = false;
 
