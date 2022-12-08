@@ -1,11 +1,9 @@
 package com.example.auth.service;
 
-import com.example.auth.decorator.UserAddRequest;
-import com.example.auth.decorator.UserAggregationResponse;
-import com.example.auth.decorator.UserFilter;
-import com.example.auth.decorator.UserResponse;
+import com.example.auth.decorator.*;
 import com.example.auth.exception.UserCollectionException;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.List;
 
 public interface UserService {
@@ -23,4 +21,6 @@ public interface UserService {
     List<UserResponse> getUserByAge(UserFilter userFilter);
 
     List<UserAggregationResponse> getUserBySalary(UserFilter userFilter);
+
+    UserResponse addResult(String id, Result result) throws InvocationTargetException, IllegalAccessException;
 }

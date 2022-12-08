@@ -1,25 +1,32 @@
 package com.example.auth.service;
 
-import com.example.auth.decorator.UserAddRequest;
-import com.example.auth.decorator.UserAggregationResponse;
-import com.example.auth.decorator.UserFilter;
-import com.example.auth.decorator.UserResponse;
+import com.amazonaws.services.dynamodbv2.xspec.M;
+import com.example.auth.constant.MessageConstant;
+import com.example.auth.decorator.*;
+import com.example.auth.exception.AlreadyExistException;
+import com.example.auth.exception.InvalidRequestException;
+import com.example.auth.exception.NotFoundException;
 import com.example.auth.exception.UserCollectionException;
 import com.example.auth.model.User;
 import com.example.auth.repository.UserRepository;
+import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.List;
-
+@Slf4j
 @Service
 public class UserServiceImpl implements UserService {
     @Autowired
     ModelMapper modelMapper;
     @Autowired
-    private UserRepository userRepository;
+    UserRepository userRepository;
+    @Autowired
+    NullAwareBeanUtilsBean nullAwareBeanUtilsBean;
 
     @Override
 
@@ -96,10 +103,43 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public List<UserAggregationResponse> getUserBySalary(UserFilter userFilter) {
+        System.out.println("inside service impl");
         return userRepository.getUserByAggregation(userFilter);
     }
 
+    @Override
+    public UserResponse addResult(String id, Result result) throws InvocationTargetException, IllegalAccessException {
+        User user1 = getUserModel(id);
+        List<Result> results = new ArrayList<>();
+
+        if (!CollectionUtils.isEmpty(user1.getResult())) {
+            results = user1.getResult();
+            checkResultValidation(result);
+        }for (Result result1 : results) {
+            if (result.getSemester()==result1.getSemester()){
+                throw new AlreadyExistException(MessageConstant.SEMESTER_ALREADY_EXIST);
+            }
+        }
+        results.add(result);
+        user1.setResult(results);
+        userRepository.save(user1);
+        UserResponse userResponse = new UserResponse();
+        nullAwareBeanUtilsBean.copyProperties(userResponse, user1);
+        return userResponse;
+    }
+
+
+
     public User getUserModel(String id) {
-        return userRepository.findById(id).orElseThrow();
+        return userRepository.findByIdAndSoftDeleteFalse(id).orElseThrow(() -> new NotFoundException(MessageConstant.USER_ID_NOT_FOUND));
+    }
+    public void checkResultValidation(Result result) throws InvocationTargetException, IllegalAccessException{
+        if (result.getSemester()>8){
+            new InvalidRequestException(MessageConstant.SEMESTER_NOT_VALID);
+
+        }
+        if (result.getSpi()>10){
+            throw new InvalidRequestException(MessageConstant.SPI_NOT_VALID);
+        }
     }
 }

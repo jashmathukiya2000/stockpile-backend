@@ -7,6 +7,7 @@ import com.example.auth.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.List;
 
 @RestController
@@ -78,7 +79,8 @@ public class UserController {
         }
         return dataResponse;
     }
-@RequestMapping(name = "getUserByAge", value = "get/Age", method = RequestMethod.POST)
+
+    @RequestMapping(name = "getUserByAge", value = "get/Age", method = RequestMethod.POST)
     public ListResponse<UserResponse> getUserByAge(@RequestBody UserFilter userFilter){
         ListResponse<UserResponse> listResponse= new ListResponse<>();
         try{
@@ -89,15 +91,19 @@ public class UserController {
         return listResponse;
     }
 
-    @RequestMapping(name = "getUserBySalaryAggregation", value = "get", method = RequestMethod.POST)
+    @RequestMapping(name = "getUserBySalaryAggregation", value = "get/salary", method = RequestMethod.POST)
     public ListResponse<UserAggregationResponse> getUserBySalary(@RequestBody UserFilter userFilter){
         ListResponse<UserAggregationResponse> listResponse= new ListResponse<>();
-        try{
-            listResponse.setData(userService.getUserBySalary(userFilter));
-        } catch (Exception e) {
-            listResponse.setStatus(Response.getNotFoundResponse(ResponseConstant.DATA_NOT_FOUND));
-        }
+        listResponse.setData(userService.getUserBySalary(userFilter));
+        listResponse.setStatus(Response.getOkResponse(ResponseConstant.OK_DESCRIPTION));
         return listResponse;
+    }
+    @RequestMapping(name = "addResult",value = "add/{id}",method = RequestMethod.POST)
+    public DataResponse<UserResponse> addResult(@PathVariable String id, @RequestBody Result result) throws InvocationTargetException, IllegalAccessException {
+        DataResponse<UserResponse> dataResponse= new DataResponse<>();
+        dataResponse.setData(userService.addResult(id,result));
+        dataResponse.setStatus(Response.getOkResponse(ResponseConstant.OK_DESCRIPTION));
+        return dataResponse;
     }
 }
 

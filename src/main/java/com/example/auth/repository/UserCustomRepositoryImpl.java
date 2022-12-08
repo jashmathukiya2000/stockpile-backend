@@ -30,31 +30,23 @@ public class UserCustomRepositoryImpl implements UserCustomRepository {
 
         Query query = new Query();
         Criteria criteria = new Criteria();
-        criteria = criteria.and("SoftDelete").is(false);
+        criteria = criteria.and("softDelete").is(false);
         if (!StringUtils.isEmpty(userFilter.getAge()))
             criteria = criteria.and("age").is(userFilter.getAge());
         if (!StringUtils.isEmpty(userFilter.getOccupation()))
             criteria = criteria.and("occupation").is(userFilter.getOccupation());
-        if (!StringUtils.isEmpty(userFilter.getSalary()))
+        if (userFilter.getSalary() != 0)
             criteria = criteria.and("salary").is(userFilter.getSalary());
         query.addCriteria(criteria);
         return mongoTemplate.find(query, UserResponse.class, "auth");
     }
 
-    @Override
-    public List<UserAggregationResponse> getUserByAggregation(UserFilter userFilter){
-        List<AggregationOperation> operations = getUserBySalaryAggregation(userFilter);
-        Aggregation aggregation =  newAggregation(operations);
-        return  mongoTemplate.aggregate(aggregation, "auth",UserAggregationResponse.class).getMappedResults();
-    }
-
-
     public List<AggregationOperation> getUserBySalaryAggregation(UserFilter userFilter) {
         List<AggregationOperation> operations = new ArrayList<>();
         Criteria criteria = new Criteria();
-        if (!StringUtils.isEmpty(userFilter.getSalary()))
-            criteria = criteria.and("SoftDelete").is(false);
-        criteria = criteria.and("salary").is(userFilter.getSalary());
+        criteria = criteria.and("softDelete").is(false);
+        if (userFilter.getSalary() != 0)
+            criteria = criteria.and("salary").is(userFilter.getSalary());
         operations.add(match(criteria));
 
         operations.add(new CustomAggregationOperation(new Document("$group",
@@ -62,5 +54,13 @@ public class UserCustomRepositoryImpl implements UserCustomRepository {
                         .append("auth", new Document("$push", new Document("name", "$name")
                                 .append("occupation", "$occupation"))))));
         return operations;
+    }
+
+    @Override
+    public List<UserAggregationResponse> getUserByAggregation(UserFilter userFilter) {
+        List<AggregationOperation> operations = getUserBySalaryAggregation(userFilter);
+        Aggregation aggregation = newAggregation(operations);
+        List<UserAggregationResponse> userAggregationResponses = mongoTemplate.aggregate(aggregation, "auth", UserAggregationResponse.class).getMappedResults();
+        return userAggregationResponses;
     }
 }

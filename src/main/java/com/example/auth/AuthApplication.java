@@ -1,5 +1,6 @@
 package com.example.auth;
 
+import com.example.auth.decorator.NullAwareBeanUtilsBean;
 import org.modelmapper.ModelMapper;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -14,6 +15,10 @@ public class AuthApplication {
     @Bean
     public ModelMapper modelMapper() {
         return new ModelMapper();
+    }
+    @Bean
+    public NullAwareBeanUtilsBean beanUtilsBean() {
+        return new NullAwareBeanUtilsBean();
     }
 
 }

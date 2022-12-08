@@ -1,20 +1,16 @@
-package com.example.auth.model;
+package com.example.auth.decorator;
 
-import com.example.auth.decorator.Result;
+import com.example.auth.model.Address;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import org.springframework.data.mongodb.core.mapping.Document;
-
 import java.util.List;
-
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-@Document(collection = "auth")
-public class User {
+public class ResultResponse {
     String id;
     String name;
     String age;
