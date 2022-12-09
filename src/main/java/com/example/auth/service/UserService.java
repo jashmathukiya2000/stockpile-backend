@@ -1,21 +1,20 @@
 package com.example.auth.service;
 
 import com.example.auth.decorator.*;
-import com.example.auth.exception.UserCollectionException;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.List;
 
 public interface UserService {
-    UserResponse addUser(UserAddRequest userAddRequest) throws UserCollectionException;
+    UserResponse addUser(UserAddRequest userAddRequest);
 
-    List<UserResponse> getAllUser() throws UserCollectionException;
+    List<UserResponse> getAllUser();
 
-    UserResponse getUser(String id) throws UserCollectionException;
+    UserResponse getUser(String id) throws InvocationTargetException, IllegalAccessException;
 
-    void updateUser(String id, UserAddRequest userAddRequest) throws UserCollectionException;
+    void updateUser(String id, UserAddRequest userAddRequest);
 
-    void deleteUser(String id) throws UserCollectionException;
+    void deleteUser(String id);
 
 
     List<UserResponse> getUserByAge(UserFilter userFilter);

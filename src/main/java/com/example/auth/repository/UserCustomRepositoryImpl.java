@@ -45,14 +45,18 @@ public class UserCustomRepositoryImpl implements UserCustomRepository {
         List<AggregationOperation> operations = new ArrayList<>();
         Criteria criteria = new Criteria();
         criteria = criteria.and("softDelete").is(false);
-        if (userFilter.getSalary() != 0)
-            criteria = criteria.and("salary").is(userFilter.getSalary());
+        criteria = criteria.and("occupation").is(userFilter.getOccupation());
         operations.add(match(criteria));
 
         operations.add(new CustomAggregationOperation(new Document("$group",
                 new Document("_id", "$salary")
                         .append("auth", new Document("$push", new Document("name", "$name")
-                                .append("occupation", "$occupation"))))));
+                                .append("occupation", "$occupation")
+                                .append("age", "$age")))
+                        .append("count", new Document("$sum", 1))
+                        .append("name", new Document("$first", "$name"))
+                        .append("occupation", new Document("$last", "$occupation")))));
+        operations.add(new CustomAggregationOperation(new Document("$sort", new Document("_id", 1))));
         return operations;
     }
 

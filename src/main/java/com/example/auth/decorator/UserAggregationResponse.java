@@ -12,4 +12,7 @@ import java.util.List;
 public class UserAggregationResponse {
     String _id;
     List<Auth> auth;
+    String count;
+    String name;
+    String occupation;
 }

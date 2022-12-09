@@ -11,6 +11,5 @@ import lombok.NoArgsConstructor;
 public class Auth {
     String occupation;
     String name;
-
-
+    String age;
 }

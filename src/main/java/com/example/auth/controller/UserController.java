@@ -2,44 +2,35 @@ package com.example.auth.controller;
 
 import com.example.auth.constant.ResponseConstant;
 import com.example.auth.decorator.*;
-import com.example.auth.exception.UserCollectionException;
 import com.example.auth.service.UserService;
+import lombok.SneakyThrows;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
-import java.lang.reflect.InvocationTargetException;
 import java.util.List;
 
 @RestController
 @RequestMapping("/users")
 public class UserController {
     @Autowired
-    private UserService userService;
-
+    UserService userService;
 
     @RequestMapping(name = "addUser", value = "/add", method = RequestMethod.POST)
     public DataResponse<UserResponse> addUser(@RequestBody UserAddRequest userAddRequest) {
         DataResponse<UserResponse> dataResponse = new DataResponse<>();
-        try {
-            dataResponse.setData(userService.addUser(userAddRequest));
-            dataResponse.setStatus(Response.getOkResponse(ResponseConstant.SAVED_SUCCESSFULLY));
-        } catch (Exception e) {
-            dataResponse.setStatus(Response.getInternalServerErrorResponse());
-        }
+        dataResponse.setData(userService.addUser(userAddRequest));
+        dataResponse.setStatus(Response.getOkResponse(ResponseConstant.SAVED_SUCCESSFULLY));
         return dataResponse;
     }
 
 
     @RequestMapping(name = "getAllUser", value = "/get", method = RequestMethod.GET)
-    public ListResponse<UserResponse> getAllUser() throws UserCollectionException {
+    public ListResponse<UserResponse> getAllUser() {
         List<UserResponse> user = userService.getAllUser();
         ListResponse<UserResponse> listResponse = new ListResponse<>();
-        if (user.size() > 0) {
-            listResponse.setStatus(Response.getNotFoundResponse());
-        }
         listResponse.setData(user);
+        listResponse.getData();
         listResponse.setStatus(Response.getOkResponse());
-
         return listResponse;
     }
 
@@ -49,7 +40,7 @@ public class UserController {
         DataResponse<UserResponse> dataResponse = new DataResponse<>();
         try {
             dataResponse.setData(userService.getUser(id));
-            dataResponse.setStatus(Response.getOkResponse(ResponseConstant.OK_DESCRIPTION));
+            dataResponse.setStatus(Response.getOkResponse(ResponseConstant.OK));
         } catch (Exception e) {
             dataResponse.setStatus(Response.getNotFoundResponse(ResponseConstant.NOT_FOUND));
         }
@@ -62,7 +53,7 @@ public class UserController {
         try {
             userService.updateUser(id, userAddRequest);
             dataResponse.setStatus(Response.getUpdateResponse(ResponseConstant.UPDATED_SUCCESSFULLY));
-        } catch (UserCollectionException e) {
+        } catch (Exception e) {
             dataResponse.setStatus(Response.getNotFoundResponse(ResponseConstant.NOT_FOUND));
         }
         return dataResponse;
@@ -71,19 +62,15 @@ public class UserController {
     @RequestMapping(name = "deleteUser", value = "/delete/{id}", method = RequestMethod.DELETE)
     public DataResponse<Object> deleteUser(@PathVariable String id) {
         DataResponse<Object> dataResponse = new DataResponse<>();
-        try {
-            userService.deleteUser(id);
-            dataResponse.setStatus(Response.getOkResponse(ResponseConstant.DELETED_SUCCESSFULLY));
-        } catch (UserCollectionException e) {
-            dataResponse.setStatus(Response.getNotFoundResponse(ResponseConstant.NOT_FOUND));
-        }
+        userService.deleteUser(id);
+        dataResponse.setStatus(Response.getOkResponse(ResponseConstant.DELETED_SUCCESSFULLY));
         return dataResponse;
     }
 
     @RequestMapping(name = "getUserByAge", value = "get/Age", method = RequestMethod.POST)
-    public ListResponse<UserResponse> getUserByAge(@RequestBody UserFilter userFilter){
-        ListResponse<UserResponse> listResponse= new ListResponse<>();
-        try{
+    public ListResponse<UserResponse> getUserByAge(@RequestBody UserFilter userFilter) {
+        ListResponse<UserResponse> listResponse = new ListResponse<>();
+        try {
             listResponse.setData(userService.getUserByAge(userFilter));
         } catch (Exception e) {
             listResponse.setStatus(Response.getNotFoundResponse(ResponseConstant.NOT_FOUND));
@@ -92,20 +79,21 @@ public class UserController {
     }
 
     @RequestMapping(name = "getUserBySalaryAggregation", value = "get/salary", method = RequestMethod.POST)
-    public ListResponse<UserAggregationResponse> getUserBySalary(@RequestBody UserFilter userFilter){
-        ListResponse<UserAggregationResponse> listResponse= new ListResponse<>();
+    public ListResponse<UserAggregationResponse> getUserBySalary(@RequestBody UserFilter userFilter) {
+        ListResponse<UserAggregationResponse> listResponse = new ListResponse<>();
         listResponse.setData(userService.getUserBySalary(userFilter));
-        listResponse.setStatus(Response.getOkResponse(ResponseConstant.OK_DESCRIPTION));
+        listResponse.setStatus(Response.getOkResponse(ResponseConstant.OK));
         return listResponse;
     }
-    @RequestMapping(name = "addResult",value = "add/{id}",method = RequestMethod.POST)
-    public DataResponse<UserResponse> addResult(@PathVariable String id, @RequestBody Result result) throws InvocationTargetException, IllegalAccessException {
-        DataResponse<UserResponse> dataResponse= new DataResponse<>();
-        dataResponse.setData(userService.addResult(id,result));
-        dataResponse.setStatus(Response.getOkResponse(ResponseConstant.OK_DESCRIPTION));
+
+    @SneakyThrows
+    @RequestMapping(name = "addResult", value = "add/{id}", method = RequestMethod.POST)
+    public DataResponse<UserResponse> addResult(@PathVariable String id, @RequestBody Result result) {
+        DataResponse<UserResponse> dataResponse = new DataResponse<>();
+        dataResponse.setData(userService.addResult(id, result));
+        dataResponse.getData();
+        dataResponse.setStatus(Response.getOkResponse());
         return dataResponse;
     }
+
 }
-
-
-

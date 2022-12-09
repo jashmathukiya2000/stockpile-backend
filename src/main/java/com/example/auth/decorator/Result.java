@@ -12,4 +12,6 @@ public class Result {
     double spi;
     int semester;
     Date date= new Date();
+
+
 }

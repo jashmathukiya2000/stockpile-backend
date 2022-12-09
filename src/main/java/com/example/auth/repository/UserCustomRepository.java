@@ -1,6 +1,5 @@
 package com.example.auth.repository;
 
-import com.example.auth.decorator.CustomAggregationOperation;
 import com.example.auth.decorator.UserAggregationResponse;
 import com.example.auth.decorator.UserFilter;
 import com.example.auth.decorator.UserResponse;

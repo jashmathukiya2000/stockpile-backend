@@ -26,5 +26,6 @@ public class User {
     @JsonIgnore
     boolean softDelete = false;
     List<Result> result;
+    double cgpa;
 
 }

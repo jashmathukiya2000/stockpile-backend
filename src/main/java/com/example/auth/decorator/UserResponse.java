@@ -23,4 +23,5 @@ public class UserResponse {
     @JsonIgnore
     boolean softDelete = false;
     List<Result> result;
+    double cgpa;
 }
