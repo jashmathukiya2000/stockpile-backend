@@ -1,4 +1,4 @@
-package com.example.auth.decorator;
+package com.example.auth.common.config.advice;
 
 import org.apache.commons.beanutils.BeanUtilsBean;
 import java.lang.reflect.InvocationTargetException;

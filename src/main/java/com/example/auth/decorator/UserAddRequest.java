@@ -11,11 +11,12 @@ import lombok.NoArgsConstructor;
 
 @NoArgsConstructor
 public class UserAddRequest {
-
-    String name;
-    String age;
+   String firstName;
+   String middleName;
+   String lastName;
+    double age;
     String occupation;
-    String salary;
+    double salary;
     Address address;
     String email;
     String phoneNumber;

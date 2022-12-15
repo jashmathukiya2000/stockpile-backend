@@ -1,4 +1,4 @@
-package com.example.auth.exception;
+package com.example.auth.common.config.exception;
 
 public class EmptyException extends RuntimeException{
     public  EmptyException(String message){

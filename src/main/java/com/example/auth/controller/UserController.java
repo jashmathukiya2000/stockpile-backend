@@ -1,61 +1,44 @@
 package com.example.auth.controller;
 
-import com.example.auth.constant.ResponseConstant;
+import com.example.auth.common.config.constant.ResponseConstant;
+import com.example.auth.common.config.enums.Role;
 import com.example.auth.decorator.*;
+import com.example.auth.service.ResultService;
 import com.example.auth.service.UserService;
+import lombok.AllArgsConstructor;
 import lombok.SneakyThrows;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @RestController
 @RequestMapping("/users")
+@AllArgsConstructor
 public class UserController {
-    @Autowired
-    UserService userService;
-
-    @RequestMapping(name = "addUser", value = "/add", method = RequestMethod.POST)
-    public DataResponse<UserResponse> addUser(@RequestBody UserAddRequest userAddRequest) {
+    private final UserService userService;
+    private final ResultService resultService;
+@SneakyThrows
+    @RequestMapping(name = "addOrUpdateUser", value = "/add", method = RequestMethod.POST)
+    public DataResponse<UserResponse> addOrUpdateUser(@RequestParam(required = false) String id, @RequestBody UserAddRequest userAddRequest) {
         DataResponse<UserResponse> dataResponse = new DataResponse<>();
-        dataResponse.setData(userService.addUser(userAddRequest));
+        dataResponse.setData( userService.addOrUpdateUser(id, userAddRequest));
         dataResponse.setStatus(Response.getOkResponse(ResponseConstant.SAVED_SUCCESSFULLY));
         return dataResponse;
     }
 
-
-    @RequestMapping(name = "getAllUser", value = "/get", method = RequestMethod.GET)
+    @SneakyThrows
+    @RequestMapping(name = "getAllUser", value = "/getAll", method = RequestMethod.GET)
     public ListResponse<UserResponse> getAllUser() {
-        List<UserResponse> user = userService.getAllUser();
         ListResponse<UserResponse> listResponse = new ListResponse<>();
-        listResponse.setData(user);
-        listResponse.getData();
+        listResponse.setData(userService.getAllUser());
         listResponse.setStatus(Response.getOkResponse());
         return listResponse;
     }
 
-
-    @RequestMapping(name = "getUserById", value = "/get/{id}", method = RequestMethod.GET)
+    @SneakyThrows
+    @RequestMapping(name = "getUserById", value = "/user/{id}", method = RequestMethod.POST)
     public DataResponse<UserResponse> getUserById(@PathVariable String id) {
         DataResponse<UserResponse> dataResponse = new DataResponse<>();
-        try {
-            dataResponse.setData(userService.getUser(id));
-            dataResponse.setStatus(Response.getOkResponse(ResponseConstant.OK));
-        } catch (Exception e) {
-            dataResponse.setStatus(Response.getNotFoundResponse(ResponseConstant.NOT_FOUND));
-        }
-        return dataResponse;
-    }
-
-    @RequestMapping(name = "updateUser", value = "/update/{id}", method = RequestMethod.PUT)
-    public DataResponse<UserResponse> updateUser(@PathVariable String id, @RequestBody UserAddRequest userAddRequest) {
-        DataResponse<UserResponse> dataResponse = new DataResponse<>();
-        try {
-            userService.updateUser(id, userAddRequest);
-            dataResponse.setStatus(Response.getUpdateResponse(ResponseConstant.UPDATED_SUCCESSFULLY));
-        } catch (Exception e) {
-            dataResponse.setStatus(Response.getNotFoundResponse(ResponseConstant.NOT_FOUND));
-        }
+        dataResponse.setData(userService.getUser(id));
+        dataResponse.setStatus(Response.getOkResponse(ResponseConstant.OK));
         return dataResponse;
     }
 
@@ -67,18 +50,15 @@ public class UserController {
         return dataResponse;
     }
 
-    @RequestMapping(name = "getUserByAge", value = "get/Age", method = RequestMethod.POST)
+    @RequestMapping(name = "getUserByAge", value = "/age", method = RequestMethod.POST)
     public ListResponse<UserResponse> getUserByAge(@RequestBody UserFilter userFilter) {
         ListResponse<UserResponse> listResponse = new ListResponse<>();
-        try {
-            listResponse.setData(userService.getUserByAge(userFilter));
-        } catch (Exception e) {
-            listResponse.setStatus(Response.getNotFoundResponse(ResponseConstant.NOT_FOUND));
-        }
+        listResponse.setData(userService.getUserByAge(userFilter));
+        listResponse.setStatus(Response.getOkResponse());
         return listResponse;
     }
 
-    @RequestMapping(name = "getUserBySalaryAggregation", value = "get/salary", method = RequestMethod.POST)
+    @RequestMapping(name = "getUserBySalaryAggregation", value = "/salary", method = RequestMethod.POST)
     public ListResponse<UserAggregationResponse> getUserBySalary(@RequestBody UserFilter userFilter) {
         ListResponse<UserAggregationResponse> listResponse = new ListResponse<>();
         listResponse.setData(userService.getUserBySalary(userFilter));
@@ -87,13 +67,38 @@ public class UserController {
     }
 
     @SneakyThrows
-    @RequestMapping(name = "addResult", value = "add/{id}", method = RequestMethod.POST)
+    @RequestMapping(name = "addResult", value = "/addResult/{id}", method = RequestMethod.POST)
     public DataResponse<UserResponse> addResult(@PathVariable String id, @RequestBody Result result) {
         DataResponse<UserResponse> dataResponse = new DataResponse<>();
-        dataResponse.setData(userService.addResult(id, result));
-        dataResponse.getData();
+        dataResponse.setData(resultService.addResult(id, result));
         dataResponse.setStatus(Response.getOkResponse());
         return dataResponse;
     }
 
+    @RequestMapping(name = "getBySpi", value = "/spi", method = RequestMethod.GET)
+    public ListResponse<UserSpiResponse> getBySpi(@RequestParam double spi) {
+        ListResponse<UserSpiResponse> dataResponse = new ListResponse<>();
+        dataResponse.setData(resultService.getBySpi(spi));
+        dataResponse.setStatus(Response.getOkResponse());
+        return dataResponse;
+    }
+
+
+    @RequestMapping(name = "signUpUser", value = "/signup", method = RequestMethod.POST)
+    public DataResponse<SignUpResponse> signUpUser(@RequestBody SignUpAddRequest addSignUp, @RequestParam Role role) {
+        DataResponse<SignUpResponse> dataResponse = new DataResponse<>();
+        dataResponse.setData(userService.signUpUser(addSignUp, role));
+        dataResponse.setStatus(Response.getOkResponse());
+        return dataResponse;
+
+    }
+
+    @SneakyThrows
+    @RequestMapping(name = "login", value = "/login/email", method = RequestMethod.POST)
+    public DataResponse<SignUpResponse> login(@RequestBody LoginAddRequest loginAddRequest) {
+        DataResponse<SignUpResponse> dataResponse = new DataResponse<>();
+        dataResponse.setData(userService.login(loginAddRequest));
+        dataResponse.setStatus(Response.getOkResponse(ResponseConstant.LOGIN_SUCCESSFULL));
+        return dataResponse;
+    }
 }

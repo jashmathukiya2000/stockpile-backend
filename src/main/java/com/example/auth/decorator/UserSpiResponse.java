@@ -5,16 +5,15 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.util.List;
-
+@AllArgsConstructor
 @Data
 @NoArgsConstructor
-@AllArgsConstructor
-public class UserAggregationResponse {
+public class UserSpiResponse {
     String _id;
-    List<Auth> auth;
+    List<UserSpiData> auth;
+    int sum;
     int count;
-    String name;
-    String occupation;
+    int average;
 
 
 }

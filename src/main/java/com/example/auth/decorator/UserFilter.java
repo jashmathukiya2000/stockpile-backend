@@ -1,19 +1,21 @@
 package com.example.auth.decorator;
 
-import com.example.auth.model.Address;
-import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+
+import java.util.List;
 
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 public class UserFilter {
     String name;
-    String age;
+    int  age;
     String occupation;
     int  salary;
+    List<Result> result;
 
 
 

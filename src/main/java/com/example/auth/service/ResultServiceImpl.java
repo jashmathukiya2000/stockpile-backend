@@ -1,0 +1,79 @@
+package com.example.auth.service;
+
+import com.example.auth.common.config.constant.MessageConstant;
+import com.example.auth.common.config.advice.NullAwareBeanUtilsBean;
+import com.example.auth.decorator.Result;
+import com.example.auth.decorator.UserResponse;
+import com.example.auth.decorator.UserSpiResponse;
+import com.example.auth.common.config.exception.NotFoundException;
+import com.example.auth.model.User;
+import com.example.auth.repository.UserRepository;
+import lombok.AllArgsConstructor;
+import lombok.SneakyThrows;
+import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
+
+import java.text.DecimalFormat;
+import java.util.ArrayList;
+import java.util.List;
+
+@Service
+@AllArgsConstructor
+public class ResultServiceImpl implements ResultService {
+
+    private final UserRepository userRepository;
+    private final NullAwareBeanUtilsBean nullAwareBeanUtilsBean;
+
+
+@SneakyThrows
+    @Override
+    public UserResponse addResult(String id, Result result) {
+        List<Result> results = new ArrayList<>();
+        User user1 = getUserModel(id);
+        double sum = 0;
+        double cgpa = 0;
+        if (!CollectionUtils.isEmpty(user1.getResult())) {
+            results = user1.getResult();
+            checkResultValidation(result);
+        }
+        boolean matchFound = results.parallelStream()
+                                        .anyMatch(result1 -> result1.getSemester() == result.getSemester());
+        if (matchFound){
+            throw new NotFoundException(MessageConstant.SEMESTER_ALREADY_EXIST);
+        }
+        results.add(result);
+
+        for (Result result1 : results) {
+            sum += result1.getSpi();
+        }
+        cgpa = sum / results.size();
+        cgpa = Double.parseDouble(new DecimalFormat("##.##").format(cgpa));
+        user1.setCgpa(cgpa);
+        user1.setResult(results);
+        userRepository.save(user1);
+        UserResponse userResponse = new UserResponse();
+        nullAwareBeanUtilsBean.copyProperties(userResponse, user1);
+        return userResponse;
+    }
+
+    @Override
+    public List<UserSpiResponse> getBySpi(double spi) {
+        return userRepository.getUserBySpi(spi);
+    }
+
+    @SneakyThrows
+    public User getUserModel(String id) {
+        return userRepository.findByIdAndSoftDeleteIsFalse(id).orElseThrow(() -> new NotFoundException(MessageConstant.USER_ID_NOT_FOUND));
+    }
+
+    @SneakyThrows
+    public void checkResultValidation(Result result)  {
+        if (result.getSemester() > 8) {
+            throw new NotFoundException(MessageConstant.SEMESTER_NOT_VALID);
+        }
+        if (result.getSpi() > 10) {
+            throw new NotFoundException(MessageConstant.SPI_NOT_VALID);
+        }
+
+    }
+}

@@ -18,7 +18,6 @@ public CustomAggregationOperation(Document document){
     }
     public static String getJson(JSONObject aggregationMap, String key, Object object) throws JSONException {
         String json = aggregationMap.getJSONObject(key).toString();
-        //System.out.println("[getJson] : "+json);
         return new TemplateParser<>().compileTemplate(json,object);
     }
 

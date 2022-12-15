@@ -1,4 +1,4 @@
-package com.example.auth.constant;
+package com.example.auth.common.config.constant;
 
 public class ResponseConstant {
     public static final String OK ="SUCCESS";
@@ -8,6 +8,7 @@ public class ResponseConstant {
     public static final String UPDATED_SUCCESSFULLY = "UPDATED";
     public static final String NOT_FOUND = "id  not found";
     public static final String DELETED_SUCCESSFULLY ="SUCCESSFULLY_DELETED" ;
+    public static final String LOGIN_SUCCESSFULL = "login successfully";
 //    public static final String DATA_NOT_FOUND ="DATA NOT FOUND" ;
 //    public static final String INVALID_REQUEST_EXCEPTION ="invalid request exception" ;
 }

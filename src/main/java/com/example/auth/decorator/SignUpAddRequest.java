@@ -4,17 +4,14 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.util.List;
-
 @Data
-@NoArgsConstructor
 @AllArgsConstructor
-public class UserAggregationResponse {
-    String _id;
-    List<Auth> auth;
-    int count;
+@NoArgsConstructor
+public class SignUpAddRequest {
     String name;
-    String occupation;
-
-
+    String email;
+    String contact;
+    String userName;
+    String password;
+    String confirmPassword;
 }

@@ -1,4 +1,4 @@
-package com.example.auth.swaggerconfig;
+package com.example.auth.common.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

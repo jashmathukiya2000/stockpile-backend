@@ -4,17 +4,14 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.util.List;
-
 @Data
-@NoArgsConstructor
 @AllArgsConstructor
-public class UserAggregationResponse {
+@NoArgsConstructor
+public class UserSpiData {
     String _id;
-    List<Auth> auth;
-    int count;
     String name;
-    String occupation;
+    String email;
+    String semester;
 
 
 }

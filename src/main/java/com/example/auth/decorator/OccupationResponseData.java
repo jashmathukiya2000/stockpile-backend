@@ -1,20 +1,19 @@
 package com.example.auth.decorator;
 
+import com.amazonaws.services.dynamodbv2.xspec.S;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.util.List;
-
+@AllArgsConstructor
 @Data
 @NoArgsConstructor
-@AllArgsConstructor
-public class UserAggregationResponse {
+public class OccupationResponseData {
     String _id;
-    List<Auth> auth;
-    int count;
     String name;
     String occupation;
-
-
+    int age;
+    String email;
+    int semester;
+    int spi;
 }

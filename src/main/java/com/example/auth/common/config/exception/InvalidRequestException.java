@@ -1,4 +1,4 @@
-package com.example.auth.exception;
+package com.example.auth.common.config.exception;
 
 public class InvalidRequestException extends RuntimeException{
     public  InvalidRequestException(String message){

@@ -1,6 +1,6 @@
 package com.example.auth.decorator;
 
-import com.example.auth.constant.ResponseConstant;
+import com.example.auth.common.config.constant.ResponseConstant;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -19,12 +19,23 @@ public class Response {
     public static Response getOkResponse(String message) {
         return new Response(HttpStatus.OK, message);
 
+    } public static Response getEmptyResponse(String message) {
+        return new Response(HttpStatus.BAD_REQUEST, message);
+
+    } public static Response getInvaildResponse(String message) {
+        return new Response(HttpStatus.BAD_REQUEST, message);
+
+    }
+
+    public static Response getAlreadyExists(String message) {
+        return new Response(HttpStatus.BAD_REQUEST, message);
+
     }   public static Response getInvalidRequestException(String message) {
-        return new Response(HttpStatus.OK, message);
+        return new Response(HttpStatus.BAD_REQUEST, message);
     }
 
     public static Response getNotFoundResponse(String message) {
-        return new Response(HttpStatus.OK, message);
+        return new Response(HttpStatus.BAD_REQUEST, message);
     }
 
     public static Response getOkResponse() {
@@ -32,12 +43,8 @@ public class Response {
     }
 
     public static Response getInternalServerErrorResponse() {
-        return new Response(HttpStatus.OK, ResponseConstant.OK);
+        return new Response(HttpStatus.BAD_REQUEST, ResponseConstant.OK);
     }
-
-//    public static Response getNotFoundResponse() {
-//        return new Response(HttpStatus.OK, ResponseConstant.NO_DESCRIPTION);
-//    }
 
         public static Response getUpdateResponse (String message){
             return new Response(HttpStatus.OK, ResponseConstant.UPDATED);
