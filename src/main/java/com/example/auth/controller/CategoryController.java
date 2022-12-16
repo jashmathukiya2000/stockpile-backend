@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @AllArgsConstructor
-@RequestMapping("categroy")
+@RequestMapping("categroies")
 public class CategoryController {
 
     private final CategoryService categoryService;
@@ -36,7 +36,6 @@ public class CategoryController {
 
    //end point name change
     //methodName change
-   //add description in response
 
     @RequestMapping(name = "getAllCategory", value = "/getAllCategroy", method = RequestMethod.GET)
     public ListResponse<CategoryResponse> getAllCategory() {

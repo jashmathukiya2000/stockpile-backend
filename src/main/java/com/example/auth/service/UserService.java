@@ -20,8 +20,4 @@ public interface UserService {
 
     List<UserAggregationResponse> getUserBySalary(UserFilter userFilter);
 
-    SignUpResponse signUpUser(SignUpAddRequest addSignUp, Role role);
-
-
-    SignUpResponse login(LoginAddRequest loginAddRequest) throws InvocationTargetException, IllegalAccessException;
 }

@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Optional;
 
 public interface UserRepository extends MongoRepository<User,String>,UserCustomRepository {
+
     Optional<User> findByIdAndSoftDeleteIsFalse(String id);
 
     List<User> findAllBySoftDeleteFalse();

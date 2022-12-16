@@ -2,15 +2,9 @@ package com.example.auth.service;
 
 import com.example.auth.common.config.advice.NullAwareBeanUtilsBean;
 import com.example.auth.common.config.constant.MessageConstant;
-import com.example.auth.common.config.enums.PasswordEncryptionType;
-import com.example.auth.common.config.enums.Role;
-import com.example.auth.common.config.exception.InvalidRequestException;
 import com.example.auth.common.config.exception.NotFoundException;
-import com.example.auth.common.config.utils.PasswordUtils;
 import com.example.auth.decorator.*;
-import com.example.auth.model.SignUpUser;
 import com.example.auth.model.User;
-import com.example.auth.repository.SignUpRepository;
 import com.example.auth.repository.UserRepository;
 import lombok.AllArgsConstructor;
 import lombok.SneakyThrows;
@@ -21,6 +15,8 @@ import org.springframework.stereotype.Service;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 @Slf4j
 @Service
@@ -29,7 +25,7 @@ public class UserServiceImpl implements UserService {
     private final ModelMapper modelMapper;
     private final UserRepository userRepository;
     private final NullAwareBeanUtilsBean nullAwareBeanUtilsBean;
-    private final SignUpRepository signUpRepository;
+
 
 
     @Override
@@ -41,9 +37,11 @@ public class UserServiceImpl implements UserService {
             user1.setLastName(userAddRequest.getLastName());
             user1.setFullName();
             user1.setAge(userAddRequest.getAge());
+            user1.setEmail(userAddRequest.getEmail());
             user1.setOccupation(userAddRequest.getOccupation());
             user1.setSalary(userAddRequest.getSalary());
             user1.setAddress(userAddRequest.getAddress());
+
             UserResponse userResponse1 = modelMapper.map(userAddRequest, UserResponse.class);
             nullAwareBeanUtilsBean.copyProperties(userResponse1, user1);
             userRepository.save(user1);
@@ -73,9 +71,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public UserResponse getUser(String id) throws InvocationTargetException, IllegalAccessException {
         User user = getUserModel(id);
-        UserResponse userResponse = new UserResponse();
-        nullAwareBeanUtilsBean.copyProperties(userResponse, user);
-        return userResponse;
+       return modelMapper.map(user,UserResponse.class);
     }
 
 
@@ -96,48 +92,35 @@ public class UserServiceImpl implements UserService {
         return userRepository.getUserByAggregation(userFilter);
     }
 
-    @Override
-    public SignUpResponse signUpUser(SignUpAddRequest signUpAddRequest, Role role) {
-        SignUpUser signUpUser1 = modelMapper.map(signUpAddRequest, SignUpUser.class);
-        SignUpResponse userResponse1 = modelMapper.map(signUpAddRequest, SignUpResponse.class);
-        if (!signUpAddRequest.getPassword().equals(signUpAddRequest.getConfirmPassword())) {
-            throw new InvalidRequestException(MessageConstant.INCORRECT_PASSWORD);
-        }
-        if (signUpUser1.getPassword() != null) {
-            String password = PasswordUtils.encryptPassword(signUpUser1.getPassword());
-            signUpUser1.setPassword(password);
-            userResponse1.setPassword(password);
-        }
-        signUpUser1.setRole(role);
-        userResponse1.setRole(role);
-        signUpRepository.save(signUpUser1);
-        return userResponse1;
-    }
-
-    @SneakyThrows
-    @Override
-    public SignUpResponse login(LoginAddRequest loginAddRequest) throws InvocationTargetException, IllegalAccessException {
-        SignUpUser signUpUser = getUserByEmail(loginAddRequest.getEmail());
-        String userPasswrod = signUpUser.getPassword();
-        SignUpResponse signUpResponse = modelMapper.map(loginAddRequest, SignUpResponse.class);
-        boolean passwords = PasswordUtils.isPasswordAuthenticated(loginAddRequest.getPassword(), userPasswrod, PasswordEncryptionType.BCRYPT);
-        if (passwords) {
-            nullAwareBeanUtilsBean.copyProperties(signUpResponse, signUpUser);
-        } else {
-            throw new InvalidRequestException(MessageConstant.INCORRECT_PASSWORD);
-        }
-        return signUpResponse;
-    }
 
     @SneakyThrows
     public User getUserModel(String id) {
         return userRepository.findByIdAndSoftDeleteIsFalse(id).orElseThrow(() -> new NotFoundException(MessageConstant.USER_ID_NOT_FOUND));
     }
 
-    @SneakyThrows
-    public SignUpUser getUserByEmail(String email) throws NotFoundException {
-        return signUpRepository.findUserByEmailAndSoftDeleteIsFalse(email).orElseThrow(() -> new NotFoundException(MessageConstant.USER_NOT_FOUND));
+
+
+    boolean validNumber(String number) {
+        Pattern p = Pattern.compile("^\\d{10}$");
+
+        Matcher m = p.matcher(number);
+        return (m.matches());
     }
 
-}
+    boolean validZip(String zip) throws RuntimeException {
+        return zip.matches("^[0-9]{5}(?:-[0-9]{4})?$\n");
+    }
 
+    boolean validAge(String age) throws RuntimeException {
+        return age.matches("^(0?[1-9]|[1-9][0-9]|[1][1-9][1-9]|200)$");
+    }
+
+    boolean regexEmail(String email) {
+        Pattern VALID_EMAIL_ADDRESS_REGEX =
+                Pattern.compile("^[A-Z0-9._%+-]+@[A-Z0-9.-]+\\.[A-Z]{2,6}$", Pattern.CASE_INSENSITIVE);
+        Matcher matcher = VALID_EMAIL_ADDRESS_REGEX.matcher(email);
+        return matcher.find();
+    }
+
+
+}

@@ -7,20 +7,27 @@ import com.example.auth.decorator.CategoryResponse;
 import com.example.auth.common.config.advice.NullAwareBeanUtilsBean;
 import com.example.auth.model.Category;
 import com.example.auth.repository.CategoryRepository;
-import lombok.AllArgsConstructor;
 import lombok.SneakyThrows;
+import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.List;
 
 @Service
-@AllArgsConstructor
+@Slf4j
 public class CategoryServiceImpl implements CategoryService {
     private final CategoryRepository categoryRepository;
     private final ModelMapper modelMapper;
     private final NullAwareBeanUtilsBean nullAwareBeanUtilsBean;
+
+    public CategoryServiceImpl(CategoryRepository categoryRepository, ModelMapper modelMapper, NullAwareBeanUtilsBean nullAwareBeanUtilsBean) {
+        this.categoryRepository = categoryRepository;
+        this.modelMapper = modelMapper;
+        this.nullAwareBeanUtilsBean = nullAwareBeanUtilsBean;
+    }
 
 
     @Override
@@ -41,13 +48,17 @@ public class CategoryServiceImpl implements CategoryService {
         }
     }
 
-    @SneakyThrows
+
     @Override
     public CategoryResponse getCategoryById(String id) {
         Category category = getById(id);
-        CategoryResponse categoryResponse = new CategoryResponse();
-        nullAwareBeanUtilsBean.copyProperties(categoryResponse, category);
-        return categoryResponse;
+        try {
+            CategoryResponse categoryResponse = new CategoryResponse();
+            nullAwareBeanUtilsBean.copyProperties(categoryResponse, category);
+        } catch (IllegalAccessException | InvocationTargetException e) {
+             log.error("error in mapping from category to category response: {}",e.getMessage(), e);
+        }
+        return null;
     }
 
     @SneakyThrows
