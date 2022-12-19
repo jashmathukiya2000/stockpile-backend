@@ -1,6 +1,5 @@
 package com.example.auth.service;
 
-import com.example.auth.common.config.enums.Role;
 import com.example.auth.decorator.*;
 
 import java.lang.reflect.InvocationTargetException;

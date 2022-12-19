@@ -62,7 +62,8 @@ public class UserModelServiceImpl implements UserModelService {
         SignUpResponse signUpResponse = modelMapper.map(loginAddRequest, SignUpResponse.class);
         boolean passwords = PasswordUtils.isPasswordAuthenticated(loginAddRequest.getPassword(), userPasswrod, PasswordEncryptionType.BCRYPT);
         if (passwords) {
-            nullAwareBeanUtilsBean.copyProperties(signUpResponse, signUpUser);
+//            nullAwareBeanUtilsBean.copyProperties(signUpResponse, signUpUser);
+            modelMapper.map(signUpUser,SignUpResponse.class);
         } else {
             throw new InvalidRequestException(MessageConstant.INCORRECT_PASSWORD);
         }

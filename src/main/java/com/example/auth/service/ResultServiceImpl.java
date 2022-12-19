@@ -3,6 +3,7 @@ package com.example.auth.service;
 import com.example.auth.common.config.constant.MessageConstant;
 import com.example.auth.common.config.advice.NullAwareBeanUtilsBean;
 import com.example.auth.decorator.Result;
+import com.example.auth.decorator.UserAddRequest;
 import com.example.auth.decorator.UserResponse;
 import com.example.auth.decorator.UserSpiResponse;
 import com.example.auth.common.config.exception.NotFoundException;
@@ -10,6 +11,7 @@ import com.example.auth.model.User;
 import com.example.auth.repository.UserRepository;
 import lombok.AllArgsConstructor;
 import lombok.SneakyThrows;
+import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
@@ -23,26 +25,26 @@ public class ResultServiceImpl implements ResultService {
 
     private final UserRepository userRepository;
     private final NullAwareBeanUtilsBean nullAwareBeanUtilsBean;
+    private final ModelMapper modelMapper;
 
 
 @SneakyThrows
     @Override
     public UserResponse addResult(String id, Result result) {
-        List<Result> results = new ArrayList<>();
-        User user1 = getUserModel(id);
-        double sum = 0;
-        double cgpa = 0;
-        if (!CollectionUtils.isEmpty(user1.getResult())) {
-            results = user1.getResult();
-            checkResultValidation(result);
-        }
+    List<Result> results = new ArrayList<>();
+    User user1 = getUserModel(id);
+    double sum = 0;
+    double cgpa = 0;
+    if (!CollectionUtils.isEmpty(user1.getResult())) {
+        results = user1.getResult();
+        checkResultValidation(result);
+    }
         boolean matchFound = results.parallelStream()
                                         .anyMatch(result1 -> result1.getSemester() == result.getSemester());
         if (matchFound){
             throw new NotFoundException(MessageConstant.SEMESTER_ALREADY_EXIST);
-        }
-        results.add(result);
-
+    }
+         results.add(result);
         for (Result result1 : results) {
             sum += result1.getSpi();
         }
@@ -52,9 +54,12 @@ public class ResultServiceImpl implements ResultService {
         user1.setResult(results);
         userRepository.save(user1);
         UserResponse userResponse = new UserResponse();
-        nullAwareBeanUtilsBean.copyProperties(userResponse, user1);
+//        nullAwareBeanUtilsBean.copyProperties(userResponse, user1);
+    modelMapper.map(userResponse,User.class);
+
         return userResponse;
     }
+
 
     @Override
     public List<UserSpiResponse> getBySpi(double spi) {

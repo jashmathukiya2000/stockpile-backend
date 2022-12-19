@@ -52,13 +52,8 @@ public class CategoryServiceImpl implements CategoryService {
     @Override
     public CategoryResponse getCategoryById(String id) {
         Category category = getById(id);
-        try {
-            CategoryResponse categoryResponse = new CategoryResponse();
-            nullAwareBeanUtilsBean.copyProperties(categoryResponse, category);
-        } catch (IllegalAccessException | InvocationTargetException e) {
-             log.error("error in mapping from category to category response: {}",e.getMessage(), e);
-        }
-        return null;
+        CategoryResponse categoryResponse = modelMapper.map(category, CategoryResponse.class);
+        return categoryResponse;
     }
 
     @SneakyThrows

@@ -1,6 +1,7 @@
 package com.example.auth.service;
 
 import com.example.auth.decorator.Result;
+import com.example.auth.decorator.UserAddRequest;
 import com.example.auth.decorator.UserResponse;
 import com.example.auth.decorator.UserSpiResponse;
 import com.example.auth.common.config.exception.EmptyException;

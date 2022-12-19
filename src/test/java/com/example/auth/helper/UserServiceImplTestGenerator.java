@@ -44,7 +44,14 @@ public class UserServiceImplTestGenerator {
     }
     public static User getMockUser(){
         return User.builder()
-                .id("id")
+                .firstName("sans")
+                .middleName("km")
+                .lastName("shukla")
+                .occupation("java developer")
+                .email("sanskrityshukla4@gmail.com")
+                .age(21)
+                .phoneNumber("6386580393")
+                .salary(25000)
                 .softDelete(false)
                 .build();
     }
