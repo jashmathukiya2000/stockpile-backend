@@ -10,32 +10,19 @@ import java.util.List;
 
 public class ResultServiceImplTestGenerator {
     private static final String id="id";
-public static User MockGetResult(List<Result> result){
-    return User.builder()
-            .firstName("sans")
-            .middleName("km")
-            .lastName("shukla")
-            .occupation("java developer")
-            .email("sanskrityshukla4@gmail.com")
-            .age(21)
-            .phoneNumber("6386580393")
-            .salary(25000)
-            .build();
 
-}
-
-
-public static UserResponse  MockGetUserResponse(){
+public static UserResponse  MockGetUserResponse( ){
     return UserResponse.builder()
             .firstName("sans")
             .middleName("km")
             .lastName("shukla")
+            .fullName("sans km shukla")
             .occupation("java developer")
             .email("sanskrityshukla4@gmail.com")
             .age(21)
             .phoneNumber("6386580393")
             .salary(25000)
-            .cgpa(5.7)
+            .cgpa(7.6)
             .result(MockListResult())
             .build();
 
@@ -43,17 +30,10 @@ public static UserResponse  MockGetUserResponse(){
 }
 public static Result MockAddResult(){
      return Result.builder()
-              .spi(5.6)
+              .spi(7.6)
              .semester(5)
               .build();
 }
-public static List<Result> MockListResult(){
-    return List.of(Result.builder()
-            .spi(5.6)
-            .semester(5)
-            .build());
-}
-
 
     public static User getMockUser(){
         return User.builder()
@@ -68,9 +48,11 @@ public static List<Result> MockListResult(){
                 .build();
     }
 
-    public static List<UserSpiResponse> MockGetSpiResponse(){
-    return  List.of(UserSpiResponse.builder()
-             .count(5)
-             .build());
+    public static List<Result> MockListResult(){
+        return List.of(Result.builder()
+                .spi(7.6)
+                .semester(5)
+                .build());
     }
+
 }

@@ -55,7 +55,7 @@ public class ResultServiceImpl implements ResultService {
         userRepository.save(user1);
         UserResponse userResponse = new UserResponse();
 //        nullAwareBeanUtilsBean.copyProperties(userResponse, user1);
-    modelMapper.map(userResponse,User.class);
+    modelMapper.map(user1,UserResponse.class);
 
         return userResponse;
     }

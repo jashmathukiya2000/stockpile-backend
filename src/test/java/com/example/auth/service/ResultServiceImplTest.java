@@ -12,6 +12,7 @@ import org.modelmapper.ModelMapper;
 import org.springframework.boot.test.context.SpringBootTest;
 
 import java.lang.reflect.InvocationTargetException;
+import java.util.List;
 import java.util.Optional;
 
 import static org.mockito.Mockito.when;
@@ -31,25 +32,19 @@ class ResultServiceImplTest {
     void TestAddResult() throws InvocationTargetException, IllegalAccessException {
 
         //given
+         var user = ResultServiceImplTestGenerator.getMockUser();
+         var result = ResultServiceImplTestGenerator.MockAddResult();
+         var response = ResultServiceImplTestGenerator.MockGetUserResponse();
 
-        var user = ResultServiceImplTestGenerator.MockGetResult(null);
+        when(userRepository.findByIdAndSoftDeleteIsFalse(id)).thenReturn(Optional.ofNullable(user));
+        when(userRepository.save(user)).thenReturn(user);
 
-        var result = ResultServiceImplTestGenerator.MockAddResult();
-        var resultResponse=ResultServiceImplTestGenerator.MockListResult();
-        var response = ResultServiceImplTestGenerator.MockGetResult(resultResponse);
-
-        when(userRepository.findByIdAndSoftDeleteIsFalse(id)).thenReturn(Optional.of(user));
-
-//        Mockito.doNothing().when(nullAwareBeanUtilsBean).copyProperties(response,user);
         //when
-        var actualData = resultService.addResult(id, result);
+        var actualData = resultService.addResult(id,result );
 
         //then
-        Assertions.assertEquals(response, actualData);
-
-
+        Assertions.assertEquals(response,actualData);
     }
-
     @Test
     void TestgetBySpi() {
 

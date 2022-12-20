@@ -12,23 +12,28 @@ import com.example.auth.decorator.SignUpAddRequest;
 import com.example.auth.decorator.SignUpResponse;
 import com.example.auth.model.UserModel;
 import com.example.auth.repository.UserModelRepository;
+import com.google.common.annotations.VisibleForTesting;
 import lombok.SneakyThrows;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.convention.MatchingStrategies;
 import org.springframework.stereotype.Service;
 
 import java.lang.reflect.InvocationTargetException;
+import java.security.NoSuchAlgorithmException;
 
 @Service
 public class UserModelServiceImpl implements UserModelService {
     private final UserModelRepository userModelRepository;
     private final ModelMapper modelMapper;
     private final NullAwareBeanUtilsBean nullAwareBeanUtilsBean;
+    private final PasswordUtils passwordUtils;
 
-    public UserModelServiceImpl(UserModelRepository userModelRepository, ModelMapper modelMapper, NullAwareBeanUtilsBean nullAwareBeanUtilsBean) {
+
+    public UserModelServiceImpl(UserModelRepository userModelRepository, ModelMapper modelMapper, NullAwareBeanUtilsBean nullAwareBeanUtilsBean, PasswordUtils passwordUtils) {
         this.userModelRepository = userModelRepository;
         this.modelMapper = modelMapper;
         this.nullAwareBeanUtilsBean = nullAwareBeanUtilsBean;
+        this.passwordUtils = passwordUtils;
     }
    public ModelMapper getModelMapper(){
         ModelMapper modelMapper = new ModelMapper();
@@ -44,7 +49,7 @@ public class UserModelServiceImpl implements UserModelService {
             throw new InvalidRequestException(MessageConstant.INCORRECT_PASSWORD);
         }
         if (signUpUser1.getPassword() != null) {
-            String password = PasswordUtils.encryptPassword(signUpUser1.getPassword());
+            String password = password(signUpUser1.getPassword());
             signUpUser1.setPassword(password);
             userResponse1.setPassword(password);
         }
@@ -54,13 +59,18 @@ public class UserModelServiceImpl implements UserModelService {
         return userResponse1;
     }
 
+    @VisibleForTesting
+     String password(String password) {
+        return PasswordUtils.encryptPassword(password);
+    }
+
     @SneakyThrows
     @Override
     public SignUpResponse login(LoginAddRequest loginAddRequest) throws InvocationTargetException, IllegalAccessException {
         UserModel signUpUser = getUserByEmail(loginAddRequest.getEmail());
-        String userPasswrod = signUpUser.getPassword();
+        String userPassworod = signUpUser.getPassword();
         SignUpResponse signUpResponse = modelMapper.map(loginAddRequest, SignUpResponse.class);
-        boolean passwords = PasswordUtils.isPasswordAuthenticated(loginAddRequest.getPassword(), userPasswrod, PasswordEncryptionType.BCRYPT);
+        boolean passwords = password(loginAddRequest.getPassword(), userPassworod);
         if (passwords) {
 //            nullAwareBeanUtilsBean.copyProperties(signUpResponse, signUpUser);
             modelMapper.map(signUpUser,SignUpResponse.class);
@@ -69,10 +79,16 @@ public class UserModelServiceImpl implements UserModelService {
         }
         return signUpResponse;
     }
+    @VisibleForTesting
+    boolean password(String userPassword,String databasePassword) throws NoSuchAlgorithmException {
+        boolean passwords = passwordUtils.isPasswordAuthenticated(userPassword, databasePassword, PasswordEncryptionType.BCRYPT);
+        return passwords;
+    }
 
     @SneakyThrows
     public UserModel getUserByEmail(String email) throws NotFoundException {
         return userModelRepository.findUserByEmailAndSoftDeleteIsFalse(email).orElseThrow(() -> new NotFoundException(MessageConstant.USER_NOT_FOUND));
     }
+
 
 }
