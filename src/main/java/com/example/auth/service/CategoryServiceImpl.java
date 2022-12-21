@@ -7,7 +7,6 @@ import com.example.auth.decorator.CategoryResponse;
 import com.example.auth.common.config.advice.NullAwareBeanUtilsBean;
 import com.example.auth.model.Category;
 import com.example.auth.repository.CategoryRepository;
-import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
@@ -56,7 +55,7 @@ public class CategoryServiceImpl implements CategoryService {
         return categoryResponse;
     }
 
-    @SneakyThrows
+
     @Override
     public List<CategoryResponse> getAllCategory() {
         List<Category> category = categoryRepository.findAllBySoftDeleteFalse();

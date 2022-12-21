@@ -6,9 +6,10 @@ import com.example.auth.decorator.SignUpAddRequest;
 import com.example.auth.decorator.SignUpResponse;
 
 import java.lang.reflect.InvocationTargetException;
+import java.security.NoSuchAlgorithmException;
 
 public interface UserModelService {
     SignUpResponse signUpUser(SignUpAddRequest signUpAddRequest, Role role);
-    SignUpResponse login(LoginAddRequest loginAddRequest) throws InvocationTargetException, IllegalAccessException;
+    SignUpResponse login(LoginAddRequest loginAddRequest) throws InvocationTargetException, IllegalAccessException, NoSuchAlgorithmException;
 
 }

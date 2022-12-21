@@ -3,14 +3,13 @@ package com.example.auth.service;
 import com.example.auth.common.config.constant.MessageConstant;
 import com.example.auth.common.config.advice.NullAwareBeanUtilsBean;
 import com.example.auth.decorator.Result;
-import com.example.auth.decorator.UserAddRequest;
 import com.example.auth.decorator.UserResponse;
 import com.example.auth.decorator.UserSpiResponse;
 import com.example.auth.common.config.exception.NotFoundException;
 import com.example.auth.model.User;
 import com.example.auth.repository.UserRepository;
-import lombok.AllArgsConstructor;
 import lombok.SneakyThrows;
+import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
@@ -20,19 +19,28 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Service
-@AllArgsConstructor
+@Slf4j
+
 public class ResultServiceImpl implements ResultService {
 
     private final UserRepository userRepository;
     private final NullAwareBeanUtilsBean nullAwareBeanUtilsBean;
     private final ModelMapper modelMapper;
 
+    public ResultServiceImpl(UserRepository userRepository, NullAwareBeanUtilsBean nullAwareBeanUtilsBean, ModelMapper modelMapper) {
+        this.userRepository = userRepository;
+        this.nullAwareBeanUtilsBean = nullAwareBeanUtilsBean;
+        this.modelMapper = modelMapper;
+    }
 
-@SneakyThrows
+
+    @SneakyThrows
     @Override
     public UserResponse addResult(String id, Result result) {
     List<Result> results = new ArrayList<>();
+    List<Result> resultResponse= new ArrayList<>();
     User user1 = getUserModel(id);
+    System.out.println(user1.getId());
     double sum = 0;
     double cgpa = 0;
     if (!CollectionUtils.isEmpty(user1.getResult())) {
@@ -44,18 +52,20 @@ public class ResultServiceImpl implements ResultService {
         if (matchFound){
             throw new NotFoundException(MessageConstant.SEMESTER_ALREADY_EXIST);
     }
-         results.add(result);
+        results.add(result);
         for (Result result1 : results) {
             sum += result1.getSpi();
         }
+        log.info("resultResponse:{}",results);
         cgpa = sum / results.size();
+//        log.info(String.valueOf(cgpa));
         cgpa = Double.parseDouble(new DecimalFormat("##.##").format(cgpa));
         user1.setCgpa(cgpa);
-        user1.setResult(results);
+     user1.setResult(results);
         userRepository.save(user1);
         UserResponse userResponse = new UserResponse();
 //        nullAwareBeanUtilsBean.copyProperties(userResponse, user1);
-    modelMapper.map(user1,UserResponse.class);
+    modelMapper.map(user1,userResponse);
 
         return userResponse;
     }

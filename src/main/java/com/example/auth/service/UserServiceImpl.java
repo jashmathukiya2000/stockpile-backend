@@ -3,7 +3,10 @@ package com.example.auth.service;
 import com.example.auth.common.config.advice.NullAwareBeanUtilsBean;
 import com.example.auth.common.config.constant.MessageConstant;
 import com.example.auth.common.config.exception.NotFoundException;
-import com.example.auth.decorator.*;
+import com.example.auth.decorator.UserAddRequest;
+import com.example.auth.decorator.UserAggregationResponse;
+import com.example.auth.decorator.UserFilter;
+import com.example.auth.decorator.UserResponse;
 import com.example.auth.model.User;
 import com.example.auth.repository.UserRepository;
 import lombok.AllArgsConstructor;
@@ -15,8 +18,6 @@ import org.springframework.stereotype.Service;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 @Slf4j
 @Service
@@ -25,7 +26,6 @@ public class UserServiceImpl implements UserService {
     private final ModelMapper modelMapper;
     private final UserRepository userRepository;
     private final NullAwareBeanUtilsBean nullAwareBeanUtilsBean;
-
 
 
     @Override
@@ -71,7 +71,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public UserResponse getUser(String id) throws InvocationTargetException, IllegalAccessException {
         User user = getUserModel(id);
-       return modelMapper.map(user,UserResponse.class);
+        return modelMapper.map(user, UserResponse.class);
     }
 
 
@@ -93,34 +93,9 @@ public class UserServiceImpl implements UserService {
     }
 
 
-    @SneakyThrows
-    public User getUserModel(String id) {
+
+    public User getUserModel(String id){
         return userRepository.findByIdAndSoftDeleteIsFalse(id).orElseThrow(() -> new NotFoundException(MessageConstant.USER_ID_NOT_FOUND));
     }
-
-
-
-    boolean validNumber(String number) {
-        Pattern p = Pattern.compile("^\\d{10}$");
-
-        Matcher m = p.matcher(number);
-        return (m.matches());
-    }
-
-    boolean validZip(String zip) throws RuntimeException {
-        return zip.matches("^[0-9]{5}(?:-[0-9]{4})?$\n");
-    }
-
-    boolean validAge(String age) throws RuntimeException {
-        return age.matches("^(0?[1-9]|[1-9][0-9]|[1][1-9][1-9]|200)$");
-    }
-
-    boolean regexEmail(String email) {
-        Pattern VALID_EMAIL_ADDRESS_REGEX =
-                Pattern.compile("^[A-Z0-9._%+-]+@[A-Z0-9.-]+\\.[A-Z]{2,6}$", Pattern.CASE_INSENSITIVE);
-        Matcher matcher = VALID_EMAIL_ADDRESS_REGEX.matcher(email);
-        return matcher.find();
-    }
-
 
 }

@@ -1,9 +1,7 @@
 package com.example.auth.service;
 
 import com.example.auth.common.config.advice.NullAwareBeanUtilsBean;
-import com.example.auth.decorator.Result;
 import com.example.auth.helper.ResultServiceImplTestGenerator;
-import com.example.auth.helper.UserModelServiceTestGenerator;
 import com.example.auth.repository.UserRepository;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -12,7 +10,6 @@ import org.modelmapper.ModelMapper;
 import org.springframework.boot.test.context.SpringBootTest;
 
 import java.lang.reflect.InvocationTargetException;
-import java.util.List;
 import java.util.Optional;
 
 import static org.mockito.Mockito.when;
@@ -24,7 +21,7 @@ class ResultServiceImplTest {
 
     private final UserRepository userRepository = Mockito.mock(UserRepository.class);
     private final NullAwareBeanUtilsBean nullAwareBeanUtilsBean = Mockito.mock(NullAwareBeanUtilsBean.class);
-    private final ModelMapper modelMapper = UserModelServiceTestGenerator.getModelMapper();
+    private final ModelMapper modelMapper = ResultServiceImplTestGenerator.getModelMapper();
 
     public ResultService resultService = new ResultServiceImpl(userRepository, nullAwareBeanUtilsBean, modelMapper);
 
@@ -32,22 +29,44 @@ class ResultServiceImplTest {
     void TestAddResult() throws InvocationTargetException, IllegalAccessException {
 
         //given
-         var user = ResultServiceImplTestGenerator.getMockUser();
-         var result = ResultServiceImplTestGenerator.MockAddResult();
-         var response = ResultServiceImplTestGenerator.MockGetUserResponse();
-
+        var user = ResultServiceImplTestGenerator.getMockUser(null);
+        var addResult = ResultServiceImplTestGenerator.MockAddResult();
+        var Resultresponse = ResultServiceImplTestGenerator.MockGetUserResponse();
         when(userRepository.findByIdAndSoftDeleteIsFalse(id)).thenReturn(Optional.ofNullable(user));
-        when(userRepository.save(user)).thenReturn(user);
-
+       when(userRepository.save(user)).thenReturn(user);
         //when
-        var actualData = resultService.addResult(id,result );
+        var actualData = resultService.addResult(id, addResult);
 
         //then
-        Assertions.assertEquals(response,actualData);
+         Assertions.assertEquals(Resultresponse, actualData);
+    } @Test
+    void testAddResult() throws InvocationTargetException, IllegalAccessException {
+        //given
+        var result=ResultServiceImplTestGenerator.MockListResult();
+        var addResult = ResultServiceImplTestGenerator.MockAddResult();
+        var user = ResultServiceImplTestGenerator.getMockUser(result);
+
+        var Resultresponse = ResultServiceImplTestGenerator.MockGetUserResponse();
+
+        when(userRepository.findByIdAndSoftDeleteIsFalse(id)).thenReturn(Optional.ofNullable(user));
+
+        //when
+        var actualData = resultService.addResult(id, addResult);
+
+        //then
+         Assertions.assertEquals(Resultresponse, actualData);
     }
+
+
     @Test
-    void TestgetBySpi() {
+    void TestSpi(){
+        var spiResponse=ResultServiceImplTestGenerator.getMockUserSpiResponse();
+        when(userRepository.getUserBySpi(5.6)).thenReturn(spiResponse);
+
+        var actualData=resultService.getBySpi(5.6);
+        Assertions.assertEquals(spiResponse,actualData);
 
     }
 
 }
+

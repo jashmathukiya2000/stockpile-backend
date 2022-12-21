@@ -24,7 +24,7 @@ class UserServiceImplTest {
 
 
     @Test
-    void testAddOrUpdateUser() throws InvocationTargetException, IllegalAccessException {
+    void testrUpdateUser() throws InvocationTargetException, IllegalAccessException {
         //given
         var userAddRequest = UserServiceImplTestGenerator.getMockUserAddRequest();
         var user = UserServiceImplTestGenerator.getMockUser();
@@ -34,6 +34,24 @@ class UserServiceImplTest {
 
         var actualData = userService.addOrUpdateUser(id, userAddRequest);
 
+        Assertions.assertEquals(userResponse, actualData);
+
+    }
+
+    @Test
+    void testAddUser() throws InvocationTargetException, IllegalAccessException {
+        //given
+
+        var user = UserServiceImplTestGenerator.getMockUser();
+        var userAddRequest = UserServiceImplTestGenerator.getMockUserAddRequest();
+        var userResponse = UserServiceImplTestGenerator.getMockUserResponse();
+        when(userRepository.findByIdAndSoftDeleteIsFalse(id)).thenReturn(Optional.of(user));
+        when(userRepository.save(user)).thenReturn(user);
+        //when
+
+        var actualData = userService.addOrUpdateUser(null, userAddRequest);
+
+        //then
         Assertions.assertEquals(userResponse, actualData);
 
     }
@@ -71,17 +89,46 @@ class UserServiceImplTest {
 
 
     @Test
-    void deleteUser(){
+    void deleteUser() {
+        //given
         var user = UserServiceImplTestGenerator.getMockUser();
         when(userRepository.findByIdAndSoftDeleteIsFalse(id)).thenReturn(Optional.of(user));
 
+        //when
         userService.deleteUser(id);
-  verify(userRepository,times(1)).findByIdAndSoftDeleteIsFalse(eq(id));
 
-
-
+        //then
+        verify(userRepository, times(1)).findByIdAndSoftDeleteIsFalse(id);
 
 
     }
+
+    @Test
+    void TestUserByAge() {
+        //given
+        var UserFilter = UserServiceImplTestGenerator.getMockUserFilter();
+        var UserResponse = UserServiceImplTestGenerator.getMockResponse();
+        when(userRepository.getByFilterAndSoftDeleteFalse(UserFilter)).thenReturn(UserResponse);
+
+        //when
+        var actualData = userService.getUserByAge(UserFilter);
+
+        //then
+        Assertions.assertEquals(UserResponse, actualData);
+    }
+
+    @Test
+    void TestUserBySalary() {
+        //given
+        var addUserFilter = UserServiceImplTestGenerator.getMockUserFilter();
+        var response = UserServiceImplTestGenerator.getMockAggregationFilter();
+        when(userRepository.getUserByAggregation(addUserFilter)).thenReturn(response);
+        //when
+        var actualData = userService.getUserBySalary(addUserFilter);
+
+        //then
+        Assertions.assertEquals(response, actualData);
+    }
+
 
 }
