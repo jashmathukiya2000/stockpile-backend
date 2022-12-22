@@ -12,6 +12,7 @@ import lombok.NoArgsConstructor;
 @Builder
 public class FilterClass {
     String search;
+    String id;
     @JsonIgnore
     boolean softDelete =false;
 

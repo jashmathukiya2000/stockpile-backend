@@ -1,10 +1,13 @@
 package com.example.auth.repository;
 
+import com.example.auth.common.config.constant.ResponseConstant;
+import com.example.auth.common.config.exception.NotFoundException;
 import com.example.auth.decorator.*;
 import com.example.auth.decorator.pagination.CountQueryResult;
 import com.example.auth.decorator.pagination.FilterClass;
 import com.example.auth.decorator.pagination.FilterSortRequest;
 import com.example.auth.decorator.pagination.UserSortBy;
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.bson.Document;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,6 +26,7 @@ import org.springframework.stereotype.Repository;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 import static org.springframework.data.mongodb.core.aggregation.Aggregation.*;
@@ -125,7 +129,7 @@ public class UserCustomRepositoryImpl implements UserCustomRepository {
 
     @Override
     public Page<UserResponse> getAllUserByPagination(FilterClass filter, FilterSortRequest.SortRequest<UserSortBy> sort, PageRequest pagination) {
-        List<AggregationOperation> operations = userFilterAggregation(filter, sort, pagination,true);
+        List<AggregationOperation> operations = userFilterAggregation(filter, sort, pagination, true);
         //Created Aggregation operation
         Aggregation aggregation = newAggregation(operations);
 
@@ -142,8 +146,8 @@ public class UserCustomRepositoryImpl implements UserCustomRepository {
                 users,
                 pagination,
                 () -> count);
-    }
 
+    }
 
     private Criteria getCriteria(FilterClass userFilter, List<AggregationOperation> operations) {
         Criteria criteria = new Criteria();
@@ -151,7 +155,7 @@ public class UserCustomRepositoryImpl implements UserCustomRepository {
                 new Document("$concat", Arrays.asList(new Document("$ifNull", Arrays.asList("$firstName", " ")),
                         "|@|", new Document("$ifNull", Arrays.asList("$lastName", " ")),
                         "|@|", new Document("$ifNull", Arrays.asList("$address.zip", " ")),
-                        "|@|", new Document("$ifNull", Arrays.asList("$occupation"," "))
+                        "|@|", new Document("$ifNull", Arrays.asList("$occupation", " "))
                 ))))));
         if (!StringUtils.isEmpty(userFilter.getSearch())) {
             userFilter.setSearch(userFilter.getSearch().replaceAll("\\|@\\|", ""));
@@ -160,8 +164,10 @@ public class UserCustomRepositoryImpl implements UserCustomRepository {
                     Criteria.where("search").regex(".*" + userFilter.getSearch() + ".*", "i")
             );
         }
-
-        criteria = criteria.and("softDelete").is(false);
+        if (CollectionUtils.isEmpty(Collections.singleton(userFilter.getId()))) {
+            criteria = criteria.and("_id").in(userFilter.getId());
+        }
+            criteria = criteria.and("softDelete").is(false);
         return criteria;
     }
 
