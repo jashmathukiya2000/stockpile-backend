@@ -13,7 +13,7 @@ import java.util.Date;
 public class Result {
     double spi;
     int semester;
-//    Date date;
+    Date date;
 
 
 }

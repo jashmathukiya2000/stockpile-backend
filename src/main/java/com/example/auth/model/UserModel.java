@@ -21,7 +21,7 @@ public class UserModel {
     String password;
     Role role;
     @JsonIgnore
-    boolean softDelete=false;
+    boolean softDelete = false;
 
 
 }

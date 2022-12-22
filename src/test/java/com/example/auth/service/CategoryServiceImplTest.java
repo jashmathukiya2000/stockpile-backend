@@ -27,7 +27,7 @@ class CategoryServiceImplTest {
         //given
         var category = CategoryServiceImplGenerator.MockCategory();
         var addCategory = CategoryServiceImplGenerator.MockAddCategory();
-        var Categoryresponse = CategoryServiceImplGenerator.MockCategoryResponse();
+        var categoryresponse = CategoryServiceImplGenerator.MockCategoryResponse();
         when(categoryRepository.getByIdAndSoftDeleteIsFalse(id)).thenReturn(Optional.of(category));
         when(categoryRepository.save(category)).thenReturn(category);
 
@@ -35,7 +35,7 @@ class CategoryServiceImplTest {
         var actualData = categoryService.addOrUpdateCategory(id, addCategory);
 
         //then
-        Assertions.assertEquals(Categoryresponse, actualData);
+        Assertions.assertEquals(categoryresponse, actualData);
     }
 
     @Test
@@ -43,7 +43,7 @@ class CategoryServiceImplTest {
         //given
         var category = CategoryServiceImplGenerator.MockCategory();
         var addCategory = CategoryServiceImplGenerator.MockAddCategory();
-        var Categoryresponse = CategoryServiceImplGenerator.MockCategoryResponse();
+        var categoryresponse = CategoryServiceImplGenerator.MockCategoryResponse();
         when(categoryRepository.getByIdAndSoftDeleteIsFalse(id)).thenReturn(Optional.of(category));
         when(categoryRepository.save(category)).thenReturn(category);
 
@@ -51,7 +51,7 @@ class CategoryServiceImplTest {
         var actualData = categoryService.addOrUpdateCategory(null, addCategory);
 
         //then
-        Assertions.assertEquals(Categoryresponse, actualData);
+        Assertions.assertEquals(categoryresponse, actualData);
     }
 
 
@@ -71,7 +71,6 @@ class CategoryServiceImplTest {
 
     @Test
     void TestGetAllCategory() {
-
         //given
         var category = CategoryServiceImplGenerator.MockCategories();
         var Categoryresponse = CategoryServiceImplGenerator.getMockResponse();
@@ -87,7 +86,6 @@ class CategoryServiceImplTest {
 
     @Test
     void TestDeleteCategory() {
-
         //given
         var category = CategoryServiceImplGenerator.MockCategory();
         Mockito.when(categoryRepository.getByIdAndSoftDeleteIsFalse(id)).thenReturn(Optional.of(category));

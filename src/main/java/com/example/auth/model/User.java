@@ -21,6 +21,7 @@ import java.util.stream.Collectors;
 @Builder
 public class User {
     String id;
+
     String firstName;
     String middleName;
     String lastName;

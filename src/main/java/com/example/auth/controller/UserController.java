@@ -1,30 +1,37 @@
 package com.example.auth.controller;
 
 import com.example.auth.common.config.constant.ResponseConstant;
-import com.example.auth.common.config.enums.Role;
 import com.example.auth.decorator.*;
+import com.example.auth.decorator.pagination.*;
 import com.example.auth.service.ResultService;
 import com.example.auth.service.UserService;
-import lombok.AllArgsConstructor;
-import lombok.SneakyThrows;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.web.bind.annotation.*;
+
+import java.lang.reflect.InvocationTargetException;
 
 @RestController
 @RequestMapping("/users")
-@AllArgsConstructor
+
 public class UserController {
     private final UserService userService;
     private final ResultService resultService;
-@SneakyThrows
+
+    public UserController(UserService userService, ResultService resultService) {
+        this.userService = userService;
+        this.resultService = resultService;
+    }
+
     @RequestMapping(name = "addOrUpdateUser", value = "/add", method = RequestMethod.POST)
-    public DataResponse<UserResponse> addOrUpdateUser(@RequestParam(required = false) String id, @RequestBody UserAddRequest userAddRequest) {
+    public DataResponse<UserResponse> addOrUpdateUser(@RequestParam(required = false) String id, @RequestBody UserAddRequest userAddRequest) throws InvocationTargetException, IllegalAccessException {
         DataResponse<UserResponse> dataResponse = new DataResponse<>();
-        dataResponse.setData( userService.addOrUpdateUser(id, userAddRequest));
+        dataResponse.setData(userService.addOrUpdateUser(id, userAddRequest));
         dataResponse.setStatus(Response.getOkResponse(ResponseConstant.SAVED_SUCCESSFULLY));
         return dataResponse;
     }
 
-    @SneakyThrows
+
     @RequestMapping(name = "getAllUser", value = "/getAll", method = RequestMethod.GET)
     public ListResponse<UserResponse> getAllUser() {
         ListResponse<UserResponse> listResponse = new ListResponse<>();
@@ -33,9 +40,9 @@ public class UserController {
         return listResponse;
     }
 
-    @SneakyThrows
+
     @RequestMapping(name = "getUserById", value = "/user/{id}", method = RequestMethod.POST)
-    public DataResponse<UserResponse> getUserById(@PathVariable String id) {
+    public DataResponse<UserResponse> getUserById(@PathVariable String id) throws InvocationTargetException, IllegalAccessException {
         DataResponse<UserResponse> dataResponse = new DataResponse<>();
         dataResponse.setData(userService.getUser(id));
         dataResponse.setStatus(Response.getOkResponse(ResponseConstant.OK));
@@ -66,9 +73,9 @@ public class UserController {
         return listResponse;
     }
 
-    @SneakyThrows
+
     @RequestMapping(name = "addResult", value = "/addResult/{id}", method = RequestMethod.POST)
-    public DataResponse<UserResponse> addResult(@PathVariable String id, @RequestBody Result result) {
+    public DataResponse<UserResponse> addResult(@PathVariable String id, @RequestBody Result result) throws InvocationTargetException, IllegalAccessException {
         DataResponse<UserResponse> dataResponse = new DataResponse<>();
         dataResponse.setData(resultService.addResult(id, result));
         dataResponse.setStatus(Response.getOkResponse());
@@ -83,7 +90,18 @@ public class UserController {
         return dataResponse;
     }
 
-
+    @RequestMapping(name = "getAllUserByPagination", value = "get/all/pagination",method = RequestMethod.POST)
+    public PageResponse<UserResponse> getAllUserByPagination(@RequestBody FilterSortRequest<FilterClass, UserSortBy> filterSortRequest){
+        PageResponse<UserResponse> pageResponse=new PageResponse<>();
+        FilterClass filter= filterSortRequest.getFilter();
+        FilterSortRequest.SortRequest<UserSortBy> sort=filterSortRequest.getSort();
+        Pagination pagination= filterSortRequest.getPagination();
+        PageRequest pageRequest=PageRequest.of(pagination.getPage(), pagination.getLimit());
+        Page<UserResponse> userResponses=userService.getAllUserByPagination(filter,sort,pageRequest);
+        pageResponse.setData(userResponses);
+        pageResponse.setStatus(Response.getOkResponse());
+        return pageResponse;
+    }
 
 
 }

@@ -19,7 +19,7 @@ public class Category {
     String itemName;
     int quantity;
     int price;
-    @JsonIgnore
 
-    boolean softDelete=false;
+    @JsonIgnore
+    boolean softDelete = false;
 }

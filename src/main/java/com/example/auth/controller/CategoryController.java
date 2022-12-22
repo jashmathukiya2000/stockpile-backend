@@ -3,27 +3,25 @@ package com.example.auth.controller;
 import com.example.auth.common.config.constant.ResponseConstant;
 import com.example.auth.decorator.*;
 import com.example.auth.service.CategoryService;
-import lombok.AllArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@AllArgsConstructor
 @RequestMapping("categroies")
 public class CategoryController {
-
     private final CategoryService categoryService;
-    //value -- endpoint check
-    //provide response --> response class
+
+    public CategoryController(CategoryService categoryService) {
+        this.categoryService = categoryService;
+    }
+
     @RequestMapping(name = "addOrUpdateCategory", value = "/addOrUpdate", method = RequestMethod.POST)
     public DataResponse<CategoryResponse> addOrUpdateCategory(@RequestParam(required = false) String id, @RequestBody CategoryAddRequest categoryAddRequest) {
         DataResponse<CategoryResponse> dataResponse = new DataResponse<>();
-   dataResponse.setData(  categoryService.addOrUpdateCategory(id,categoryAddRequest));
+        dataResponse.setData(categoryService.addOrUpdateCategory(id, categoryAddRequest));
         dataResponse.setStatus(Response.getOkResponse(ResponseConstant.SAVED_SUCCESSFULLY));
         return dataResponse;
     }
 
-
-    //add description in response
 
     @RequestMapping(name = "getCategoryById", value = "/{id}", method = RequestMethod.GET)
     public DataResponse<CategoryResponse> getCategoryById(@PathVariable String id) {
@@ -33,9 +31,6 @@ public class CategoryController {
         return dataResponse;
     }
 
-
-   //end point name change
-    //methodName change
 
     @RequestMapping(name = "getAllCategory", value = "/getAllCategroy", method = RequestMethod.GET)
     public ListResponse<CategoryResponse> getAllCategory() {

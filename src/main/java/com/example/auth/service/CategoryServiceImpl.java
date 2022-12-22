@@ -1,17 +1,16 @@
 package com.example.auth.service;
 
+import com.example.auth.common.config.advice.NullAwareBeanUtilsBean;
 import com.example.auth.common.config.constant.MessageConstant;
 import com.example.auth.common.config.exception.NotFoundException;
 import com.example.auth.decorator.CategoryAddRequest;
 import com.example.auth.decorator.CategoryResponse;
-import com.example.auth.common.config.advice.NullAwareBeanUtilsBean;
 import com.example.auth.model.Category;
 import com.example.auth.repository.CategoryRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 
-import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -42,7 +41,7 @@ public class CategoryServiceImpl implements CategoryService {
         } else {
             Category category = modelMapper.map(categoryAddRequest, Category.class);
             CategoryResponse categoryResponse = modelMapper.map(categoryAddRequest, CategoryResponse.class);
-             categoryRepository.save(category);
+            categoryRepository.save(category);
             return categoryResponse;
         }
     }

@@ -19,10 +19,14 @@ public class Response {
     public static Response getOkResponse(String message) {
         return new Response(HttpStatus.OK, message);
 
-    } public static Response getEmptyResponse(String message) {
+    }
+
+    public static Response getEmptyResponse(String message) {
         return new Response(HttpStatus.BAD_REQUEST, message);
 
-    } public static Response getInvaildResponse(String message) {
+    }
+
+    public static Response getInvaildResponse(String message) {
         return new Response(HttpStatus.BAD_REQUEST, message);
 
     }
@@ -30,7 +34,9 @@ public class Response {
     public static Response getAlreadyExists(String message) {
         return new Response(HttpStatus.BAD_REQUEST, message);
 
-    }   public static Response getInvalidRequestException(String message) {
+    }
+
+    public static Response getInvalidRequestException(String message) {
         return new Response(HttpStatus.BAD_REQUEST, message);
     }
 
@@ -46,8 +52,8 @@ public class Response {
         return new Response(HttpStatus.BAD_REQUEST, ResponseConstant.OK);
     }
 
-        public static Response getUpdateResponse (String message){
-            return new Response(HttpStatus.OK, ResponseConstant.UPDATED);
-        }
+    public static Response getUpdateResponse() {
+        return new Response(HttpStatus.OK, ResponseConstant.UPDATED);
     }
+}
 

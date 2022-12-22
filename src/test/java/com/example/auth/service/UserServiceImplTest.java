@@ -106,15 +106,15 @@ class UserServiceImplTest {
     @Test
     void TestUserByAge() {
         //given
-        var UserFilter = UserServiceImplTestGenerator.getMockUserFilter();
-        var UserResponse = UserServiceImplTestGenerator.getMockResponse();
-        when(userRepository.getByFilterAndSoftDeleteFalse(UserFilter)).thenReturn(UserResponse);
+        var userFilter = UserServiceImplTestGenerator.getMockUserFilter();
+        var userResponse = UserServiceImplTestGenerator.getMockResponse();
+        when(userRepository.getByFilterAndSoftDeleteFalse(userFilter)).thenReturn(userResponse);
 
         //when
-        var actualData = userService.getUserByAge(UserFilter);
+        var actualData = userService.getUserByAge(userFilter);
 
         //then
-        Assertions.assertEquals(UserResponse, actualData);
+        Assertions.assertEquals(userResponse, actualData);
     }
 
     @Test

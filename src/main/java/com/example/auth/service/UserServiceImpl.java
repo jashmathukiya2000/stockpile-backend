@@ -7,14 +7,19 @@ import com.example.auth.decorator.UserAddRequest;
 import com.example.auth.decorator.UserAggregationResponse;
 import com.example.auth.decorator.UserFilter;
 import com.example.auth.decorator.UserResponse;
+import com.example.auth.decorator.pagination.FilterClass;
+import com.example.auth.decorator.pagination.FilterSortRequest;
+import com.example.auth.decorator.pagination.UserSortBy;
 import com.example.auth.model.User;
 import com.example.auth.repository.UserRepository;
 import lombok.AllArgsConstructor;
-import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
+import java.awt.print.Pageable;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.List;
@@ -92,9 +97,13 @@ public class UserServiceImpl implements UserService {
         return userRepository.getUserByAggregation(userFilter);
     }
 
+    @Override
+    public Page<UserResponse> getAllUserByPagination(FilterClass filter, FilterSortRequest.SortRequest<UserSortBy> sort, PageRequest pageRequest) {
+        return userRepository.getAllUserByPagination(filter,sort,pageRequest);
+    }
 
 
-    public User getUserModel(String id){
+    public User getUserModel(String id) {
         return userRepository.findByIdAndSoftDeleteIsFalse(id).orElseThrow(() -> new NotFoundException(MessageConstant.USER_ID_NOT_FOUND));
     }
 
