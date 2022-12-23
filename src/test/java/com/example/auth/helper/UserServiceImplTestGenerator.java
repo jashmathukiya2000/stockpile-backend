@@ -1,9 +1,9 @@
 package com.example.auth.helper;
 
-import com.example.auth.decorator.UserAddRequest;
-import com.example.auth.decorator.UserAggregationResponse;
-import com.example.auth.decorator.UserFilter;
-import com.example.auth.decorator.UserResponse;
+import com.example.auth.decorator.user.UserAddRequest;
+import com.example.auth.decorator.user.UserAggregationResponse;
+import com.example.auth.decorator.user.UserFilter;
+import com.example.auth.decorator.user.UserResponse;
 import com.example.auth.model.User;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.convention.MatchingStrategies;
@@ -94,4 +94,7 @@ public class UserServiceImplTestGenerator {
                 .name("sans")
                 .build());
     }
-}
+
+
+    }
+

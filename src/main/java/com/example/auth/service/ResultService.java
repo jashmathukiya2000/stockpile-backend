@@ -1,10 +1,9 @@
 package com.example.auth.service;
 
-import com.example.auth.decorator.Result;
-import com.example.auth.decorator.UserAddRequest;
-import com.example.auth.decorator.UserResponse;
-import com.example.auth.decorator.UserSpiResponse;
-import com.example.auth.common.config.exception.EmptyException;
+import com.example.auth.decorator.user.Result;
+import com.example.auth.decorator.user.UserResponse;
+import com.example.auth.decorator.user.UserSpiResponse;
+import com.example.auth.commons.exception.EmptyException;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.List;

@@ -1,6 +1,6 @@
 package com.example.auth.service;
 
-import com.example.auth.common.config.advice.NullAwareBeanUtilsBean;
+import com.example.auth.commons.advice.NullAwareBeanUtilsBean;
 import com.example.auth.helper.ResultServiceImplTestGenerator;
 import com.example.auth.repository.UserRepository;
 import org.junit.jupiter.api.Assertions;

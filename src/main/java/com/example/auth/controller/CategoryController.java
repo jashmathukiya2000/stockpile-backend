@@ -1,8 +1,13 @@
 package com.example.auth.controller;
 
-import com.example.auth.common.config.constant.ResponseConstant;
+import com.example.auth.commons.constant.ResponseConstant;
 import com.example.auth.decorator.*;
+import com.example.auth.decorator.category.CategoryAddRequest;
+import com.example.auth.decorator.category.CategoryResponse;
+import com.example.auth.decorator.pagination.*;
 import com.example.auth.service.CategoryService;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -48,4 +53,18 @@ public class CategoryController {
         dataResponse.setStatus(Response.getOkResponse(ResponseConstant.DELETED_SUCCESSFULLY));
         return dataResponse;
     }
+
+    @RequestMapping(name = "getAllCategoryByPagination", value = "get/all/pagination",method = RequestMethod.POST)
+    public PageResponse<CategoryResponse> getAllCategoryByPagination(@RequestBody FilterSortRequest<CategoryFilter, CategorySortBy> filterSortRequest){
+        PageResponse<CategoryResponse> pageResponse=new PageResponse<>();
+        CategoryFilter filter= filterSortRequest.getFilter();
+        FilterSortRequest.SortRequest<CategorySortBy> sort=filterSortRequest.getSort();
+        Pagination pagination= filterSortRequest.getPagination();
+        PageRequest pageRequest=PageRequest.of(pagination.getPage(), pagination.getLimit());
+        Page<CategoryResponse> categoryrResponses=categoryService.getAllCategoryByPagination(filter,sort,pageRequest);
+        pageResponse.setData(categoryrResponses);
+        pageResponse.setStatus(Response.getOkResponse());
+        return pageResponse;
+    }
+
 }

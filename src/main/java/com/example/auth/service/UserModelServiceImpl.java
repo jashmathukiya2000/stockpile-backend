@@ -1,19 +1,18 @@
 package com.example.auth.service;
 
-import com.example.auth.common.config.advice.NullAwareBeanUtilsBean;
-import com.example.auth.common.config.constant.MessageConstant;
-import com.example.auth.common.config.enums.PasswordEncryptionType;
-import com.example.auth.common.config.enums.Role;
-import com.example.auth.common.config.exception.InvalidRequestException;
-import com.example.auth.common.config.exception.NotFoundException;
-import com.example.auth.common.config.utils.PasswordUtils;
-import com.example.auth.decorator.LoginAddRequest;
-import com.example.auth.decorator.SignUpAddRequest;
-import com.example.auth.decorator.SignUpResponse;
+import com.example.auth.commons.constant.MessageConstant;
+import com.example.auth.commons.enums.PasswordEncryptionType;
+import com.example.auth.commons.enums.Role;
+import com.example.auth.commons.exception.InvalidRequestException;
+import com.example.auth.commons.exception.NotFoundException;
+import com.example.auth.commons.utils.PasswordUtils;
+import com.example.auth.decorator.userModel.LoginAddRequest;
+import com.example.auth.decorator.userModel.UserModelAddRequest;
+import com.example.auth.decorator.userModel.UserModelResponse;
 import com.example.auth.model.UserModel;
 import com.example.auth.repository.UserModelRepository;
+import com.example.auth.service.UserModelService;
 import com.google.common.annotations.VisibleForTesting;
-import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.convention.MatchingStrategies;
@@ -44,9 +43,9 @@ public class UserModelServiceImpl implements UserModelService {
     }
 
     @Override
-    public SignUpResponse signUpUser(SignUpAddRequest signUpAddRequest, Role role) {
+    public UserModelResponse signUpUser(UserModelAddRequest signUpAddRequest, Role role) {
         UserModel signUpUser1 = modelMapper.map(signUpAddRequest, UserModel.class);
-        SignUpResponse userResponse1 = modelMapper.map(signUpAddRequest, SignUpResponse.class);
+        UserModelResponse userResponse1 = modelMapper.map(signUpAddRequest, UserModelResponse.class);
         if (!signUpAddRequest.getPassword().equals(signUpAddRequest.getConfirmPassword())) {
             throw new InvalidRequestException(MessageConstant.INCORRECT_PASSWORD);
         }
@@ -62,21 +61,21 @@ public class UserModelServiceImpl implements UserModelService {
     }
 
     @VisibleForTesting
-     String password(String password) {
+    public String password(String password) {
         return PasswordUtils.encryptPassword(password);
     }
 
 
     @Override
-    public SignUpResponse login(LoginAddRequest loginAddRequest) throws InvocationTargetException, IllegalAccessException, NoSuchAlgorithmException {
+    public UserModelResponse login(LoginAddRequest loginAddRequest) throws InvocationTargetException, IllegalAccessException, NoSuchAlgorithmException {
         UserModel signUpUser = getUserByEmail(loginAddRequest.getEmail());
         String userPassworod = signUpUser.getPassword();
 
-        SignUpResponse signUpResponse = modelMapper.map(loginAddRequest, SignUpResponse.class);
+        UserModelResponse signUpResponse = modelMapper.map(loginAddRequest, UserModelResponse.class);
         boolean passwords = passwordUtils.isPasswordAuthenticated(loginAddRequest.getPassword(),userPassworod, PasswordEncryptionType.BCRYPT);
         if (passwords) {
 //            nullAwareBeanUtilsBean.copyProperties(signUpResponse, signUpUser);
-            modelMapper.map(signUpUser,SignUpResponse.class);
+            modelMapper.map(signUpUser, UserModelResponse.class);
         } else {
             throw new InvalidRequestException(MessageConstant.INCORRECT_PASSWORD);
         }

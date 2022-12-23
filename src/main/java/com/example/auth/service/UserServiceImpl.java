@@ -1,13 +1,13 @@
 package com.example.auth.service;
 
-import com.example.auth.common.config.advice.NullAwareBeanUtilsBean;
-import com.example.auth.common.config.constant.MessageConstant;
-import com.example.auth.common.config.exception.NotFoundException;
-import com.example.auth.decorator.UserAddRequest;
-import com.example.auth.decorator.UserAggregationResponse;
-import com.example.auth.decorator.UserFilter;
-import com.example.auth.decorator.UserResponse;
-import com.example.auth.decorator.pagination.FilterClass;
+import com.example.auth.commons.advice.NullAwareBeanUtilsBean;
+import com.example.auth.commons.constant.MessageConstant;
+import com.example.auth.commons.exception.NotFoundException;
+import com.example.auth.decorator.user.UserAddRequest;
+import com.example.auth.decorator.user.UserAggregationResponse;
+import com.example.auth.decorator.user.UserFilter;
+import com.example.auth.decorator.user.UserResponse;
+import com.example.auth.decorator.pagination.UserFilterData;
 import com.example.auth.decorator.pagination.FilterSortRequest;
 import com.example.auth.decorator.pagination.UserSortBy;
 import com.example.auth.model.User;
@@ -19,7 +19,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
-import java.awt.print.Pageable;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.List;
@@ -98,7 +97,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public Page<UserResponse> getAllUserByPagination(FilterClass filter, FilterSortRequest.SortRequest<UserSortBy> sort, PageRequest pageRequest) {
+    public Page<UserResponse> getAllUserByPagination(UserFilterData filter, FilterSortRequest.SortRequest<UserSortBy> sort, PageRequest pageRequest) {
         return userRepository.getAllUserByPagination(filter,sort,pageRequest);
     }
 

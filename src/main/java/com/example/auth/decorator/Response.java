@@ -1,6 +1,6 @@
 package com.example.auth.decorator;
 
-import com.example.auth.common.config.constant.ResponseConstant;
+import com.example.auth.commons.constant.ResponseConstant;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;

@@ -1,8 +1,9 @@
 package com.example.auth.controller;
 
-import com.example.auth.common.config.constant.ResponseConstant;
+import com.example.auth.commons.constant.ResponseConstant;
 import com.example.auth.decorator.*;
 import com.example.auth.decorator.pagination.*;
+import com.example.auth.decorator.user.*;
 import com.example.auth.service.ResultService;
 import com.example.auth.service.UserService;
 import org.springframework.data.domain.Page;
@@ -91,9 +92,9 @@ public class UserController {
     }
 
     @RequestMapping(name = "getAllUserByPagination", value = "get/all/pagination",method = RequestMethod.POST)
-    public PageResponse<UserResponse> getAllUserByPagination(@RequestBody FilterSortRequest<FilterClass, UserSortBy> filterSortRequest){
+    public PageResponse<UserResponse> getAllUserByPagination(@RequestBody FilterSortRequest<UserFilterData, UserSortBy> filterSortRequest){
         PageResponse<UserResponse> pageResponse=new PageResponse<>();
-        FilterClass filter= filterSortRequest.getFilter();
+        UserFilterData filter= filterSortRequest.getFilter();
         FilterSortRequest.SortRequest<UserSortBy> sort=filterSortRequest.getSort();
         Pagination pagination= filterSortRequest.getPagination();
         PageRequest pageRequest=PageRequest.of(pagination.getPage(), pagination.getLimit());

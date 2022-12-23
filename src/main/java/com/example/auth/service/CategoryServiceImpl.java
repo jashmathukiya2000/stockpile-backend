@@ -1,14 +1,19 @@
 package com.example.auth.service;
 
-import com.example.auth.common.config.advice.NullAwareBeanUtilsBean;
-import com.example.auth.common.config.constant.MessageConstant;
-import com.example.auth.common.config.exception.NotFoundException;
-import com.example.auth.decorator.CategoryAddRequest;
-import com.example.auth.decorator.CategoryResponse;
+import com.example.auth.commons.advice.NullAwareBeanUtilsBean;
+import com.example.auth.commons.constant.MessageConstant;
+import com.example.auth.commons.exception.NotFoundException;
+import com.example.auth.decorator.category.CategoryAddRequest;
+import com.example.auth.decorator.category.CategoryResponse;
+import com.example.auth.decorator.pagination.CategoryFilter;
+import com.example.auth.decorator.pagination.CategorySortBy;
+import com.example.auth.decorator.pagination.FilterSortRequest;
 import com.example.auth.model.Category;
 import com.example.auth.repository.CategoryRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -72,6 +77,12 @@ public class CategoryServiceImpl implements CategoryService {
         category.setSoftDelete(true);
         categoryRepository.save(category);
     }
+
+    @Override
+    public Page<CategoryResponse> getAllCategoryByPagination(CategoryFilter filter, FilterSortRequest.SortRequest<CategorySortBy> sort, PageRequest pageRequest) {
+        return categoryRepository    .getAllCategoryByPagination(filter,sort,pageRequest);
+    }
+
 
     public Category getById(String id) throws NotFoundException {
         return categoryRepository.getByIdAndSoftDeleteIsFalse(id).orElseThrow(() -> new NotFoundException(MessageConstant.USER_ID_NOT_FOUND));

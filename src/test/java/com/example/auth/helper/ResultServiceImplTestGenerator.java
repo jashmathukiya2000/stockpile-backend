@@ -1,8 +1,8 @@
 package com.example.auth.helper;
 
-import com.example.auth.decorator.Result;
-import com.example.auth.decorator.UserResponse;
-import com.example.auth.decorator.UserSpiResponse;
+import com.example.auth.decorator.user.Result;
+import com.example.auth.decorator.user.UserResponse;
+import com.example.auth.decorator.user.UserSpiResponse;
 import com.example.auth.model.User;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.convention.MatchingStrategies;

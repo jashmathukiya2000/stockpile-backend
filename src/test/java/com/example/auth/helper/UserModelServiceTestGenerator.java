@@ -1,9 +1,9 @@
 package com.example.auth.helper;
 
-import com.example.auth.common.config.enums.Role;
-import com.example.auth.decorator.LoginAddRequest;
-import com.example.auth.decorator.SignUpAddRequest;
-import com.example.auth.decorator.SignUpResponse;
+import com.example.auth.commons.enums.Role;
+import com.example.auth.decorator.userModel.LoginAddRequest;
+import com.example.auth.decorator.userModel.UserModelAddRequest;
+import com.example.auth.decorator.userModel.UserModelResponse;
 import com.example.auth.model.UserModel;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.convention.MatchingStrategies;
@@ -29,8 +29,8 @@ public class UserModelServiceTestGenerator {
                 .build();
     }
 
-    public static SignUpAddRequest getMockUserAddRequest() {
-        return SignUpAddRequest.builder()
+    public static UserModelAddRequest getMockUserAddRequest() {
+        return UserModelAddRequest.builder()
                 .email(email)
                 .password("password")
                 .confirmPassword("password")
@@ -39,8 +39,8 @@ public class UserModelServiceTestGenerator {
 
     }
 
-    public static SignUpResponse getMockSignUpResponse(String password) {
-        return SignUpResponse.builder()
+    public static UserModelResponse getMockSignUpResponse(String password) {
+        return UserModelResponse.builder()
                 .email(email)
                 .password(password)
                 .name("sans")
@@ -55,8 +55,8 @@ public class UserModelServiceTestGenerator {
                 .build();
     }
 
-    public static SignUpResponse getMockLoginResponse() {
-        return SignUpResponse.builder()
+    public static UserModelResponse getMockLoginResponse() {
+        return UserModelResponse.builder()
                 .password("password")
                 .email(email)
                 .build();

@@ -1,10 +1,10 @@
 package com.example.auth.service;
 
-import com.example.auth.decorator.UserAddRequest;
-import com.example.auth.decorator.UserAggregationResponse;
-import com.example.auth.decorator.UserFilter;
-import com.example.auth.decorator.UserResponse;
-import com.example.auth.decorator.pagination.FilterClass;
+import com.example.auth.decorator.user.UserAddRequest;
+import com.example.auth.decorator.user.UserAggregationResponse;
+import com.example.auth.decorator.user.UserFilter;
+import com.example.auth.decorator.user.UserResponse;
+import com.example.auth.decorator.pagination.UserFilterData;
 import com.example.auth.decorator.pagination.FilterSortRequest;
 import com.example.auth.decorator.pagination.UserSortBy;
 import org.springframework.data.domain.Page;
@@ -26,7 +26,7 @@ public interface UserService {
 
     List<UserAggregationResponse> getUserBySalary(UserFilter userFilter);
 
-    Page<UserResponse> getAllUserByPagination(FilterClass filter, FilterSortRequest.SortRequest<UserSortBy> sort, PageRequest pageRequest);
+    Page<UserResponse> getAllUserByPagination(UserFilterData filter, FilterSortRequest.SortRequest<UserSortBy> sort, PageRequest pageRequest);
 }
 
 

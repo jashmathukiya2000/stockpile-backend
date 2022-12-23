@@ -1,6 +1,11 @@
 package com.example.auth.service;
 
-import com.example.auth.common.config.advice.NullAwareBeanUtilsBean;
+import com.example.auth.commons.advice.NullAwareBeanUtilsBean;
+import com.example.auth.decorator.user.UserResponse;
+import com.example.auth.decorator.pagination.FilterSortRequest;
+import com.example.auth.decorator.pagination.Pagination;
+import com.example.auth.decorator.pagination.UserFilterData;
+import com.example.auth.decorator.pagination.UserSortBy;
 import com.example.auth.helper.UserServiceImplTestGenerator;
 import com.example.auth.repository.UserRepository;
 import org.junit.jupiter.api.Assertions;
@@ -8,6 +13,10 @@ import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.modelmapper.ModelMapper;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.Optional;
@@ -131,4 +140,28 @@ class UserServiceImplTest {
     }
 
 
+    @Test
+    void testgetAllUserByPagination(){
+        //given
+        UserFilterData userFilter = new UserFilterData();
+        userFilter.setId(userFilter.getId());
+        FilterSortRequest.SortRequest<UserSortBy> sort=new FilterSortRequest.SortRequest<>();
+        sort.setSortBy(UserSortBy.AGE);
+        sort.setOrderBy(Sort.Direction.ASC);
+
+        Pagination pagination= new Pagination();
+        pagination.setPage(1);
+        pagination.setLimit(5);
+        PageRequest pageRequest=PageRequest.of(pagination.getPage(),pagination.getLimit());
+
+        var userResponse=UserServiceImplTestGenerator.getMockResponse();
+        Page<UserResponse> page=new PageImpl<>(userResponse);
+        when(userRepository.getAllUserByPagination(userFilter,sort,pageRequest)).thenReturn(page);
+
+        //when
+      var actualData=  userService.getAllUserByPagination(userFilter,sort,pageRequest);
+
+        //then
+        Assertions.assertEquals(page,actualData);
+    }
 }

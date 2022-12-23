@@ -1,6 +1,6 @@
 package com.example.auth.model;
 
-import com.example.auth.common.config.enums.Role;
+import com.example.auth.commons.enums.Role;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AllArgsConstructor;
 import lombok.Builder;

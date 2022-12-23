@@ -1,6 +1,7 @@
 package com.example.auth.model;
 
-import com.example.auth.decorator.Result;
+import com.example.auth.commons.enums.Role;
+import com.example.auth.decorator.user.Result;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -33,6 +34,7 @@ public class User {
     Address address;
     String email;
     String phoneNumber;
+    Role role;
     @JsonIgnore
     boolean softDelete = false;
     List<Result> result;

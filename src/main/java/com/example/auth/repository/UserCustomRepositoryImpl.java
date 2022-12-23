@@ -1,12 +1,12 @@
 package com.example.auth.repository;
 
-import com.example.auth.common.config.constant.ResponseConstant;
-import com.example.auth.common.config.exception.NotFoundException;
 import com.example.auth.decorator.*;
 import com.example.auth.decorator.pagination.CountQueryResult;
-import com.example.auth.decorator.pagination.FilterClass;
+import com.example.auth.decorator.pagination.UserFilterData;
 import com.example.auth.decorator.pagination.FilterSortRequest;
 import com.example.auth.decorator.pagination.UserSortBy;
+import com.example.auth.decorator.user.*;
+import com.example.auth.repository.UserCustomRepository;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.bson.Document;
@@ -128,7 +128,7 @@ public class UserCustomRepositoryImpl implements UserCustomRepository {
     }
 
     @Override
-    public Page<UserResponse> getAllUserByPagination(FilterClass filter, FilterSortRequest.SortRequest<UserSortBy> sort, PageRequest pagination) {
+    public Page<UserResponse> getAllUserByPagination(UserFilterData filter, FilterSortRequest.SortRequest<UserSortBy> sort, PageRequest pagination) {
         List<AggregationOperation> operations = userFilterAggregation(filter, sort, pagination, true);
         //Created Aggregation operation
         Aggregation aggregation = newAggregation(operations);
@@ -149,7 +149,7 @@ public class UserCustomRepositoryImpl implements UserCustomRepository {
 
     }
 
-    private Criteria getCriteria(FilterClass userFilter, List<AggregationOperation> operations) {
+    private Criteria getCriteria(UserFilterData userFilter, List<AggregationOperation> operations) {
         Criteria criteria = new Criteria();
         operations.add(new CustomAggregationOperation(new Document("$addFields", new Document("search",
                 new Document("$concat", Arrays.asList(new Document("$ifNull", Arrays.asList("$firstName", " ")),
@@ -171,7 +171,7 @@ public class UserCustomRepositoryImpl implements UserCustomRepository {
         return criteria;
     }
 
-    private List<AggregationOperation> userFilterAggregation(FilterClass filter, FilterSortRequest.SortRequest<UserSortBy> sort, PageRequest pagination, boolean addPage) {
+    private List<AggregationOperation> userFilterAggregation(UserFilterData filter, FilterSortRequest.SortRequest<UserSortBy> sort, PageRequest pagination, boolean addPage) {
         List<AggregationOperation> operations = new ArrayList<>();
 
         operations.add(match(getCriteria(filter, operations)));

@@ -1,8 +1,7 @@
 package com.example.auth.service;
 
-import com.example.auth.common.config.advice.NullAwareBeanUtilsBean;
-import com.example.auth.common.config.enums.Role;
-import com.example.auth.common.config.utils.PasswordUtils;
+import com.example.auth.commons.enums.Role;
+import com.example.auth.commons.utils.PasswordUtils;
 import com.example.auth.helper.UserModelServiceTestGenerator;
 import com.example.auth.repository.UserModelRepository;
 import org.junit.jupiter.api.Assertions;

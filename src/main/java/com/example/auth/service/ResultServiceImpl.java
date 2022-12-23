@@ -1,14 +1,13 @@
 package com.example.auth.service;
 
-import com.example.auth.common.config.advice.NullAwareBeanUtilsBean;
-import com.example.auth.common.config.constant.MessageConstant;
-import com.example.auth.common.config.exception.NotFoundException;
-import com.example.auth.decorator.Result;
-import com.example.auth.decorator.UserResponse;
-import com.example.auth.decorator.UserSpiResponse;
+import com.example.auth.commons.advice.NullAwareBeanUtilsBean;
+import com.example.auth.commons.constant.MessageConstant;
+import com.example.auth.commons.exception.NotFoundException;
+import com.example.auth.decorator.user.Result;
+import com.example.auth.decorator.user.UserResponse;
+import com.example.auth.decorator.user.UserSpiResponse;
 import com.example.auth.model.User;
 import com.example.auth.repository.UserRepository;
-import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;

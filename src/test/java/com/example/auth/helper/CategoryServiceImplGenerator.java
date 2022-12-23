@@ -1,7 +1,7 @@
 package com.example.auth.helper;
 
-import com.example.auth.decorator.CategoryAddRequest;
-import com.example.auth.decorator.CategoryResponse;
+import com.example.auth.decorator.category.CategoryAddRequest;
+import com.example.auth.decorator.category.CategoryResponse;
 import com.example.auth.model.Category;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.convention.MatchingStrategies;
