@@ -1,5 +1,6 @@
 package com.example.auth.decorator.user;
 
+import com.example.auth.decorator.user.Auth;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;

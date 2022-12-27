@@ -6,7 +6,6 @@ import com.example.auth.decorator.pagination.UserFilterData;
 import com.example.auth.decorator.pagination.FilterSortRequest;
 import com.example.auth.decorator.pagination.UserSortBy;
 import com.example.auth.decorator.user.*;
-import com.example.auth.repository.UserCustomRepository;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.bson.Document;
@@ -60,11 +59,11 @@ public class UserCustomRepositoryImpl implements UserCustomRepository {
 
         operations.add(new CustomAggregationOperation(new Document("$group",
                 new Document("_id", "$salary")
-                        .append("auth", new Document("$push", new Document("name", "$name")
+                        .append("auth", new Document("$push", new Document("name", "$categoryName")
                                 .append("occupation", "$occupation")
                                 .append("age", "$age")))
                         .append("count", new Document("$sum", 1))
-                        .append("name", new Document("$first", "$name"))
+                        .append("name", new Document("$first", "$categoryName"))
                         .append("occupation", new Document("$last", "$occupation")))));
         operations.add(new CustomAggregationOperation(new Document("$sort", new Document("_id", 1))));
         return operations;
@@ -83,7 +82,7 @@ public class UserCustomRepositoryImpl implements UserCustomRepository {
         operations.add(new CustomAggregationOperation(new Document("$unwind", new Document("path", "$result"))));
         operations.add(new CustomAggregationOperation(new Document("$match", new Document("result.spi", spi).append("softDelete", false))));
         operations.add(new CustomAggregationOperation(new Document("$group", new Document("_id", "$result.spi")
-                .append("auth", new Document("$push", new Document("name", "$name").append("email", "$email")
+                .append("auth", new Document("$push", new Document("name", "$categoryName").append("email", "$email")
                         .append("_id", "$_id").append("semester", "$result.semester")))
                 .append("sum", new Document("$sum", "$result.semester"))
                 .append("count", new Document("$sum", 1))
@@ -100,32 +99,34 @@ public class UserCustomRepositoryImpl implements UserCustomRepository {
 
     }
 
-    public List<AggregationOperation> getUserByOccupation(String occupation) {
-        List<AggregationOperation> operations = new ArrayList<>();
-        operations.add(new CustomAggregationOperation(new Document("$unwind", new Document("path", "$result"))));
-        operations.add(new CustomAggregationOperation(new Document("$match", new Document("occupation", occupation).append("softDelete", false))));
-        operations.add(new CustomAggregationOperation(new Document("$group", new Document("_id", "$salary")
-                .append("auth", new Document("$push", new Document("name", "$name")
-                        .append("occupation", "$occupation")
-                        .append("age", "$age").append("email", "$email")
-                        .append("_id", "$_id")
-                        .append("semester", "$result.semester").append("spi", "$result.spi")))
-                .append("count", new Document("$sum", 1))
-                .append("name", new Document("$first", "$name"))
-                .append("occuption", new Document("$last", "$occupation")))));
-        operations.add(new CustomAggregationOperation(new Document("$sort", new Document("_id", 1))));
-        operations.add(new CustomAggregationOperation(new Document("$limit", 1)));
-        return operations;
-    }
+//    public List<AggregationOperation> getUserByOccupation(String occupation) {
+//        List<AggregationOperation> operations = new ArrayList<>();
+//        operations.add(new CustomAggregationOperation(new Document("$unwind", new Document("path", "$result"))));
+//        operations.add(new CustomAggregationOperation(new Document("$match", new Document("occupation", occupation).append("softDelete", false))));
+//        operations.add(new CustomAggregationOperation(new Document("$group", new Document("_id", "$salary")
+//                .append("auth", new Document("$push", new Document("categoryName", "$categoryName")
+//                        .append("occupation", "$occupation")
+//                        .append("age", "$age").append("email", "$email")
+//                        .append("_id", "$_id")
+//                        .append("semester", "$result.semester").append("spi", "$result.spi")))
+//                .append("count", new Document("$sum", 1))
+//                .append("categoryName", new Document("$first", "$categoryName"))
+//                .append("occuption", new Document("$last", "$occupation").append("maxSpi",
+//                        new Document("$max","$result").append("minSpi",
+//                                new Document("$min","$result")))))));
+//        operations.add(new CustomAggregationOperation(new Document("$sort", new Document("_id", 1))));
+//        operations.add(new CustomAggregationOperation(new Document("$limit", 1)));
+//        return operations;
+//    }
 
 
-    @Override
-    public List<OccupationResponse> getByOccupation(String occupation) {
-        List<AggregationOperation> operations = getUserByOccupation(occupation);
-        Aggregation aggregation = newAggregation(operations);
-        return mongoTemplate.aggregate(aggregation, "auth", OccupationResponse.class).getMappedResults();
-
-    }
+//    @Override
+//    public List<OccupationResponse> getByOccupation(String occupation) {
+//        List<AggregationOperation> operations = getUserByOccupation(occupation);
+//        Aggregation aggregation = newAggregation(operations);
+//        return mongoTemplate.aggregate(aggregation, "auth", OccupationResponse.class).getMappedResults();
+//
+//    }
 
     @Override
     public Page<UserResponse> getAllUserByPagination(UserFilterData filter, FilterSortRequest.SortRequest<UserSortBy> sort, PageRequest pagination) {
@@ -149,7 +150,9 @@ public class UserCustomRepositoryImpl implements UserCustomRepository {
 
     }
 
-    private Criteria getCriteria(UserFilterData userFilter, List<AggregationOperation> operations) {
+
+
+    Criteria getCriteria(UserFilterData userFilter, List<AggregationOperation> operations) {
         Criteria criteria = new Criteria();
         operations.add(new CustomAggregationOperation(new Document("$addFields", new Document("search",
                 new Document("$concat", Arrays.asList(new Document("$ifNull", Arrays.asList("$firstName", " ")),
@@ -187,6 +190,27 @@ public class UserCustomRepositoryImpl implements UserCustomRepository {
         }
         return operations;
     }
+
+
+    @Override
+    public List<MaxSpiResponse> getUserByMaxSpi(String id) {
+        List<AggregationOperation> operations = getByMaxSpi(id);
+        Aggregation aggregation = newAggregation(operations);
+        return mongoTemplate.aggregate(aggregation, "auth", MaxSpiResponse.class).getMappedResults();
+    }
+
+    public List<AggregationOperation> getByMaxSpi(String id){
+        List<AggregationOperation> operations = new ArrayList<>();
+        operations.add(new CustomAggregationOperation(new Document("$match", new Document("_id", id).append("softDelete", false))));
+       operations.add(new CustomAggregationOperation(new Document("$group",
+                                new Document("_id","$_id")
+                               .append("auth",new Document("$push",
+                                new Document("name","$categoryName")
+                               .append("maxSpi", new Document("$max","$result"))
+                               .append("minSpi",new Document("$min","$result")))))));
+        return operations;
+    }
+
 
 }
 

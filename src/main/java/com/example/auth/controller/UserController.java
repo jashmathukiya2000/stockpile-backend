@@ -103,6 +103,12 @@ public class UserController {
         pageResponse.setStatus(Response.getOkResponse());
         return pageResponse;
     }
-
+@RequestMapping(name = "getUserByMaxSpi",value = "/get{id}",method = RequestMethod.POST)
+    public ListResponse<MaxSpiResponse> getUserByMaxSpi(@PathVariable String id){
+    ListResponse<MaxSpiResponse> listResponse= new ListResponse<>();
+    listResponse.setData(userService.getUserByMaxSpi(id));
+    listResponse.setStatus(Response.getOkResponse(ResponseConstant.OK));
+    return listResponse;
+}
 
 }

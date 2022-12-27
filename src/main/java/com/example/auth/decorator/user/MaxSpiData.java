@@ -5,10 +5,10 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Data
-@NoArgsConstructor
 @AllArgsConstructor
-public class Auth {
-    String occupation;
-    String name;
-    String age;
+@NoArgsConstructor
+public class MaxSpiData {
+       String name;
+       String maxSpi;
+       String minSpi;
 }

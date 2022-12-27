@@ -8,17 +8,18 @@ import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
-import java.util.Date;
-
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-@Document(collection = "categories")
+@Document(collection = "items")
 @Builder
-public class Category {
-    @Id
+public class Item {
+    String categoryId;
     String id;
-    Date date;
+    String itemName;
+    double price;
+    int quantity;
     @JsonIgnore
     boolean softDelete;
+
 }

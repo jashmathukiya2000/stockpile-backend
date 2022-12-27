@@ -1,6 +1,5 @@
-package com.example.auth.decorator.category;
+package com.example.auth.decorator;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -10,6 +9,9 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class CategoryAddRequest {
-    String name;
+public class ItemAddRequest {
+    String itemName;
+    double price;
+    int quantity;
+
 }

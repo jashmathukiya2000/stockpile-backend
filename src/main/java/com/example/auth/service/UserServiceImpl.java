@@ -3,10 +3,7 @@ package com.example.auth.service;
 import com.example.auth.commons.advice.NullAwareBeanUtilsBean;
 import com.example.auth.commons.constant.MessageConstant;
 import com.example.auth.commons.exception.NotFoundException;
-import com.example.auth.decorator.user.UserAddRequest;
-import com.example.auth.decorator.user.UserAggregationResponse;
-import com.example.auth.decorator.user.UserFilter;
-import com.example.auth.decorator.user.UserResponse;
+import com.example.auth.decorator.user.*;
 import com.example.auth.decorator.pagination.UserFilterData;
 import com.example.auth.decorator.pagination.FilterSortRequest;
 import com.example.auth.decorator.pagination.UserSortBy;
@@ -63,7 +60,6 @@ public class UserServiceImpl implements UserService {
     public List<UserResponse> getAllUser() {
         List<User> users = userRepository.findAllBySoftDeleteFalse();
         List<UserResponse> userResponseList = new ArrayList<>();
-        log.info("user:{}", users);
         users.forEach(user -> {
             UserResponse userResponse1 = modelMapper.map(user, UserResponse.class);
             userResponseList.add(userResponse1);
@@ -99,6 +95,11 @@ public class UserServiceImpl implements UserService {
     @Override
     public Page<UserResponse> getAllUserByPagination(UserFilterData filter, FilterSortRequest.SortRequest<UserSortBy> sort, PageRequest pageRequest) {
         return userRepository.getAllUserByPagination(filter,sort,pageRequest);
+    }
+
+    @Override
+    public List<MaxSpiResponse> getUserByMaxSpi(String id) {
+        return userRepository.getUserByMaxSpi(id);
     }
 
 

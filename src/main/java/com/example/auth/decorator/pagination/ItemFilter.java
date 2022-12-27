@@ -9,7 +9,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class CategoryFilter {
+public class ItemFilter {
     String search;
     String id;
     @JsonIgnore

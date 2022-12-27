@@ -5,12 +5,14 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.util.List;
-@AllArgsConstructor
+
 @Data
+@AllArgsConstructor
 @NoArgsConstructor
-public class OccupationResponse {
-    List<OccupationResponseData> auth;
-    String name;
-    String occupation;
-    int count;
+public class MaxSpiResponse {
+    String _id;
+
+    List<MaxSpiData> auth;
+
+
 }

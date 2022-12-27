@@ -42,9 +42,10 @@ class ResultServiceImplTest {
     } @Test
     void testAddResult() throws InvocationTargetException, IllegalAccessException {
         //given
-        var result=ResultServiceImplTestGenerator.MockListResult();
+
+        var results=ResultServiceImplTestGenerator.MockListResult();
         var addResult = ResultServiceImplTestGenerator.MockAddResult();
-        var user = ResultServiceImplTestGenerator.getMockUser(result);
+        var user = ResultServiceImplTestGenerator.getMockUser(results);
 
         var Resultresponse = ResultServiceImplTestGenerator.MockGetUserResponse();
 

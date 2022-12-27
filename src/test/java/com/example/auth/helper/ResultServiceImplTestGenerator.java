@@ -43,6 +43,8 @@ public class ResultServiceImplTestGenerator {
                 .spi(7.6)
                 .semester(5)
                 .build();
+
+
     }
 
     public static User getMockUser(List<Result> results) {

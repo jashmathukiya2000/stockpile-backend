@@ -1,6 +1,7 @@
 package com.example.auth.decorator.user;
 
 import com.example.auth.commons.enums.Role;
+import com.example.auth.decorator.user.Result;
 import com.example.auth.model.Address;
 import lombok.AllArgsConstructor;
 import lombok.Builder;

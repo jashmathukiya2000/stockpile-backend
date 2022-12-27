@@ -21,25 +21,18 @@ public class CategoryServiceImplGenerator {
     public static Category MockCategory() {
         return Category.builder()
                 .id(id)
-                .itemName("noodles")
-                .price(100)
-                .quantity(5)
+
                 .build();
     }
 
     public static CategoryAddRequest MockAddCategory() {
         return CategoryAddRequest.builder()
-                .itemName("noodles")
-                .price(100)
-                .quantity(5)
                 .build();
     }
 
     public static CategoryResponse MockCategoryResponse() {
         return CategoryResponse.builder()
-                .itemName("noodles")
-                .price(100)
-                .quantity(5)
+
                 .build();
     }
 
@@ -47,9 +40,7 @@ public class CategoryServiceImplGenerator {
         return List.of(Category.builder()
                 .id(id)
                 .softDelete(false)
-                .itemName("noodles")
-                .price(100)
-                .quantity(5)
+
                 .build());
 
     }
@@ -57,9 +48,7 @@ public class CategoryServiceImplGenerator {
     public static List<CategoryResponse> getMockResponse() {
         return List.of(CategoryResponse
                 .builder()
-                .itemName("noodles")
-                .price(100)
-                .quantity(5)
+
                 .build());
     }
 }

@@ -8,6 +8,7 @@ import com.example.auth.decorator.user.UserResponse;
 import com.example.auth.decorator.user.UserSpiResponse;
 import com.example.auth.model.User;
 import com.example.auth.repository.UserRepository;
+import com.google.common.annotations.VisibleForTesting;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
@@ -37,6 +38,7 @@ public class ResultServiceImpl implements ResultService {
         List<Result> results = new ArrayList<>();
         User user1 = getUserModel(id);
 //        System.out.println(user1.getId());
+
         double sum = 0;
         double cgpa = 0;
         if (!CollectionUtils.isEmpty(user1.getResult())) {
@@ -85,6 +87,7 @@ public class ResultServiceImpl implements ResultService {
         }
 
     }
+
 
 
 

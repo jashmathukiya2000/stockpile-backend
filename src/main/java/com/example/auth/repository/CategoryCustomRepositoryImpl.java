@@ -2,8 +2,8 @@ package com.example.auth.repository;
 
 import com.example.auth.decorator.CustomAggregationOperation;
 import com.example.auth.decorator.category.CategoryResponse;
-import com.example.auth.decorator.pagination.CategoryFilter;
-import com.example.auth.decorator.pagination.CategorySortBy;
+import com.example.auth.decorator.pagination.ItemFilter;
+import com.example.auth.decorator.pagination.ItemSortBy;
 import com.example.auth.decorator.pagination.CountQueryResult;
 import com.example.auth.decorator.pagination.FilterSortRequest;
 import org.apache.commons.collections.CollectionUtils;
@@ -32,7 +32,7 @@ public class CategoryCustomRepositoryImpl implements CategoryCustomRepository {
     MongoTemplate mongoTemplate;
 
     @Override
-    public Page<CategoryResponse> getAllCategoryByPagination(CategoryFilter filter, FilterSortRequest.SortRequest<CategorySortBy> sort, PageRequest pageRequest) {
+    public Page<CategoryResponse> getAllCategoryByPagination(ItemFilter filter, FilterSortRequest.SortRequest<ItemSortBy> sort, PageRequest pageRequest) {
         List<AggregationOperation> operations= categoryAggregationFilter(filter,sort,pageRequest,true);
 
         Aggregation aggregation = newAggregation(operations);
@@ -52,7 +52,7 @@ List<CategoryResponse> category= mongoTemplate.aggregate(aggregation,"category",
 
 
 
-    private List<AggregationOperation> categoryAggregationFilter(CategoryFilter filter, FilterSortRequest.SortRequest<CategorySortBy> sort, PageRequest pageRequest, boolean addPage) {
+    private List<AggregationOperation> categoryAggregationFilter(ItemFilter filter, FilterSortRequest.SortRequest<ItemSortBy> sort, PageRequest pageRequest, boolean addPage) {
         List<AggregationOperation> operations = new ArrayList<>();
 
         operations.add(match(getCriteria(filter, operations)));
@@ -69,7 +69,7 @@ List<CategoryResponse> category= mongoTemplate.aggregate(aggregation,"category",
         return operations;
     }
 
-    private Criteria getCriteria(CategoryFilter filter, List<AggregationOperation> operations) {
+    private Criteria getCriteria(ItemFilter filter, List<AggregationOperation> operations) {
         Criteria criteria = new Criteria();
         operations.add(new CustomAggregationOperation(new Document("$addFields", new Document("search",
                 new Document("$concat", Arrays.asList(new Document("$ifNull", Arrays.asList("$firstName", " ")),

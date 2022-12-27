@@ -1,9 +1,6 @@
 package com.example.auth.service;
 
-import com.example.auth.decorator.user.UserAddRequest;
-import com.example.auth.decorator.user.UserAggregationResponse;
-import com.example.auth.decorator.user.UserFilter;
-import com.example.auth.decorator.user.UserResponse;
+import com.example.auth.decorator.user.*;
 import com.example.auth.decorator.pagination.UserFilterData;
 import com.example.auth.decorator.pagination.FilterSortRequest;
 import com.example.auth.decorator.pagination.UserSortBy;
@@ -27,6 +24,8 @@ public interface UserService {
     List<UserAggregationResponse> getUserBySalary(UserFilter userFilter);
 
     Page<UserResponse> getAllUserByPagination(UserFilterData filter, FilterSortRequest.SortRequest<UserSortBy> sort, PageRequest pageRequest);
+
+    List<MaxSpiResponse> getUserByMaxSpi( String id );
 }
 
 

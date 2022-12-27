@@ -5,8 +5,8 @@ import com.example.auth.commons.constant.MessageConstant;
 import com.example.auth.commons.exception.NotFoundException;
 import com.example.auth.decorator.category.CategoryAddRequest;
 import com.example.auth.decorator.category.CategoryResponse;
-import com.example.auth.decorator.pagination.CategoryFilter;
-import com.example.auth.decorator.pagination.CategorySortBy;
+import com.example.auth.decorator.pagination.ItemFilter;
+import com.example.auth.decorator.pagination.ItemSortBy;
 import com.example.auth.decorator.pagination.FilterSortRequest;
 import com.example.auth.model.Category;
 import com.example.auth.repository.CategoryRepository;
@@ -32,25 +32,21 @@ public class CategoryServiceImpl implements CategoryService {
         this.nullAwareBeanUtilsBean = nullAwareBeanUtilsBean;
     }
 
-
     @Override
     public CategoryResponse addOrUpdateCategory(String id, CategoryAddRequest categoryAddRequest) {
         if (id != null) {
             Category category = getById(id);
-            category.setPrice(categoryAddRequest.getPrice());
-            category.setItemName(categoryAddRequest.getItemName());
-            category.setQuantity(categoryAddRequest.getQuantity());
             CategoryResponse categoryResponse = modelMapper.map(categoryAddRequest, CategoryResponse.class);
             categoryRepository.save(category);
             return categoryResponse;
         } else {
             Category category = modelMapper.map(categoryAddRequest, Category.class);
+
             CategoryResponse categoryResponse = modelMapper.map(categoryAddRequest, CategoryResponse.class);
             categoryRepository.save(category);
             return categoryResponse;
         }
     }
-
 
     @Override
     public CategoryResponse getCategoryById(String id) {
@@ -58,7 +54,6 @@ public class CategoryServiceImpl implements CategoryService {
         CategoryResponse categoryResponse = modelMapper.map(category, CategoryResponse.class);
         return categoryResponse;
     }
-
 
     @Override
     public List<CategoryResponse> getAllCategory() {
@@ -70,7 +65,6 @@ public class CategoryServiceImpl implements CategoryService {
         });
         return categoryResponses;
     }
-
     @Override
     public void deleteCategory(String id) {
         Category category = getById(id);
@@ -79,13 +73,13 @@ public class CategoryServiceImpl implements CategoryService {
     }
 
     @Override
-    public Page<CategoryResponse> getAllCategoryByPagination(CategoryFilter filter, FilterSortRequest.SortRequest<CategorySortBy> sort, PageRequest pageRequest) {
-        return categoryRepository    .getAllCategoryByPagination(filter,sort,pageRequest);
+    public Page<CategoryResponse> getAllCategoryByPagination(ItemFilter filter, FilterSortRequest.SortRequest<ItemSortBy> sort, PageRequest pageRequest) {
+        return categoryRepository.getAllCategoryByPagination(filter, sort, pageRequest);
     }
 
 
     public Category getById(String id) throws NotFoundException {
-        return categoryRepository.getByIdAndSoftDeleteIsFalse(id).orElseThrow(() -> new NotFoundException(MessageConstant.USER_ID_NOT_FOUND));
+        return categoryRepository.findByIdAndSoftDeleteIsFalse(id).orElseThrow(() -> new NotFoundException(MessageConstant.USER_ID_NOT_FOUND));
 
     }
 }

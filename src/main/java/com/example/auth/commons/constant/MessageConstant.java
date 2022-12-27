@@ -14,4 +14,5 @@ public class MessageConstant {
     public static final String USER_NOT_FOUND = "user not found";
     public static final String AUTHENTICATION_FAILED = "authentication failed";
     public static final String INCORRECT_EMAIL = "email not match";
+    public static final String ID_NOT_FOUND = "Id not found";
 }

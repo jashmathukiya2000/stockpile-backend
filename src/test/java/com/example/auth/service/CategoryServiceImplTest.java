@@ -2,8 +2,8 @@ package com.example.auth.service;
 
 import com.example.auth.commons.advice.NullAwareBeanUtilsBean;
 import com.example.auth.decorator.category.CategoryResponse;
-import com.example.auth.decorator.pagination.CategoryFilter;
-import com.example.auth.decorator.pagination.CategorySortBy;
+import com.example.auth.decorator.pagination.ItemFilter;
+import com.example.auth.decorator.pagination.ItemSortBy;
 import com.example.auth.decorator.pagination.FilterSortRequest;
 import com.example.auth.decorator.pagination.Pagination;
 import com.example.auth.helper.CategoryServiceImplGenerator;
@@ -37,7 +37,7 @@ class CategoryServiceImplTest {
         var category = CategoryServiceImplGenerator.MockCategory();
         var addCategory = CategoryServiceImplGenerator.MockAddCategory();
         var categoryresponse = CategoryServiceImplGenerator.MockCategoryResponse();
-        when(categoryRepository.getByIdAndSoftDeleteIsFalse(id)).thenReturn(Optional.of(category));
+        when(categoryRepository.findByIdAndSoftDeleteIsFalse(id)).thenReturn(Optional.of(category));
         when(categoryRepository.save(category)).thenReturn(category);
 
         //when
@@ -53,7 +53,7 @@ class CategoryServiceImplTest {
         var category = CategoryServiceImplGenerator.MockCategory();
         var addCategory = CategoryServiceImplGenerator.MockAddCategory();
         var categoryresponse = CategoryServiceImplGenerator.MockCategoryResponse();
-        when(categoryRepository.getByIdAndSoftDeleteIsFalse(id)).thenReturn(Optional.of(category));
+        when(categoryRepository.findByIdAndSoftDeleteIsFalse(id)).thenReturn(Optional.of(category));
         when(categoryRepository.save(category)).thenReturn(category);
 
         //when
@@ -69,7 +69,7 @@ class CategoryServiceImplTest {
         //given
         var category = CategoryServiceImplGenerator.MockCategory();
         var Categoryresponse = CategoryServiceImplGenerator.MockCategoryResponse();
-        when(categoryRepository.getByIdAndSoftDeleteIsFalse(id)).thenReturn(Optional.of(category));
+        when(categoryRepository.findByIdAndSoftDeleteIsFalse(id)).thenReturn(Optional.of(category));
 
         //when
         var actualData = categoryService.getCategoryById(id);
@@ -97,22 +97,22 @@ class CategoryServiceImplTest {
     void testDeleteCategory() {
         //given
         var category = CategoryServiceImplGenerator.MockCategory();
-        Mockito.when(categoryRepository.getByIdAndSoftDeleteIsFalse(id)).thenReturn(Optional.of(category));
+        Mockito.when(categoryRepository.findByIdAndSoftDeleteIsFalse(id)).thenReturn(Optional.of(category));
 
         //when
         categoryService.deleteCategory(id);
         //then
-        verify(categoryRepository, times(1)).getByIdAndSoftDeleteIsFalse((id));
+        verify(categoryRepository, times(1)).findByIdAndSoftDeleteIsFalse((id));
 
     }
 
     @Test
   void   testgetCategoryByPagination(){
         //given
-        CategoryFilter categoryFilter= new CategoryFilter();
+        ItemFilter categoryFilter= new ItemFilter();
         categoryFilter.setId(categoryFilter.getId());
-        FilterSortRequest.SortRequest< CategorySortBy > sort=new FilterSortRequest.SortRequest<>();
-        sort.setSortBy(CategorySortBy.ITEM_NAME);
+        FilterSortRequest.SortRequest<ItemSortBy> sort=new FilterSortRequest.SortRequest<>();
+        sort.setSortBy(ItemSortBy.ITEM_NAME);
         sort.setOrderBy(Sort.Direction.ASC);
         Pagination pagination= new Pagination();
         pagination.setLimit(2);
