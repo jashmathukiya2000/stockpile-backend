@@ -20,6 +20,7 @@ import org.springframework.data.mongodb.core.aggregation.AggregationResults;
 import org.springframework.data.mongodb.core.aggregation.SortOperation;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.support.PageableExecutionUtils;
+import org.springframework.stereotype.Repository;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -28,9 +29,12 @@ import java.util.List;
 
 import static org.springframework.data.mongodb.core.aggregation.Aggregation.*;
 
+@Repository
 public class ItemCustomRepositoryImpl implements ItemCustomRepository{
+
     @Autowired
     MongoTemplate mongoTemplate;
+
     @Override
     public Page<ItemResponse> getAllItemsByPagination(ItemFilter filter, FilterSortRequest.SortRequest<ItemSortBy> sort, PageRequest pageRequest) {
             List<AggregationOperation> operations= itemAggregationFilter(filter,sort,pageRequest,true);
@@ -71,17 +75,16 @@ public class ItemCustomRepositoryImpl implements ItemCustomRepository{
         private Criteria getCriteria(ItemFilter filter, List<AggregationOperation> operations) {
             Criteria criteria = new Criteria();
             operations.add(new CustomAggregationOperation(new Document("$addFields", new Document("search",
-                    new Document("$concat", Arrays.asList(new Document("$ifNull", Arrays.asList("$itemtName", " ")),
-                            "|@|", new Document("$ifNull", Arrays.asList("$price", " "))
+                    new Document("$concat", Arrays.asList(new Document("$ifNull", Arrays.asList("$itemName", " "))
                     ))))));
             if (!StringUtils.isEmpty(filter.getSearch())) {
-                filter.setSearch(filter.getSearch().replaceAll("\\|@\\|", ""));
-                filter.setSearch(filter.getSearch().replaceAll("\\|@@\\|", ""));
+                filter.setSearch(filter.getSearch().replaceAll("\\|@\\|", " "));
+                filter.setSearch(filter.getSearch().replaceAll("\\|@@\\|", " "));
                 criteria = criteria.orOperator(
                         Criteria.where("search").regex(".*" + filter.getSearch() + ".*", "i")
                 );
             }
-            if (CollectionUtils.isEmpty(Collections.singleton(filter.getId()))) {
+            if (!CollectionUtils.isEmpty(Collections.singleton(filter.getId()))) {
                 criteria = criteria.and("_id").in(filter.getId());
             }
             criteria = criteria.and("softDelete").is(false);

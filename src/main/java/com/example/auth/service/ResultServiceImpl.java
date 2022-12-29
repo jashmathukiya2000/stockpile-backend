@@ -8,7 +8,6 @@ import com.example.auth.decorator.user.UserResponse;
 import com.example.auth.decorator.user.UserSpiResponse;
 import com.example.auth.model.User;
 import com.example.auth.repository.UserRepository;
-import com.google.common.annotations.VisibleForTesting;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
@@ -36,31 +35,36 @@ public class ResultServiceImpl implements ResultService {
     @Override
     public UserResponse addResult(String id, Result result) {
         List<Result> results = new ArrayList<>();
+        List<Result> finalResults = new ArrayList<>();
+
         User user1 = getUserModel(id);
-//        System.out.println(user1.getId());
 
         double sum = 0;
         double cgpa = 0;
         if (!CollectionUtils.isEmpty(user1.getResult())) {
             results = user1.getResult();
             checkResultValidation(result);
+
+            boolean matchFound = results.parallelStream()
+                    .anyMatch(result1 -> result1.getSemester() == result.getSemester());
+
+            if (matchFound) {
+                throw new NotFoundException(MessageConstant.SEMESTER_ALREADY_EXIST);
+            }
+
+            finalResults.addAll(results);
         }
-        boolean matchFound = results.parallelStream()
-                .anyMatch(result1 -> result1.getSemester() == result.getSemester());
-        if (matchFound) {
-            throw new NotFoundException(MessageConstant.SEMESTER_ALREADY_EXIST);
-        }
-        results.add(result);
-        for (Result result1 : results) {
+        finalResults.add(result);
+
+        for (Result result1 : finalResults) {
             sum += result1.getSpi();
         }
-        cgpa = sum / results.size();
+        cgpa = sum / finalResults.size();
         cgpa = Double.parseDouble(new DecimalFormat("##.##").format(cgpa));
         user1.setCgpa(cgpa);
-        user1.setResult(results);
+        user1.setResult(finalResults);
         userRepository.save(user1);
         UserResponse userResponse = new UserResponse();
-//        nullAwareBeanUtilsBean.copyProperties(userResponse, user1);
         modelMapper.map(user1, userResponse);
 
         return userResponse;
@@ -87,9 +91,6 @@ public class ResultServiceImpl implements ResultService {
         }
 
     }
-
-
-
 
 
 }

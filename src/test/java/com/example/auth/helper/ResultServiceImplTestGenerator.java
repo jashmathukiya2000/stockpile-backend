@@ -47,7 +47,7 @@ public class ResultServiceImplTestGenerator {
 
     }
 
-    public static User getMockUser(List<Result> results) {
+    public static User getMockUser( ) {
         return User.builder()
                 .id(id)
                 .firstName("sans")
@@ -60,7 +60,6 @@ public class ResultServiceImplTestGenerator {
                 .phoneNumber("6386580393")
                 .salary(25000)
                 .cgpa(7.6)
-                .result(results)
                 .build();
 
     }

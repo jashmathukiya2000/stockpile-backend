@@ -11,7 +11,9 @@ import lombok.NoArgsConstructor;
 @Builder
 public class ItemAddRequest {
     String itemName;
-    double price;
-    int quantity;
+
+     double price;
+
+     int quantity;
 
 }

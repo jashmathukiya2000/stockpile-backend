@@ -2,7 +2,6 @@ package com.example.auth.controller;
 
 import com.example.auth.commons.constant.ResponseConstant;
 import com.example.auth.decorator.*;
-import com.example.auth.decorator.category.CategoryResponse;
 import com.example.auth.decorator.pagination.*;
 import com.example.auth.service.ItemService;
 import org.springframework.data.domain.Page;
@@ -20,15 +19,20 @@ public class ItemController {
         this.itemService = itemService;
     }
 
-    @RequestMapping(name = "addOrUpdateItem",value = "/addUpdate",method = RequestMethod.POST )
-    public DataResponse<ItemResponse> addOrUpdateItem(@RequestParam String categoryId,@RequestBody ItemAddRequest itemAddRequest, @RequestParam(required = false) String id) throws InvocationTargetException, IllegalAccessException {
+    @RequestMapping(name = "addItem",value = "/add",method = RequestMethod.POST )
+    public DataResponse<ItemResponse> addItem(@RequestParam(required = false) String categoryId,@RequestBody ItemAddRequest itemAddRequest) throws InvocationTargetException, IllegalAccessException {
         DataResponse<ItemResponse> dataResponse=new DataResponse<>();
-        dataResponse.setData(itemService.addOrUpdateItem(categoryId,itemAddRequest,id));
+        dataResponse.setData(itemService.addItem(categoryId,itemAddRequest));
         dataResponse.setStatus(Response.getOkResponse(ResponseConstant.SAVED_SUCCESSFULLY));
         return dataResponse;
     }
-
-
+  @RequestMapping(name = "updateItem",value = "/update",method = RequestMethod.POST )
+    public DataResponse<ItemResponse> updateItem(@RequestParam String id,@RequestBody ItemAddRequest itemAddRequest) throws InvocationTargetException, IllegalAccessException {
+        DataResponse<ItemResponse> dataResponse=new DataResponse<>();
+        dataResponse.setData(itemService.updateItem(id,itemAddRequest));
+        dataResponse.setStatus(Response.getOkResponse(ResponseConstant.UPDATED_SUCCESSFULLY));
+        return dataResponse;
+    }
 
 
     @RequestMapping(name = "getItemById",value = "/get/{id}",method = RequestMethod.GET)

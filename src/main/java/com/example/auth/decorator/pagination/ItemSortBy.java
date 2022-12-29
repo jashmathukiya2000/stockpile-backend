@@ -16,6 +16,7 @@ public enum ItemSortBy {
     PRICE("price");
     @JsonIgnore
       private String value;
+
     ItemSortBy(String value) {
         this.value=value;
 

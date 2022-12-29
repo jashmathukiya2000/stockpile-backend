@@ -1,13 +1,22 @@
 package com.example.auth.service;
 
+import com.amazonaws.services.dynamodbv2.xspec.S;
 import com.example.auth.commons.advice.NullAwareBeanUtilsBean;
+import com.example.auth.decorator.ItemResponse;
+import com.example.auth.decorator.pagination.*;
 import com.example.auth.helper.ItemServiceImplTestGenerator;
+import com.example.auth.model.Category;
 import com.example.auth.repository.CategoryRepository;
 import com.example.auth.repository.ItemRepository;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
+import org.mockito.stubbing.OngoingStubbing;
 import org.modelmapper.ModelMapper;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.Optional;
@@ -34,7 +43,7 @@ class ItemServiceImplTest {
         var itemResponse = ItemServiceImplTestGenerator.getMockItemResponse();
         when(itemRepository.findByIdAndSoftDeleteIsFalse(id)).thenReturn(java.util.Optional.ofNullable(item));
         //when
-        var actualData = itemService.addOrUpdateItem(null, itemAddRequest, id);
+        var actualData = itemService.updateItem(id, itemAddRequest);
 
         //then
         Assertions.assertEquals(itemResponse, actualData);
@@ -44,13 +53,15 @@ class ItemServiceImplTest {
     void testAddItem() throws InvocationTargetException, IllegalAccessException {
 
         //given
+        var category=ItemServiceImplTestGenerator.getMockCategory();
         var item = ItemServiceImplTestGenerator.getMockItem();
         var itemAddRequest = ItemServiceImplTestGenerator.getMockItemAddRequest();
         var itemResponse = ItemServiceImplTestGenerator.getMockItemResponse();
         when(itemRepository.findByIdAndSoftDeleteIsFalse(id)).thenReturn(Optional.ofNullable(item));
+     when(categoryRepository.findByIdAndSoftDeleteIsFalse(categoryId)).thenReturn(category);
 
         //when
-        var actualData = itemService.addOrUpdateItem(categoryId, itemAddRequest, id);
+        var actualData = itemService.addItem(categoryId, itemAddRequest);
 
         //then
         Assertions.assertEquals(itemResponse, actualData);
@@ -74,10 +85,11 @@ class ItemServiceImplTest {
 
     @Test
     void testGetAllItem() {
+
         //given
         var item = ItemServiceImplTestGenerator.getMockListItem();
         var itemResponses = ItemServiceImplTestGenerator.getMockListResponse();
-        when(itemRepository.findAllBySoftDeleteFalse()).thenReturn(item);
+        when(itemRepository.findBySoftDeleteFalse()).thenReturn(item);
 
         //when
         var actualData = itemService.getAllItems();
@@ -88,6 +100,7 @@ class ItemServiceImplTest {
 
     @Test
     void testDeleteItem() {
+
         //given
         var item = ItemServiceImplTestGenerator.getMockItem();
         when(itemRepository.findByIdAndSoftDeleteIsFalse(id)).thenReturn(Optional.ofNullable(item));
@@ -97,6 +110,32 @@ class ItemServiceImplTest {
 
         //then
         verify(itemRepository, times(1)).findByIdAndSoftDeleteIsFalse(id);
+
+    }
+
+    @Test
+    void testgetAllItemByPagination(){
+
+        //given
+        ItemFilter itemFilter= new ItemFilter();
+        itemFilter.setId(itemFilter.getId());
+        FilterSortRequest.SortRequest<ItemSortBy> sort=new FilterSortRequest.SortRequest<>();
+        sort.setSortBy(ItemSortBy.ITEM_NAME);
+        sort.setOrderBy(Sort.Direction.ASC);
+        Pagination pagination= new Pagination();
+        pagination.setPage(0);
+        pagination.setLimit(2);
+        PageRequest pageRequest= PageRequest.of(pagination.getPage(),pagination.getLimit());
+        var itemResponses = ItemServiceImplTestGenerator.getMockListResponse();
+         Page<ItemResponse> page= new PageImpl<>(itemResponses);
+        when(itemRepository.getAllItemsByPagination(itemFilter,sort,pageRequest)).thenReturn(page);
+
+
+        //when
+        var actualData=itemService.getAllItemsByPagination(itemFilter,sort,pageRequest);
+
+        //then
+        Assertions.assertEquals(page,actualData);
 
     }
 

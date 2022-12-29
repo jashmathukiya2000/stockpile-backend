@@ -6,12 +6,11 @@ import com.example.auth.commons.enums.Role;
 import com.example.auth.commons.exception.InvalidRequestException;
 import com.example.auth.commons.exception.NotFoundException;
 import com.example.auth.commons.utils.PasswordUtils;
-import com.example.auth.decorator.userModel.LoginAddRequest;
-import com.example.auth.decorator.userModel.UserModelAddRequest;
-import com.example.auth.decorator.userModel.UserModelResponse;
+import com.example.auth.decorator.customer.CustomerAddRequest;
+import com.example.auth.decorator.customer.CustomerSignupAddRequest;
+import com.example.auth.decorator.customer.CustomerSignupResponse;
 import com.example.auth.model.UserModel;
-import com.example.auth.repository.UserModelRepository;
-import com.example.auth.service.UserModelService;
+import com.example.auth.repository.CustomerRepository;
 import com.google.common.annotations.VisibleForTesting;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
@@ -23,15 +22,15 @@ import java.security.NoSuchAlgorithmException;
 
 @Service
 @Slf4j
-public class UserModelServiceImpl implements UserModelService {
-    private final UserModelRepository userModelRepository;
+public class CustomerServiceImpl implements CustomerService {
+    private final CustomerRepository customerRepository;
     private final ModelMapper modelMapper;
 //    private final NullAwareBeanUtilsBean nullAwareBeanUtilsBean;
     private final PasswordUtils passwordUtils;
 
 
-    public UserModelServiceImpl(UserModelRepository userModelRepository, ModelMapper modelMapper, PasswordUtils passwordUtils) {
-        this.userModelRepository = userModelRepository;
+    public CustomerServiceImpl(CustomerRepository customerRepository, ModelMapper modelMapper, PasswordUtils passwordUtils) {
+        this.customerRepository = customerRepository;
         this.modelMapper = modelMapper;
 //        this.nullAwareBeanUtilsBean = nullAwareBeanUtilsBean;
         this.passwordUtils = passwordUtils;
@@ -43,9 +42,9 @@ public class UserModelServiceImpl implements UserModelService {
     }
 
     @Override
-    public UserModelResponse signUpUser(UserModelAddRequest signUpAddRequest, Role role) {
+    public CustomerSignupResponse signUpUser(CustomerSignupAddRequest signUpAddRequest, Role role) {
         UserModel signUpUser1 = modelMapper.map(signUpAddRequest, UserModel.class);
-        UserModelResponse userResponse1 = modelMapper.map(signUpAddRequest, UserModelResponse.class);
+        CustomerSignupResponse userResponse1 = modelMapper.map(signUpAddRequest, CustomerSignupResponse.class);
         if (!signUpAddRequest.getPassword().equals(signUpAddRequest.getConfirmPassword())) {
             throw new InvalidRequestException(MessageConstant.INCORRECT_PASSWORD);
         }
@@ -56,7 +55,7 @@ public class UserModelServiceImpl implements UserModelService {
         }
         signUpUser1.setRole(role);
         userResponse1.setRole(role);
-        userModelRepository.save(signUpUser1);
+        customerRepository.save(signUpUser1);
         return userResponse1;
     }
 
@@ -67,15 +66,15 @@ public class UserModelServiceImpl implements UserModelService {
 
 
     @Override
-    public UserModelResponse login(LoginAddRequest loginAddRequest) throws InvocationTargetException, IllegalAccessException, NoSuchAlgorithmException {
-        UserModel signUpUser = getUserByEmail(loginAddRequest.getEmail());
+    public CustomerSignupResponse login(CustomerAddRequest customerAddRequest) throws InvocationTargetException, IllegalAccessException, NoSuchAlgorithmException {
+        UserModel signUpUser = getUserByEmail(customerAddRequest.getEmail());
         String userPassworod = signUpUser.getPassword();
 
-        UserModelResponse signUpResponse = modelMapper.map(loginAddRequest, UserModelResponse.class);
-        boolean passwords = passwordUtils.isPasswordAuthenticated(loginAddRequest.getPassword(),userPassworod, PasswordEncryptionType.BCRYPT);
+        CustomerSignupResponse signUpResponse = modelMapper.map(customerAddRequest, CustomerSignupResponse.class);
+        boolean passwords = passwordUtils.isPasswordAuthenticated(customerAddRequest.getPassword(),userPassworod, PasswordEncryptionType.BCRYPT);
         if (passwords) {
 //            nullAwareBeanUtilsBean.copyProperties(signUpResponse, signUpUser);
-            modelMapper.map(signUpUser, UserModelResponse.class);
+            modelMapper.map(signUpUser, CustomerSignupResponse.class);
         } else {
             throw new InvalidRequestException(MessageConstant.INCORRECT_PASSWORD);
         }
@@ -84,7 +83,7 @@ public class UserModelServiceImpl implements UserModelService {
 
 
     public UserModel getUserByEmail(String email)  {
-        return userModelRepository.findUserByEmailAndSoftDeleteIsFalse(email).orElseThrow(() -> new NotFoundException(MessageConstant.USER_NOT_FOUND));
+        return customerRepository.findUserByEmailAndSoftDeleteIsFalse(email).orElseThrow(() -> new NotFoundException(MessageConstant.USER_NOT_FOUND));
     }
 
 

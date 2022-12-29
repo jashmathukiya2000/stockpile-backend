@@ -1,9 +1,6 @@
 package com.example.auth.decorator.pagination;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.springframework.data.domain.Sort;
 
 @Data
@@ -16,6 +13,7 @@ public class FilterSortRequest<FILTER, SORT> {
     Pagination pagination;
 
     @Data
+    @ToString
     @AllArgsConstructor
     @NoArgsConstructor
     public static class SortRequest<SORT> {

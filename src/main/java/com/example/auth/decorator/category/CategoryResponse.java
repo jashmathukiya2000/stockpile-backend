@@ -5,6 +5,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import javax.validation.constraints.NotEmpty;
 import java.util.Date;
 
 @Data
@@ -13,8 +14,10 @@ import java.util.Date;
 @Builder
 public class CategoryResponse {
     String id;
-    String name;
-    Date date=new Date();
+
+    String categoryName;
+
+    Date date;
 
 
 }

@@ -28,7 +28,8 @@ class CategoryServiceImplTest {
     private final CategoryRepository categoryRepository = Mockito.mock(CategoryRepository.class);
     private final ModelMapper modelMapper = CategoryServiceImplGenerator.getModelMapper();
     private final NullAwareBeanUtilsBean nullAwareBeanUtilsBean = Mockito.mock(NullAwareBeanUtilsBean.class);
-    public CategoryService categoryService = new CategoryServiceImpl(categoryRepository, modelMapper, nullAwareBeanUtilsBean);
+    private final ItemService itemService = Mockito.mock(ItemService.class);
+    public CategoryService categoryService = new CategoryServiceImpl(categoryRepository, modelMapper, nullAwareBeanUtilsBean, itemService);
 
 
     @Test
@@ -41,7 +42,7 @@ class CategoryServiceImplTest {
         when(categoryRepository.save(category)).thenReturn(category);
 
         //when
-        var actualData = categoryService.addOrUpdateCategory(id, addCategory);
+        var actualData = categoryService.updateCategory(id, addCategory);
 
         //then
         Assertions.assertEquals(categoryresponse, actualData);
@@ -53,11 +54,11 @@ class CategoryServiceImplTest {
         var category = CategoryServiceImplGenerator.MockCategory();
         var addCategory = CategoryServiceImplGenerator.MockAddCategory();
         var categoryresponse = CategoryServiceImplGenerator.MockCategoryResponse();
-        when(categoryRepository.findByIdAndSoftDeleteIsFalse(id)).thenReturn(Optional.of(category));
+        when(categoryRepository.findByIdAndSoftDeleteIsFalse(id)).thenReturn(Optional.ofNullable(category));
         when(categoryRepository.save(category)).thenReturn(category);
 
         //when
-        var actualData = categoryService.addOrUpdateCategory(null, addCategory);
+        var actualData = categoryService.addCategory(addCategory);
 
         //then
         Assertions.assertEquals(categoryresponse, actualData);

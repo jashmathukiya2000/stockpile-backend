@@ -9,6 +9,7 @@ public class ResponseConstant {
     public static final String NOT_FOUND = "id  not found";
     public static final String DELETED_SUCCESSFULLY ="SUCCESSFULLY_DELETED" ;
     public static final String LOGIN_SUCCESSFULL = "login successfully";
+    public static final String MUST_NOT_BE_NULL = "Must not be null";
 //    public static final String DATA_NOT_FOUND ="DATA NOT FOUND" ;
 //    public static final String INVALID_REQUEST_EXCEPTION ="invalid request exception" ;
 }

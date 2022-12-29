@@ -6,6 +6,7 @@ import com.example.auth.model.Category;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.convention.MatchingStrategies;
 
+import java.util.Date;
 import java.util.List;
 
 public class CategoryServiceImplGenerator {
@@ -20,27 +21,25 @@ public class CategoryServiceImplGenerator {
 
     public static Category MockCategory() {
         return Category.builder()
-                .id(id)
-
+                .categoryName("mouse")
                 .build();
     }
 
     public static CategoryAddRequest MockAddCategory() {
         return CategoryAddRequest.builder()
+                .categoryName("mouse")
                 .build();
     }
 
     public static CategoryResponse MockCategoryResponse() {
         return CategoryResponse.builder()
-
+               .categoryName("mouse")
                 .build();
     }
 
     public static List<Category> MockCategories() {
         return List.of(Category.builder()
-                .id(id)
-                .softDelete(false)
-
+                .categoryName("mouse")
                 .build());
 
     }
@@ -48,6 +47,7 @@ public class CategoryServiceImplGenerator {
     public static List<CategoryResponse> getMockResponse() {
         return List.of(CategoryResponse
                 .builder()
+                .categoryName("mouse")
 
                 .build());
     }

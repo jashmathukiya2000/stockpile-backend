@@ -11,7 +11,7 @@ import org.springframework.data.domain.PageRequest;
 import java.util.List;
 
 public interface CategoryService {
-    CategoryResponse addOrUpdateCategory(String id, CategoryAddRequest categoryAddRequest);
+    CategoryResponse addCategory(CategoryAddRequest categoryAddRequest);
 
     CategoryResponse getCategoryById(String id);
 
@@ -21,4 +21,6 @@ public interface CategoryService {
 
 
     Page<CategoryResponse> getAllCategoryByPagination(ItemFilter filter, FilterSortRequest.SortRequest<ItemSortBy> sort, PageRequest pageRequest);
+
+    CategoryResponse updateCategory(String id, CategoryAddRequest categoryAddRequest);
 }

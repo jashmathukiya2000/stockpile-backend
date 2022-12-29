@@ -12,13 +12,16 @@ import com.example.auth.model.Category;
 import com.example.auth.model.Item;
 import com.example.auth.repository.CategoryRepository;
 import com.example.auth.repository.ItemRepository;
+import org.apache.commons.collections.CollectionUtils;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
 import java.lang.reflect.InvocationTargetException;
+import java.text.DecimalFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 @Service
@@ -37,27 +40,32 @@ public class ItemServiceImpl implements ItemService {
     }
 
     @Override
-    public ItemResponse addOrUpdateItem(String categoryId,ItemAddRequest itemAddRequest, String id) throws InvocationTargetException, IllegalAccessException {
-            if (id!=null) {
-                Item item=getById(id);
-                item.setItemName(itemAddRequest.getItemName());
-                item.setPrice(itemAddRequest.getPrice());
-                item.setQuantity(itemAddRequest.getQuantity());
-                ItemResponse itemResponse = modelMapper.map(itemAddRequest, ItemResponse.class);
-                itemRepository.save(item);
-                return itemResponse;
-            } else {
+    public ItemResponse addItem(String categoryId, ItemAddRequest itemAddRequest) throws InvocationTargetException, IllegalAccessException {
 
-                Item item =modelMapper.map(itemAddRequest, Item.class);
-             Category category=getCategoryModel(categoryId);
-                item.setCategoryId(category.getId());
-                ItemResponse itemResponse = modelMapper.map(item, ItemResponse.class);
-                itemRepository.save(item);
-                return itemResponse;
-            }
-        }
+        Item item = modelMapper.map(itemAddRequest, Item.class);
+        Category category = getCategoryModel(categoryId);
+        item.setCategoryId(category.getId());
+        item.setPrice(Double.parseDouble(new DecimalFormat("##.##").format(itemAddRequest.getPrice())));
+        item.setTotalPrice(item.getPrice() * item.getQuantity());
+        item.setDate(new Date());
+        ItemResponse itemResponse = modelMapper.map(item, ItemResponse.class);
+        checkValidation(itemAddRequest);
+        itemRepository.save(item);
+        return itemResponse;
+    }
 
-
+    @Override
+    public ItemResponse updateItem(String id, ItemAddRequest itemAddRequest) {
+        Item item = getById(id);
+        item.setItemName(itemAddRequest.getItemName());
+        item.setPrice(Double.parseDouble(new DecimalFormat("##.##").format(itemAddRequest.getPrice())));
+        item.setQuantity(itemAddRequest.getQuantity());
+        item.setTotalPrice(item.getPrice() * item.getQuantity());
+        ItemResponse itemResponse = modelMapper.map(itemAddRequest, ItemResponse.class);
+        checkValidation(itemAddRequest);
+        itemRepository.save(item);
+        return itemResponse;
+    }
 
     @Override
     public ItemResponse getItemById(String id) {
@@ -67,38 +75,75 @@ public class ItemServiceImpl implements ItemService {
     }
 
 
-
     @Override
     public List<ItemResponse> getAllItems() {
-        List<Item> items = itemRepository.findAllBySoftDeleteFalse();
-        List<ItemResponse> itemResponses= new ArrayList<>();
-      items.forEach(item -> {
-          ItemResponse itemResponse=modelMapper.map(item,ItemResponse.class);
-          itemResponses.add(itemResponse);
-      });
+        List<Item> items = itemRepository.findBySoftDeleteFalse();
+        List<ItemResponse> itemResponses = new ArrayList<>();
+        items.forEach(item -> {
+            ItemResponse itemResponse = modelMapper.map(item, ItemResponse.class);
+            itemResponses.add(itemResponse);
+        });
 
         return itemResponses;
     }
 
     @Override
     public void deleteItemById(String id) {
-       Item item=getById(id);
-       item.setSoftDelete(true);
-       itemRepository.save(item);
-       ;
+        Item item = getById(id);
+        item.setSoftDelete(true);
+        itemRepository.save(item);
+
+    }
+
+    public void checkValidation(ItemAddRequest itemAddRequest) {
+        if (itemAddRequest.getPrice()<0) {
+            throw new NotFoundException(MessageConstant.PRICE_MUST_NOT_BE_NULL);
+        }
+
+        if (itemAddRequest.getQuantity()<0) {
+            throw new NotFoundException(MessageConstant.MUST_NOT_BE_NULL);
+        }
+
+        if (itemAddRequest.getItemName().isEmpty()) {
+            throw new NotFoundException(MessageConstant.NAME_MUST_NOT_BE_NULL);
+
+        }
+        if (itemRepository.existsByItemNameAndSoftDeleteIsFalse(itemAddRequest.getItemName())) {
+            throw new NotFoundException(MessageConstant.ALREADY_EXIST);
+        }
+        if (!itemAddRequest.getItemName().matches("^[A-Za-z]+(([,.] |[ '-])[A-Za-z]+)*([.,'-]?)$")){
+            throw new NotFoundException(MessageConstant.INVALID);
+        }
+
     }
 
     @Override
     public Page<ItemResponse> getAllItemsByPagination(ItemFilter filter, FilterSortRequest.SortRequest<ItemSortBy> sort, PageRequest pageRequest) {
-        return itemRepository.getAllItemsByPagination(filter,sort,pageRequest);
+        return itemRepository.getAllItemsByPagination(filter, sort, pageRequest);
     }
 
-    public Category getCategoryModel(String categoryId){
-        return categoryRepository.findByIdAndSoftDeleteIsFalse(categoryId).orElseThrow(()-> new NotFoundException(MessageConstant.ID_NOT_FOUND));
+
+    public Category getCategoryModel(String categoryId) {
+        return categoryRepository.findByIdAndSoftDeleteIsFalse(categoryId).orElseThrow(() -> new NotFoundException(MessageConstant.ID_NOT_FOUND));
     }
 
-    public Item getById(String id) {
+    private Item getById(String id) {
         return itemRepository.findByIdAndSoftDeleteIsFalse(id).orElseThrow(() -> new NotFoundException(MessageConstant.ID_NOT_FOUND));
 
     }
+    @Override
+    public void removeItems(String id) {
+        List<Item> items = itemRepository.findByCategoryIdAndSoftDeleteFalse(id);
+        if (!CollectionUtils.isEmpty(items)) {
+            items.forEach(item -> {
+                item.setSoftDelete(true);
+            });
+            itemRepository.saveAll(items);
+        }
+
+    }
+
+
 }
+
+

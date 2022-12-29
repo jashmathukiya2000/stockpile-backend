@@ -6,6 +6,6 @@ import org.springframework.data.mongodb.repository.MongoRepository;
 
 import java.util.Optional;
 
-public interface UserModelRepository extends MongoRepository<UserModel,String> {
+public interface CustomerRepository extends MongoRepository<UserModel,String> {
     Optional<UserModel> findUserByEmailAndSoftDeleteIsFalse(String email);
 }

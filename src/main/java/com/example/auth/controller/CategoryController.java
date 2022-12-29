@@ -19,11 +19,18 @@ public class CategoryController {
         this.categoryService = categoryService;
     }
 
-    @RequestMapping(name = "addOrUpdateCategory", value = "/addOrUpdate", method = RequestMethod.POST)
-    public DataResponse<CategoryResponse> addOrUpdateCategory(@RequestParam(required = false) String id, @RequestBody CategoryAddRequest categoryAddRequest) {
+    @RequestMapping(name = "addCategory", value = "/add", method = RequestMethod.POST)
+    public DataResponse<CategoryResponse> addCategory( @RequestBody CategoryAddRequest categoryAddRequest) {
         DataResponse<CategoryResponse> dataResponse = new DataResponse<>();
-        dataResponse.setData(categoryService.addOrUpdateCategory(id, categoryAddRequest));
+        dataResponse.setData(categoryService.addCategory( categoryAddRequest));
         dataResponse.setStatus(Response.getOkResponse(ResponseConstant.SAVED_SUCCESSFULLY));
+        return dataResponse;
+    }
+ @RequestMapping(name = "updateCategory", value = "/update", method = RequestMethod.POST)
+    public DataResponse<CategoryResponse> updateCategory(@RequestParam String id, @RequestBody CategoryAddRequest categoryAddRequest) {
+        DataResponse<CategoryResponse> dataResponse = new DataResponse<>();
+        dataResponse.setData(categoryService.updateCategory(id, categoryAddRequest));
+        dataResponse.setStatus(Response.getOkResponse(ResponseConstant.UPDATED_SUCCESSFULLY));
         return dataResponse;
     }
 
@@ -54,17 +61,17 @@ public class CategoryController {
         return dataResponse;
     }
 
-    @RequestMapping(name = "getAllItemsByPagination", value = "get/all/pagination",method = RequestMethod.POST)
-    public PageResponse<CategoryResponse> getAllCategoryByPagination(@RequestBody FilterSortRequest<ItemFilter, ItemSortBy> filterSortRequest){
-        PageResponse<CategoryResponse> pageResponse=new PageResponse<>();
-        ItemFilter filter= filterSortRequest.getFilter();
-        FilterSortRequest.SortRequest<ItemSortBy> sort=filterSortRequest.getSort();
-        Pagination pagination= filterSortRequest.getPagination();
-        PageRequest pageRequest=PageRequest.of(pagination.getPage(), pagination.getLimit());
-        Page<CategoryResponse> categoryrResponses=categoryService.getAllCategoryByPagination(filter,sort,pageRequest);
-        pageResponse.setData(categoryrResponses);
-        pageResponse.setStatus(Response.getOkResponse());
-        return pageResponse;
-    }
+//    @RequestMapping(categoryName = "getAllItemsByPagination", value = "get/all/pagination",method = RequestMethod.POST)
+//    public PageResponse<CategoryResponse> getAllCategoryByPagination(@RequestBody FilterSortRequest<ItemFilter, ItemSortBy> filterSortRequest){
+//        PageResponse<CategoryResponse> pageResponse=new PageResponse<>();
+//        ItemFilter filter= filterSortRequest.getFilter();
+//        FilterSortRequest.SortRequest<ItemSortBy> sort=filterSortRequest.getSort();
+//        Pagination pagination= filterSortRequest.getPagination();
+//        PageRequest pageRequest=PageRequest.of(pagination.getPage(), pagination.getLimit());
+//        Page<CategoryResponse> categoryrResponses=categoryService.getAllCategoryByPagination(filter,sort,pageRequest);
+//        pageResponse.setData(categoryrResponses);
+//        pageResponse.setStatus(Response.getOkResponse());
+//        return pageResponse;
+//    }
 
 }

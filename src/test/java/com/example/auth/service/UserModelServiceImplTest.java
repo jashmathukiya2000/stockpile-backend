@@ -3,7 +3,7 @@ package com.example.auth.service;
 import com.example.auth.commons.enums.Role;
 import com.example.auth.commons.utils.PasswordUtils;
 import com.example.auth.helper.UserModelServiceTestGenerator;
-import com.example.auth.repository.UserModelRepository;
+import com.example.auth.repository.CustomerRepository;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.modelmapper.ModelMapper;
@@ -16,12 +16,12 @@ import static org.mockito.Mockito.*;
 
 public class UserModelServiceImplTest {
     private static final String email = "sans@1234gmail.com";
-    private final UserModelRepository userModelRepository = mock(UserModelRepository.class);
+    private final CustomerRepository customerRepository = mock(CustomerRepository.class);
     private final ModelMapper modelMapper = UserModelServiceTestGenerator.getModelMapper();
 //    private final NullAwareBeanUtilsBean nullAwareBeanUtilsBean = mock(NullAwareBeanUtilsBean.class);
     private final PasswordUtils passwordUtils = mock(PasswordUtils.class);
 
-    public UserModelServiceImpl userModelService = spy(new UserModelServiceImpl(userModelRepository, modelMapper, passwordUtils));
+    public CustomerServiceImpl userModelService = spy(new CustomerServiceImpl(customerRepository, modelMapper, passwordUtils));
 
     @Test
     void TestSignupUser() {
@@ -31,7 +31,7 @@ public class UserModelServiceImplTest {
         var signUpAddRequest = UserModelServiceTestGenerator.getMockUserAddRequest();
         var signUpresponse = UserModelServiceTestGenerator.getMockSignUpResponse(password);
         when(PasswordUtils.encryptPassword("password")).thenReturn(password);
-        when(userModelRepository.save(userModel)).thenReturn(userModel);
+        when(customerRepository.save(userModel)).thenReturn(userModel);
 
         //when
         var actualData = userModelService.signUpUser(signUpAddRequest, Role.USER);
@@ -50,7 +50,7 @@ public class UserModelServiceImplTest {
         var loginAddRequst = UserModelServiceTestGenerator.getMockLoginRequest();
         var signUpResponse = UserModelServiceTestGenerator.getMockLoginResponse();
 
-        when(userModelRepository.findUserByEmailAndSoftDeleteIsFalse(email)).thenReturn(Optional.of(userModel));
+        when(customerRepository.findUserByEmailAndSoftDeleteIsFalse(email)).thenReturn(Optional.of(userModel));
 
         //when
         var actualData = userModelService.login(loginAddRequst);

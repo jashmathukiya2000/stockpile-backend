@@ -1,4 +1,4 @@
-package com.example.auth.decorator.userModel;
+package com.example.auth.decorator.customer;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -9,7 +9,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class LoginAddRequest {
+public class CustomerAddRequest {
     String email;
     String password;
 

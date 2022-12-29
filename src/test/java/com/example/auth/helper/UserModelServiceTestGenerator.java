@@ -1,9 +1,9 @@
 package com.example.auth.helper;
 
 import com.example.auth.commons.enums.Role;
-import com.example.auth.decorator.userModel.LoginAddRequest;
-import com.example.auth.decorator.userModel.UserModelAddRequest;
-import com.example.auth.decorator.userModel.UserModelResponse;
+import com.example.auth.decorator.customer.CustomerAddRequest;
+import com.example.auth.decorator.customer.CustomerSignupAddRequest;
+import com.example.auth.decorator.customer.CustomerSignupResponse;
 import com.example.auth.model.UserModel;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.convention.MatchingStrategies;
@@ -29,8 +29,8 @@ public class UserModelServiceTestGenerator {
                 .build();
     }
 
-    public static UserModelAddRequest getMockUserAddRequest() {
-        return UserModelAddRequest.builder()
+    public static CustomerSignupAddRequest getMockUserAddRequest() {
+        return CustomerSignupAddRequest.builder()
                 .email(email)
                 .password("password")
                 .confirmPassword("password")
@@ -39,8 +39,8 @@ public class UserModelServiceTestGenerator {
 
     }
 
-    public static UserModelResponse getMockSignUpResponse(String password) {
-        return UserModelResponse.builder()
+    public static CustomerSignupResponse getMockSignUpResponse(String password) {
+        return CustomerSignupResponse.builder()
                 .email(email)
                 .password(password)
                 .name("sans")
@@ -48,15 +48,15 @@ public class UserModelServiceTestGenerator {
                 .build();
     }
 
-    public static LoginAddRequest getMockLoginRequest() {
-        return LoginAddRequest.builder()
+    public static CustomerAddRequest getMockLoginRequest() {
+        return CustomerAddRequest.builder()
                 .email(email)
                 .password("password")
                 .build();
     }
 
-    public static UserModelResponse getMockLoginResponse() {
-        return UserModelResponse.builder()
+    public static CustomerSignupResponse getMockLoginResponse() {
+        return CustomerSignupResponse.builder()
                 .password("password")
                 .email(email)
                 .build();

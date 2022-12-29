@@ -7,12 +7,13 @@ import com.example.auth.decorator.pagination.ItemFilter;
 import com.example.auth.decorator.pagination.ItemSortBy;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.web.bind.annotation.RequestBody;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.List;
 
 public interface ItemService {
-    ItemResponse addOrUpdateItem(String categoryId, ItemAddRequest itemAddRequest, String id) throws InvocationTargetException, IllegalAccessException;
+    ItemResponse addItem(String categoryId, ItemAddRequest itemAddRequest) throws InvocationTargetException, IllegalAccessException;
 
     ItemResponse getItemById(String id);
 
@@ -21,4 +22,9 @@ public interface ItemService {
     void deleteItemById(String id);
 
     Page<ItemResponse> getAllItemsByPagination(ItemFilter filter, FilterSortRequest.SortRequest<ItemSortBy> sort, PageRequest pageRequest);
+
+    void removeItems(String id);
+
+
+    ItemResponse updateItem(String id, ItemAddRequest itemAddRequest);
 }

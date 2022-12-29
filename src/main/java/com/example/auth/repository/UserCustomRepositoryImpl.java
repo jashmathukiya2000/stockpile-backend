@@ -155,10 +155,10 @@ public class UserCustomRepositoryImpl implements UserCustomRepository {
     Criteria getCriteria(UserFilterData userFilter, List<AggregationOperation> operations) {
         Criteria criteria = new Criteria();
         operations.add(new CustomAggregationOperation(new Document("$addFields", new Document("search",
-                new Document("$concat", Arrays.asList(new Document("$ifNull", Arrays.asList("$firstName", " ")),
-                        "|@|", new Document("$ifNull", Arrays.asList("$lastName", " ")),
-                        "|@|", new Document("$ifNull", Arrays.asList("$address.zip", " ")),
-                        "|@|", new Document("$ifNull", Arrays.asList("$occupation", " "))
+                new Document("$concat", Arrays.asList(new Document("$ifNull", Arrays.asList("$firstName", "")),
+                        "|@|", new Document("$ifNull", Arrays.asList("$lastName", "")),
+                        "|@|", new Document("$ifNull", Arrays.asList("$address.zip", "")),
+                        "|@|", new Document("$ifNull", Arrays.asList("$occupation", ""))
                 ))))));
         if (!StringUtils.isEmpty(userFilter.getSearch())) {
             userFilter.setSearch(userFilter.getSearch().replaceAll("\\|@\\|", ""));
@@ -167,10 +167,8 @@ public class UserCustomRepositoryImpl implements UserCustomRepository {
                     Criteria.where("search").regex(".*" + userFilter.getSearch() + ".*", "i")
             );
         }
-        if (CollectionUtils.isEmpty(Collections.singleton(userFilter.getId()))) {
             criteria = criteria.and("_id").in(userFilter.getId());
-        }
-            criteria = criteria.and("softDelete").is(false);
+              criteria = criteria.and("softDelete").is(false);
         return criteria;
     }
 
@@ -186,6 +184,7 @@ public class UserCustomRepositoryImpl implements UserCustomRepository {
             if (pagination != null) {
                 operations.add(skip(pagination.getOffset()));
                 operations.add(limit(pagination.getPageSize()));
+
             }
         }
         return operations;
