@@ -21,25 +21,25 @@ public class CategoryServiceImplGenerator {
 
     public static Category MockCategory() {
         return Category.builder()
-                .categoryName("mouse")
+                .categoryName("computer")
                 .build();
     }
 
     public static CategoryAddRequest MockAddCategory() {
         return CategoryAddRequest.builder()
-                .categoryName("mouse")
+                .categoryName("computer")
                 .build();
     }
 
     public static CategoryResponse MockCategoryResponse() {
         return CategoryResponse.builder()
-               .categoryName("mouse")
+               .categoryName("computer")
                 .build();
     }
 
     public static List<Category> MockCategories() {
         return List.of(Category.builder()
-                .categoryName("mouse")
+                .categoryName("computer")
                 .build());
 
     }
@@ -47,7 +47,7 @@ public class CategoryServiceImplGenerator {
     public static List<CategoryResponse> getMockResponse() {
         return List.of(CategoryResponse
                 .builder()
-                .categoryName("mouse")
+                .categoryName("computer")
 
                 .build());
     }

@@ -2,11 +2,10 @@ package com.example.auth.repository;
 
 import com.example.auth.decorator.CustomAggregationOperation;
 import com.example.auth.decorator.category.CategoryResponse;
-import com.example.auth.decorator.pagination.ItemFilter;
-import com.example.auth.decorator.pagination.ItemSortBy;
+import com.example.auth.decorator.pagination.CategoryFilter;
+import com.example.auth.decorator.pagination.CategorySortBy;
 import com.example.auth.decorator.pagination.CountQueryResult;
 import com.example.auth.decorator.pagination.FilterSortRequest;
-import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.bson.Document;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,45 +13,47 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.core.MongoTemplate;
-import org.springframework.data.mongodb.core.aggregation.*;
+import org.springframework.data.mongodb.core.aggregation.Aggregation;
+import org.springframework.data.mongodb.core.aggregation.AggregationOperation;
+import org.springframework.data.mongodb.core.aggregation.AggregationResults;
+import org.springframework.data.mongodb.core.aggregation.SortOperation;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.support.PageableExecutionUtils;
 import org.springframework.stereotype.Repository;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 
 import static org.springframework.data.mongodb.core.aggregation.Aggregation.*;
 
 @Repository
 public class CategoryCustomRepositoryImpl implements CategoryCustomRepository {
+
     @Autowired
     MongoTemplate mongoTemplate;
 
     @Override
-    public Page<CategoryResponse> getAllCategoryByPagination(ItemFilter filter, FilterSortRequest.SortRequest<ItemSortBy> sort, PageRequest pageRequest) {
-        List<AggregationOperation> operations= categoryAggregationFilter(filter,sort,pageRequest,true);
+    public Page<CategoryResponse> getAllCategoryByPagination(CategoryFilter filter, FilterSortRequest.SortRequest<CategorySortBy> sort, PageRequest pageRequest) {
+        List<AggregationOperation> operations = categoryAggregationFilter(filter, sort, pageRequest, true);
 
         Aggregation aggregation = newAggregation(operations);
-List<CategoryResponse> category= mongoTemplate.aggregate(aggregation,"category",CategoryResponse.class).getMappedResults();
+        List<CategoryResponse> category = mongoTemplate.aggregate(aggregation, "category", CategoryResponse.class).getMappedResults();
 //FindCount
-        List<AggregationOperation> operationsForCount=categoryAggregationFilter(filter,sort,pageRequest,false);
+        List<AggregationOperation> operationsForCount = categoryAggregationFilter(filter, sort, pageRequest, false);
         operationsForCount.add(group().count().as("count"));
         operationsForCount.add(project("count"));
-        Aggregation aggregationForCount= newAggregation(CategoryRepository.class,operationsForCount);
-        AggregationResults<CountQueryResult> countQueryResults = mongoTemplate.aggregate(aggregationForCount, "auth", CountQueryResult.class);
+        Aggregation aggregationForCount = newAggregation(CategoryResponse.class, operationsForCount);
+        AggregationResults<CountQueryResult> countQueryResults = mongoTemplate.aggregate(aggregationForCount, "category", CountQueryResult.class);
         long count = countQueryResults.getMappedResults().size() == 0 ? 0 : countQueryResults.getMappedResults().get(0).getCount();
         return PageableExecutionUtils.getPage(
                 category,
-              pageRequest,
+                pageRequest,
                 () -> count);
     }
 
 
-
-    private List<AggregationOperation> categoryAggregationFilter(ItemFilter filter, FilterSortRequest.SortRequest<ItemSortBy> sort, PageRequest pageRequest, boolean addPage) {
+    private List<AggregationOperation> categoryAggregationFilter(CategoryFilter filter, FilterSortRequest.SortRequest<CategorySortBy> sort, PageRequest pageRequest, boolean addPage) {
         List<AggregationOperation> operations = new ArrayList<>();
 
         operations.add(match(getCriteria(filter, operations)));
@@ -69,13 +70,10 @@ List<CategoryResponse> category= mongoTemplate.aggregate(aggregation,"category",
         return operations;
     }
 
-    private Criteria getCriteria(ItemFilter filter, List<AggregationOperation> operations) {
+    private Criteria getCriteria(CategoryFilter filter, List<AggregationOperation> operations) {
         Criteria criteria = new Criteria();
         operations.add(new CustomAggregationOperation(new Document("$addFields", new Document("search",
-                new Document("$concat", Arrays.asList(new Document("$ifNull", Arrays.asList("$firstName", " ")),
-                        "|@|", new Document("$ifNull", Arrays.asList("$lastName", " ")),
-                        "|@|", new Document("$ifNull", Arrays.asList("$address.zip", " ")),
-                        "|@|", new Document("$ifNull", Arrays.asList("$occupation", " "))
+                new Document("$concat", Arrays.asList(new Document("$ifNull", Arrays.asList("$categoryName", " "))
                 ))))));
         if (!StringUtils.isEmpty(filter.getSearch())) {
             filter.setSearch(filter.getSearch().replaceAll("\\|@\\|", ""));
@@ -84,9 +82,9 @@ List<CategoryResponse> category= mongoTemplate.aggregate(aggregation,"category",
                     Criteria.where("search").regex(".*" + filter.getSearch() + ".*", "i")
             );
         }
-        if (CollectionUtils.isEmpty(Collections.singleton(filter.getId()))) {
-            criteria = criteria.and("_id").in(filter.getId());
-        }
+
+
+        criteria = criteria.and("id").in(filter.getId());
         criteria = criteria.and("softDelete").is(false);
         return criteria;
     }

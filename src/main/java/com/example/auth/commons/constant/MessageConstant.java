@@ -22,4 +22,8 @@ public class MessageConstant {
     public static final String ITEM_ALREADY_EXIST ="Item categoryName already exist try new one" ;
     public static final String INVALID = "Invalid";
     public static final String INVALID_PRICE ="Invalid price" ;
+    public static final String INVALID_EMAIL ="Invalid Email" ;
+    public static final String INVALID_PHONE_NUMBER ="Invalid phone number" ;
+    public static final String USERNAME_MUST_NOT_BE_NULL ="UserName must not be null" ;
+    public static final String EMAIL_ALREADY_EXIST = "Email already exist try new one";
 }

@@ -6,9 +6,7 @@ import com.example.auth.commons.exception.InvalidRequestException;
 import com.example.auth.commons.exception.NotFoundException;
 import com.example.auth.decorator.category.CategoryAddRequest;
 import com.example.auth.decorator.category.CategoryResponse;
-import com.example.auth.decorator.pagination.FilterSortRequest;
-import com.example.auth.decorator.pagination.ItemFilter;
-import com.example.auth.decorator.pagination.ItemSortBy;
+import com.example.auth.decorator.pagination.*;
 import com.example.auth.model.Category;
 import com.example.auth.repository.CategoryRepository;
 import lombok.extern.slf4j.Slf4j;
@@ -93,7 +91,7 @@ public class CategoryServiceImpl implements CategoryService {
     }
 
     @Override
-    public Page<CategoryResponse> getAllCategoryByPagination(ItemFilter filter, FilterSortRequest.SortRequest<ItemSortBy> sort, PageRequest pageRequest) {
+    public Page<CategoryResponse> getAllCategoryByPagination(CategoryFilter filter, FilterSortRequest.SortRequest<CategorySortBy> sort, PageRequest pageRequest) {
         return categoryRepository.getAllCategoryByPagination(filter, sort, pageRequest);
     }
 

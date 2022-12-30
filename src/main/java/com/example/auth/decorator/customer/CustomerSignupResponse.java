@@ -7,18 +7,21 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.Date;
+
 
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
 public class CustomerSignupResponse {
-    String name;
-    String email;
-    String contact;
-    String userName;
-    String password;
     Role role;
+    String name;
+    String userName;
+    String contact;
+    String email;
+    String password;
+    Date date;
     @JsonIgnore
     boolean login = false;
 

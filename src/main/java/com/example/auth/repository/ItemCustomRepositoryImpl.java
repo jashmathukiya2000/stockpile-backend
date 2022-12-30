@@ -40,7 +40,7 @@ public class ItemCustomRepositoryImpl implements ItemCustomRepository{
             List<AggregationOperation> operations= itemAggregationFilter(filter,sort,pageRequest,true);
             Aggregation aggregation = newAggregation(operations);
             List<ItemResponse> category= mongoTemplate.aggregate(aggregation,"items",ItemResponse.class).getMappedResults();
-               //FindCount
+            //FindCount
             List<AggregationOperation> operationsForCount= itemAggregationFilter(filter,sort,pageRequest,false);
             operationsForCount.add(group().count().as("count"));
             operationsForCount.add(project("count"));
@@ -57,7 +57,6 @@ public class ItemCustomRepositoryImpl implements ItemCustomRepository{
 
         private List<AggregationOperation> itemAggregationFilter(ItemFilter filter, FilterSortRequest.SortRequest<ItemSortBy> sort, PageRequest pageRequest, boolean addPage) {
             List<AggregationOperation> operations = new ArrayList<>();
-
             operations.add(match(getCriteria(filter, operations)));
             if (addPage) {
                 //sorting
@@ -74,21 +73,26 @@ public class ItemCustomRepositoryImpl implements ItemCustomRepository{
 
         private Criteria getCriteria(ItemFilter filter, List<AggregationOperation> operations) {
             Criteria criteria = new Criteria();
-            operations.add(new CustomAggregationOperation(new Document("$addFields", new Document("search",
-                    new Document("$concat", Arrays.asList(new Document("$ifNull", Arrays.asList("$itemName", " "))
-                    ))))));
+            operations.add(new CustomAggregationOperation(
+                    new Document("$addFields",
+                            new Document("search",
+                                    new Document("$concat", Arrays.asList(
+                                            new Document("$ifNull", Arrays.asList("$itemName", ""))
+                                    )
+                            )
+                    ))
+            ));
             if (!StringUtils.isEmpty(filter.getSearch())) {
-                filter.setSearch(filter.getSearch().replaceAll("\\|@\\|", " "));
-                filter.setSearch(filter.getSearch().replaceAll("\\|@@\\|", " "));
+                filter.setSearch(filter.getSearch().replaceAll("\\|@\\|", ""));
+                filter.setSearch(filter.getSearch().replaceAll("\\|@@\\|", ""));
                 criteria = criteria.orOperator(
                         Criteria.where("search").regex(".*" + filter.getSearch() + ".*", "i")
                 );
             }
-            if (!CollectionUtils.isEmpty(Collections.singleton(filter.getId()))) {
-                criteria = criteria.and("_id").in(filter.getId());
-            }
-            criteria = criteria.and("softDelete").is(false);
-            return criteria;
+
+             criteria = criteria.and("id").in(filter.getId());
+             criteria = criteria.and("softDelete").is(false);
+             return criteria;
         }
     }
 

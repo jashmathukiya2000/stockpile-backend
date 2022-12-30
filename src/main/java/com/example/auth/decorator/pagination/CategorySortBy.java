@@ -8,17 +8,11 @@ import java.util.HashMap;
 import java.util.Map;
 @Getter
 @NoArgsConstructor
-public enum ItemSortBy {
-    ITEM_NAME("itemName"),
-      QUANTITY("quantity"),
-
-         PRICE("price");
-    @JsonIgnore
-      private String value;
-
-    ItemSortBy(String value) {
+public enum CategorySortBy {
+    CATEGORY_NAME("categoryName");
+private String value;
+    CategorySortBy(String value) {
         this.value=value;
-
     }
     Map<String, String> toMap() {
         Map<String, String> map = new HashMap<>();

@@ -8,4 +8,5 @@ import java.util.Optional;
 
 public interface CustomerRepository extends MongoRepository<UserModel,String> {
     Optional<UserModel> findUserByEmailAndSoftDeleteIsFalse(String email);
+      boolean existsByEmailAndSoftDeleteIsFalse(String email);
 }

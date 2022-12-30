@@ -61,17 +61,17 @@ public class CategoryController {
         return dataResponse;
     }
 
-//    @RequestMapping(categoryName = "getAllItemsByPagination", value = "get/all/pagination",method = RequestMethod.POST)
-//    public PageResponse<CategoryResponse> getAllCategoryByPagination(@RequestBody FilterSortRequest<ItemFilter, ItemSortBy> filterSortRequest){
-//        PageResponse<CategoryResponse> pageResponse=new PageResponse<>();
-//        ItemFilter filter= filterSortRequest.getFilter();
-//        FilterSortRequest.SortRequest<ItemSortBy> sort=filterSortRequest.getSort();
-//        Pagination pagination= filterSortRequest.getPagination();
-//        PageRequest pageRequest=PageRequest.of(pagination.getPage(), pagination.getLimit());
-//        Page<CategoryResponse> categoryrResponses=categoryService.getAllCategoryByPagination(filter,sort,pageRequest);
-//        pageResponse.setData(categoryrResponses);
-//        pageResponse.setStatus(Response.getOkResponse());
-//        return pageResponse;
-//    }
+    @RequestMapping(name = "getAllCategoryByPagination", value = "get/all/pagination",method = RequestMethod.POST)
+    public PageResponse<CategoryResponse> getAllCategoryByPagination(@RequestBody FilterSortRequest<CategoryFilter, CategorySortBy> filterSortRequest){
+        PageResponse<CategoryResponse> pageResponse=new PageResponse<>();
+        CategoryFilter filter= filterSortRequest.getFilter();
+        FilterSortRequest.SortRequest<CategorySortBy> sort=filterSortRequest.getSort();
+        Pagination pagination= filterSortRequest.getPagination();
+        PageRequest pageRequest=PageRequest.of(pagination.getPage(), pagination.getLimit());
+        Page<CategoryResponse> categoryrResponses=categoryService.getAllCategoryByPagination(filter,sort,pageRequest);
+        pageResponse.setData(categoryrResponses);
+        pageResponse.setStatus(Response.getOkResponse());
+        return pageResponse;
+    }
 
 }

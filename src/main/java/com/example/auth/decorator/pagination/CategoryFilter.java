@@ -5,23 +5,21 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class UserFilterData {
-    String search;
-    String id;
+public class CategoryFilter {
+        String search;
+        String id;
+        @JsonIgnore
+        boolean softDelete =false;
 
-    @JsonIgnore
-    boolean softDelete =false;
-
-    public String getSearch() {
-        if (search != null) {
-            return search.trim();
+        public String getSearch(){
+            if (search!=null){
+                return search.trim();
+            }
+            return search;
         }
-        return search;
     }
 
-}

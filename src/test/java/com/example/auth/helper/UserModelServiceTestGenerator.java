@@ -1,7 +1,7 @@
 package com.example.auth.helper;
 
 import com.example.auth.commons.enums.Role;
-import com.example.auth.decorator.customer.CustomerAddRequest;
+import com.example.auth.decorator.customer.CustomerLoginAddRequest;
 import com.example.auth.decorator.customer.CustomerSignupAddRequest;
 import com.example.auth.decorator.customer.CustomerSignupResponse;
 import com.example.auth.model.UserModel;
@@ -48,8 +48,8 @@ public class UserModelServiceTestGenerator {
                 .build();
     }
 
-    public static CustomerAddRequest getMockLoginRequest() {
-        return CustomerAddRequest.builder()
+    public static CustomerLoginAddRequest getMockLoginRequest() {
+        return CustomerLoginAddRequest.builder()
                 .email(email)
                 .password("password")
                 .build();
