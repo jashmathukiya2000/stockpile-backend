@@ -4,7 +4,7 @@ import com.example.auth.commons.enums.Role;
 import com.example.auth.decorator.customer.CustomerLoginAddRequest;
 import com.example.auth.decorator.customer.CustomerSignupAddRequest;
 import com.example.auth.decorator.customer.CustomerSignupResponse;
-import com.example.auth.model.UserModel;
+import com.example.auth.model.Customer;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.convention.MatchingStrategies;
 
@@ -18,8 +18,8 @@ public class UserModelServiceTestGenerator {
         return modelMapper;
     }
 
-    public static UserModel getMockuserModel(String passwords) {
-        return UserModel.builder()
+    public static Customer getMockuserModel(String passwords) {
+        return Customer.builder()
                 .name("sans")
                 .email(email)
                 .password(passwords)

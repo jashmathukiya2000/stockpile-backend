@@ -14,7 +14,7 @@ import java.util.Optional;
 
 import static org.mockito.Mockito.*;
 
-public class UserModelServiceImplTest {
+public class CustomerServiceImplTest {
     private static final String email = "sans@1234gmail.com";
     private final CustomerRepository customerRepository = mock(CustomerRepository.class);
     private final ModelMapper modelMapper = UserModelServiceTestGenerator.getModelMapper();

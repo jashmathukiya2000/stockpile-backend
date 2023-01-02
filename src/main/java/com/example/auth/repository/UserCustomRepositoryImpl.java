@@ -58,8 +58,8 @@ public class UserCustomRepositoryImpl implements UserCustomRepository {
         operations.add(new CustomAggregationOperation(new Document("$group",
                 new Document("id", "$salary")
                         .append("auth", new Document("$push", new Document("name", "$categoryName")
-                                .append("occupation", "$occupation")
-                                .append("age", "$age")))
+                        .append("occupation", "$occupation")
+                        .append("age", "$age")))
                         .append("count", new Document("$sum", 1))
                         .append("name", new Document("$first", "$categoryName"))
                         .append("occupation", new Document("$last", "$occupation")))));
@@ -159,7 +159,6 @@ public class UserCustomRepositoryImpl implements UserCustomRepository {
                         "|@|", new Document("$ifNull", Arrays.asList("$address.zip", "")),
                         "|@|", new Document("$ifNull", Arrays.asList("$occupation", ""))
 
-
                 ))))));
 
         if (!StringUtils.isEmpty(userFilter.getSearch())) {
@@ -202,12 +201,13 @@ public class UserCustomRepositoryImpl implements UserCustomRepository {
 
     public List<AggregationOperation> getByMaxSpi(String id) {
         List<AggregationOperation> operations = new ArrayList<>();
-        operations.add(new CustomAggregationOperation(new Document("$match", new Document("id", id).append("softDelete", false))));
+        operations.add(new CustomAggregationOperation(new Document("$match", new Document("_id", id).append("softDelete", false))));
         operations.add(new CustomAggregationOperation(new Document("$group",
-                new Document("id", "$id")
+                new Document("_id", "$_id")
                         .append("auth", new Document("$push",
-                                new Document("name", "$categoryName")
-                                        .append("maxSpi", new Document("$max", "$result"))
+                                new Document("name", "$name")
+                                        .append("maxSpi",
+                                                new Document("$max", "$result"))
                                         .append("minSpi", new Document("$min", "$result")))))));
         return operations;
     }

@@ -38,13 +38,13 @@ public class CategoryCustomRepositoryImpl implements CategoryCustomRepository {
         List<AggregationOperation> operations = categoryAggregationFilter(filter, sort, pageRequest, true);
 
         Aggregation aggregation = newAggregation(operations);
-        List<CategoryResponse> category = mongoTemplate.aggregate(aggregation, "category", CategoryResponse.class).getMappedResults();
+        List<CategoryResponse> category = mongoTemplate.aggregate(aggregation, "categories", CategoryResponse.class).getMappedResults();
 //FindCount
         List<AggregationOperation> operationsForCount = categoryAggregationFilter(filter, sort, pageRequest, false);
         operationsForCount.add(group().count().as("count"));
         operationsForCount.add(project("count"));
         Aggregation aggregationForCount = newAggregation(CategoryResponse.class, operationsForCount);
-        AggregationResults<CountQueryResult> countQueryResults = mongoTemplate.aggregate(aggregationForCount, "category", CountQueryResult.class);
+        AggregationResults<CountQueryResult> countQueryResults = mongoTemplate.aggregate(aggregationForCount, "categories", CountQueryResult.class);
         long count = countQueryResults.getMappedResults().size() == 0 ? 0 : countQueryResults.getMappedResults().get(0).getCount();
         return PageableExecutionUtils.getPage(
                 category,
@@ -53,10 +53,12 @@ public class CategoryCustomRepositoryImpl implements CategoryCustomRepository {
     }
 
 
+
     private List<AggregationOperation> categoryAggregationFilter(CategoryFilter filter, FilterSortRequest.SortRequest<CategorySortBy> sort, PageRequest pageRequest, boolean addPage) {
         List<AggregationOperation> operations = new ArrayList<>();
 
         operations.add(match(getCriteria(filter, operations)));
+        System.out.println("match :");
         if (addPage) {
             //sorting
             if (sort != null && sort.getSortBy() != null && sort.getOrderBy() != null) {
@@ -70,22 +72,27 @@ public class CategoryCustomRepositoryImpl implements CategoryCustomRepository {
         return operations;
     }
 
+
     private Criteria getCriteria(CategoryFilter filter, List<AggregationOperation> operations) {
         Criteria criteria = new Criteria();
-        operations.add(new CustomAggregationOperation(new Document("$addFields", new Document("search",
-                new Document("$concat", Arrays.asList(new Document("$ifNull", Arrays.asList("$categoryName", " "))
+        operations.add(new CustomAggregationOperation(
+                new Document("$addFields",
+                        new Document("search",
+                                new Document("$concat", Arrays.asList(
+                                        new Document("$ifNull", Arrays.asList("$categoryName", ""))
                 ))))));
+
         if (!StringUtils.isEmpty(filter.getSearch())) {
-            filter.setSearch(filter.getSearch().replaceAll("\\|@\\|", ""));
-            filter.setSearch(filter.getSearch().replaceAll("\\|@@\\|", ""));
+            filter.setSearch(filter.getSearch().replace("\\|@\\|", ""));
+            filter.setSearch(filter.getSearch().replace("\\|@@\\|", ""));
+
             criteria = criteria.orOperator(
                     Criteria.where("search").regex(".*" + filter.getSearch() + ".*", "i")
             );
         }
-
-
-        criteria = criteria.and("id").in(filter.getId());
+        criteria = criteria.and("_id").in(filter.getId());
         criteria = criteria.and("softDelete").is(false);
+
         return criteria;
     }
 }

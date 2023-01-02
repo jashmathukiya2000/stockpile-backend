@@ -33,6 +33,7 @@ public class UserController {
     }
 
 
+
     @RequestMapping(name = "getAllUser", value = "/getAll", method = RequestMethod.GET)
     public ListResponse<UserResponse> getAllUser() {
         ListResponse<UserResponse> listResponse = new ListResponse<>();

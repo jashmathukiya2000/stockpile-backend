@@ -53,8 +53,6 @@ public class ItemCustomRepositoryImpl implements ItemCustomRepository{
                     () -> count);
         }
 
-
-
         private List<AggregationOperation> itemAggregationFilter(ItemFilter filter, FilterSortRequest.SortRequest<ItemSortBy> sort, PageRequest pageRequest, boolean addPage) {
             List<AggregationOperation> operations = new ArrayList<>();
             operations.add(match(getCriteria(filter, operations)));
@@ -90,7 +88,7 @@ public class ItemCustomRepositoryImpl implements ItemCustomRepository{
                 );
             }
 
-             criteria = criteria.and("id").in(filter.getId());
+             criteria = criteria.and("_id").in(filter.getId());
              criteria = criteria.and("softDelete").is(false);
              return criteria;
         }

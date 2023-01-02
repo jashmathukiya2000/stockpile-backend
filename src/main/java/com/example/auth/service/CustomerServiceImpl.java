@@ -9,7 +9,7 @@ import com.example.auth.commons.utils.PasswordUtils;
 import com.example.auth.decorator.customer.CustomerLoginAddRequest;
 import com.example.auth.decorator.customer.CustomerSignupAddRequest;
 import com.example.auth.decorator.customer.CustomerSignupResponse;
-import com.example.auth.model.UserModel;
+import com.example.auth.model.Customer;
 import com.example.auth.repository.CustomerRepository;
 import com.google.common.annotations.VisibleForTesting;
 import lombok.extern.slf4j.Slf4j;
@@ -35,7 +35,7 @@ public class CustomerServiceImpl implements CustomerService {
 
     @Override
     public CustomerSignupResponse signUpUser(CustomerSignupAddRequest customerSignupAddRequest, Role role) {
-        UserModel signUpUser1 = modelMapper.map(customerSignupAddRequest, UserModel.class);
+        Customer signUpUser1 = modelMapper.map(customerSignupAddRequest, Customer.class);
         CustomerSignupResponse userResponse1 = modelMapper.map(customerSignupAddRequest, CustomerSignupResponse.class);
         if (signUpUser1.getPassword() != null) {
             String password = password(signUpUser1.getPassword());
@@ -57,12 +57,12 @@ public class CustomerServiceImpl implements CustomerService {
 
     @Override
     public CustomerSignupResponse login(CustomerLoginAddRequest customerLoginAddRequest) throws InvocationTargetException, IllegalAccessException, NoSuchAlgorithmException {
-        UserModel signUpUser = getUserByEmail(customerLoginAddRequest.getEmail());
+        Customer signUpUser = getUserByEmail(customerLoginAddRequest.getEmail());
         String userPassworod = signUpUser.getPassword();
         CustomerSignupResponse signUpResponse = modelMapper.map(signUpUser, CustomerSignupResponse.class);
         boolean passwords = passwordUtils.isPasswordAuthenticated(customerLoginAddRequest.getPassword(), userPassworod, PasswordEncryptionType.BCRYPT);
         if (passwords) {
-            modelMapper.map(signUpResponse, UserModel.class);
+            modelMapper.map(signUpResponse, Customer.class);
         } else {
             throw new InvalidRequestException(MessageConstant.INCORRECT_PASSWORD);
         }
@@ -93,7 +93,7 @@ public class CustomerServiceImpl implements CustomerService {
         }
     }
 
-    public UserModel getUserByEmail(String email) {
+    public Customer getUserByEmail(String email) {
         return customerRepository.findUserByEmailAndSoftDeleteIsFalse(email).orElseThrow(() -> new NotFoundException(MessageConstant.USER_NOT_FOUND));
     }
 
