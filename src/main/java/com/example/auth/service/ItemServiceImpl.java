@@ -33,7 +33,6 @@ public class ItemServiceImpl implements ItemService {
 
     public ItemServiceImpl(CategoryRepository categoryRepository, ItemRepository itemRepository, ModelMapper modelMapper, NullAwareBeanUtilsBean nullAwareBeanUtilsBean) {
         this.categoryRepository = categoryRepository;
-
         this.itemRepository = itemRepository;
         this.modelMapper = modelMapper;
         this.nullAwareBeanUtilsBean = nullAwareBeanUtilsBean;
@@ -41,7 +40,6 @@ public class ItemServiceImpl implements ItemService {
 
     @Override
     public ItemResponse addItem(String categoryId, ItemAddRequest itemAddRequest) throws InvocationTargetException, IllegalAccessException {
-
         Item item = modelMapper.map(itemAddRequest, Item.class);
         Category category = getCategoryModel(categoryId);
         item.setCategoryId(category.getId());
@@ -61,7 +59,7 @@ public class ItemServiceImpl implements ItemService {
         item.setPrice(Double.parseDouble(new DecimalFormat("##.##").format(itemAddRequest.getPrice())));
         item.setQuantity(itemAddRequest.getQuantity());
         item.setTotalPrice(item.getPrice() * item.getQuantity());
-        ItemResponse itemResponse = modelMapper.map(itemAddRequest, ItemResponse.class);
+        ItemResponse itemResponse = modelMapper.map(item, ItemResponse.class);
         checkValidation(itemAddRequest);
         itemRepository.save(item);
         return itemResponse;
@@ -82,6 +80,7 @@ public class ItemServiceImpl implements ItemService {
         items.forEach(item -> {
             ItemResponse itemResponse = modelMapper.map(item, ItemResponse.class);
             itemResponses.add(itemResponse);
+
         });
 
         return itemResponses;
@@ -96,11 +95,11 @@ public class ItemServiceImpl implements ItemService {
     }
 
     public void checkValidation(ItemAddRequest itemAddRequest) {
-        if (itemAddRequest.getPrice()<0) {
+        if (itemAddRequest.getPrice() < 0) {
             throw new NotFoundException(MessageConstant.PRICE_MUST_NOT_BE_NULL);
         }
 
-        if (itemAddRequest.getQuantity()<0) {
+        if (itemAddRequest.getQuantity() < 0) {
             throw new NotFoundException(MessageConstant.MUST_NOT_BE_NULL);
         }
 
@@ -111,7 +110,7 @@ public class ItemServiceImpl implements ItemService {
         if (itemRepository.existsByItemNameAndSoftDeleteIsFalse(itemAddRequest.getItemName())) {
             throw new NotFoundException(MessageConstant.ALREADY_EXIST);
         }
-        if (!itemAddRequest.getItemName().matches("^[A-Za-z]+(([,.] |[ '-])[A-Za-z]+)*([.,'-]?)$")){
+        if (!itemAddRequest.getItemName().matches("^[A-Za-z]+(([,.] |[ '-])[A-Za-z]+)*([.,'-]?)$")) {
             throw new NotFoundException(MessageConstant.INVALID);
         }
 
@@ -131,6 +130,7 @@ public class ItemServiceImpl implements ItemService {
         return itemRepository.findByIdAndSoftDeleteIsFalse(id).orElseThrow(() -> new NotFoundException(MessageConstant.ID_NOT_FOUND));
 
     }
+
     @Override
     public void removeItems(String id) {
         List<Item> items = itemRepository.findByCategoryIdAndSoftDeleteFalse(id);

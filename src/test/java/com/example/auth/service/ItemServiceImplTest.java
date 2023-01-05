@@ -1,16 +1,16 @@
 package com.example.auth.service;
 
-import com.amazonaws.services.dynamodbv2.xspec.S;
 import com.example.auth.commons.advice.NullAwareBeanUtilsBean;
 import com.example.auth.decorator.ItemResponse;
-import com.example.auth.decorator.pagination.*;
+import com.example.auth.decorator.pagination.FilterSortRequest;
+import com.example.auth.decorator.pagination.ItemFilter;
+import com.example.auth.decorator.pagination.ItemSortBy;
+import com.example.auth.decorator.pagination.Pagination;
 import com.example.auth.helper.ItemServiceImplTestGenerator;
-import com.example.auth.model.Category;
 import com.example.auth.repository.CategoryRepository;
 import com.example.auth.repository.ItemRepository;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
-import org.mockito.stubbing.OngoingStubbing;
 import org.modelmapper.ModelMapper;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.domain.Page;
@@ -53,12 +53,11 @@ class ItemServiceImplTest {
     void testAddItem() throws InvocationTargetException, IllegalAccessException {
 
         //given
-        var category=ItemServiceImplTestGenerator.getMockCategory();
+        var category = ItemServiceImplTestGenerator.getMockCategory();
         var item = ItemServiceImplTestGenerator.getMockItem();
         var itemAddRequest = ItemServiceImplTestGenerator.getMockItemAddRequest();
         var itemResponse = ItemServiceImplTestGenerator.getMockItemResponse();
-        when(itemRepository.findByIdAndSoftDeleteIsFalse(id)).thenReturn(Optional.ofNullable(item));
-     when(categoryRepository.findByIdAndSoftDeleteIsFalse(categoryId)).thenReturn(category);
+        when(categoryRepository.findByIdAndSoftDeleteIsFalse(categoryId)).thenReturn(category);
 
         //when
         var actualData = itemService.addItem(categoryId, itemAddRequest);
@@ -114,28 +113,28 @@ class ItemServiceImplTest {
     }
 
     @Test
-    void testgetAllItemByPagination(){
+    void testgetAllItemByPagination() {
 
         //given
-        ItemFilter itemFilter= new ItemFilter();
+        ItemFilter itemFilter = new ItemFilter();
         itemFilter.setId(itemFilter.getId());
-        FilterSortRequest.SortRequest<ItemSortBy> sort=new FilterSortRequest.SortRequest<>();
+        FilterSortRequest.SortRequest<ItemSortBy> sort = new FilterSortRequest.SortRequest<>();
         sort.setSortBy(ItemSortBy.ITEM_NAME);
         sort.setOrderBy(Sort.Direction.ASC);
-        Pagination pagination= new Pagination();
+        Pagination pagination = new Pagination();
         pagination.setPage(0);
         pagination.setLimit(2);
-        PageRequest pageRequest= PageRequest.of(pagination.getPage(),pagination.getLimit());
+        PageRequest pageRequest = PageRequest.of(pagination.getPage(), pagination.getLimit());
         var itemResponses = ItemServiceImplTestGenerator.getMockListResponse();
-         Page<ItemResponse> page= new PageImpl<>(itemResponses);
-        when(itemRepository.getAllItemsByPagination(itemFilter,sort,pageRequest)).thenReturn(page);
+        Page<ItemResponse> page = new PageImpl<>(itemResponses);
+        when(itemRepository.getAllItemsByPagination(itemFilter, sort, pageRequest)).thenReturn(page);
 
 
         //when
-        var actualData=itemService.getAllItemsByPagination(itemFilter,sort,pageRequest);
+        var actualData = itemService.getAllItemsByPagination(itemFilter, sort, pageRequest);
 
         //then
-        Assertions.assertEquals(page,actualData);
+        Assertions.assertEquals(page, actualData);
 
     }
 

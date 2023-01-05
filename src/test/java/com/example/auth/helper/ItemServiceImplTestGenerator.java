@@ -6,7 +6,6 @@ import com.example.auth.model.Category;
 import com.example.auth.model.Item;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.convention.MatchingStrategies;
-import org.springframework.data.domain.Page;
 
 import java.util.Date;
 import java.util.List;
@@ -24,18 +23,24 @@ public class ItemServiceImplTestGenerator {
 
     public static Item getMockItem() {
         return Item.builder()
+                .id(id)
+                .categoryId(categoryId)
                 .itemName("monitor")
                 .price(500)
                 .quantity(2)
+                .totalPrice(1000)
+                .date(new Date())
                 .build();
-
     }
 
     public static ItemResponse getMockItemResponse() {
         return ItemResponse.builder()
                 .itemName("monitor")
+                .categoryId(categoryId)
                 .price(500)
                 .quantity(2)
+                .date(new Date())
+                .totalPrice(1000.0)
                 .build();
     }
 
@@ -43,8 +48,7 @@ public class ItemServiceImplTestGenerator {
         return ItemAddRequest.builder()
                 .itemName("monitor")
                 .price(500)
-                .quantity(2)
-                .build();
+                .quantity(2).build();
     }
 
     public static List<ItemResponse> getMockListResponse() {
@@ -65,7 +69,7 @@ public class ItemServiceImplTestGenerator {
 
     public static Optional<Category> getMockCategory() {
         return Optional.of(Category.builder()
-                .categoryName("mouse")
+                .id(categoryId)
                 .build());
     }
 

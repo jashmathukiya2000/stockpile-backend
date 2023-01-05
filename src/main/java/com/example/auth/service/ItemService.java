@@ -7,7 +7,6 @@ import com.example.auth.decorator.pagination.ItemFilter;
 import com.example.auth.decorator.pagination.ItemSortBy;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.web.bind.annotation.RequestBody;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.List;

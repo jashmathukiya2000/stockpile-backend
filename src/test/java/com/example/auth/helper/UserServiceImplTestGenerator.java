@@ -40,7 +40,6 @@ public class UserServiceImplTestGenerator {
                 .occupation("java developer")
                 .email("sanskrityshukla4@gmail.com")
                 .age(21)
-                .fullName("sans km shukla")
                 .phoneNumber("6386580393")
                 .salary(25000)
                 .build();

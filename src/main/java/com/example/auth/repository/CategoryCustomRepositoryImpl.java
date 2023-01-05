@@ -6,6 +6,7 @@ import com.example.auth.decorator.pagination.CategoryFilter;
 import com.example.auth.decorator.pagination.CategorySortBy;
 import com.example.auth.decorator.pagination.CountQueryResult;
 import com.example.auth.decorator.pagination.FilterSortRequest;
+import com.example.auth.model.Category;
 import org.apache.commons.lang3.StringUtils;
 import org.bson.Document;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,9 +21,11 @@ import org.springframework.data.mongodb.core.aggregation.SortOperation;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.support.PageableExecutionUtils;
 import org.springframework.stereotype.Repository;
+import org.springframework.util.CollectionUtils;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 import static org.springframework.data.mongodb.core.aggregation.Aggregation.*;
@@ -90,7 +93,9 @@ public class CategoryCustomRepositoryImpl implements CategoryCustomRepository {
                     Criteria.where("search").regex(".*" + filter.getSearch() + ".*", "i")
             );
         }
-        criteria = criteria.and("_id").in(filter.getId());
+        if (!CollectionUtils.isEmpty((filter.getId()))){
+            criteria=criteria.and("_id").is(filter.getId());
+        }
         criteria = criteria.and("softDelete").is(false);
 
         return criteria;

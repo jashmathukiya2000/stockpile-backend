@@ -9,12 +9,18 @@ import com.example.auth.commons.utils.PasswordUtils;
 import com.example.auth.decorator.customer.CustomerLoginAddRequest;
 import com.example.auth.decorator.customer.CustomerSignupAddRequest;
 import com.example.auth.decorator.customer.CustomerSignupResponse;
+import com.example.auth.decorator.pagination.CustomerFilter;
+import com.example.auth.decorator.pagination.CustomerSortBy;
+import com.example.auth.decorator.pagination.FilterSortRequest;
 import com.example.auth.model.Customer;
 import com.example.auth.repository.CustomerRepository;
 import com.google.common.annotations.VisibleForTesting;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
+
 import java.lang.reflect.InvocationTargetException;
 import java.security.NoSuchAlgorithmException;
 import java.util.Date;
@@ -70,12 +76,13 @@ public class CustomerServiceImpl implements CustomerService {
         return signUpResponse;
     }
 
+    @Override
+    public Page<Customer> getAllCustomerByPagination(CustomerFilter filter, FilterSortRequest.SortRequest<CustomerSortBy> sort, PageRequest pagination) {
+        return customerRepository.getAllCustomerByPagination(filter, sort, pagination);
+    }
+
 
     public void checkValidation(CustomerSignupAddRequest customerSignupAddRequest) {
-        if (!customerSignupAddRequest.getEmail().matches("^(.+)@(\\S+) $. ")) {
-
-            throw new NotFoundException(MessageConstant.INVALID_EMAIL);
-        }
         if (!customerSignupAddRequest.getPassword().equals(customerSignupAddRequest.getConfirmPassword())) {
             throw new InvalidRequestException(MessageConstant.INCORRECT_PASSWORD);
         }

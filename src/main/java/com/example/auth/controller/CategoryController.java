@@ -1,32 +1,37 @@
 package com.example.auth.controller;
 
 import com.example.auth.commons.constant.ResponseConstant;
-import com.example.auth.decorator.*;
+import com.example.auth.commons.decorator.GeneralHelper;
+import com.example.auth.decorator.DataResponse;
+import com.example.auth.decorator.ListResponse;
+import com.example.auth.decorator.Response;
 import com.example.auth.decorator.category.CategoryAddRequest;
 import com.example.auth.decorator.category.CategoryResponse;
 import com.example.auth.decorator.pagination.*;
 import com.example.auth.service.CategoryService;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("categroies")
 public class CategoryController {
     private final CategoryService categoryService;
+    private final GeneralHelper generalHelper;
 
-    public CategoryController(CategoryService categoryService) {
+    public CategoryController(CategoryService categoryService, GeneralHelper generalHelper) {
         this.categoryService = categoryService;
+        this.generalHelper = generalHelper;
     }
 
     @RequestMapping(name = "addCategory", value = "/add", method = RequestMethod.POST)
-    public DataResponse<CategoryResponse> addCategory( @RequestBody CategoryAddRequest categoryAddRequest) {
+    public DataResponse<CategoryResponse> addCategory(@RequestBody CategoryAddRequest categoryAddRequest) {
         DataResponse<CategoryResponse> dataResponse = new DataResponse<>();
-        dataResponse.setData(categoryService.addCategory( categoryAddRequest));
+        dataResponse.setData(categoryService.addCategory(categoryAddRequest));
         dataResponse.setStatus(Response.getOkResponse(ResponseConstant.SAVED_SUCCESSFULLY));
         return dataResponse;
     }
- @RequestMapping(name = "updateCategory", value = "/update", method = RequestMethod.POST)
+
+    @RequestMapping(name = "updateCategory", value = "/update", method = RequestMethod.POST)
     public DataResponse<CategoryResponse> updateCategory(@RequestParam String id, @RequestBody CategoryAddRequest categoryAddRequest) {
         DataResponse<CategoryResponse> dataResponse = new DataResponse<>();
         dataResponse.setData(categoryService.updateCategory(id, categoryAddRequest));
@@ -61,14 +66,10 @@ public class CategoryController {
         return dataResponse;
     }
 
-    @RequestMapping(name = "getAllCategoryByPagination", value = "get/all/pagination",method = RequestMethod.POST)
-    public PageResponse<CategoryResponse> getAllCategoryByPagination(@RequestBody FilterSortRequest<CategoryFilter, CategorySortBy> filterSortRequest){
-        PageResponse<CategoryResponse> pageResponse=new PageResponse<>();
-        CategoryFilter filter= filterSortRequest.getFilter();
-        FilterSortRequest.SortRequest<CategorySortBy> sort=filterSortRequest.getSort();
-        Pagination pagination= filterSortRequest.getPagination();
-        PageRequest pageRequest=PageRequest.of(pagination.getPage(), pagination.getLimit());
-        Page<CategoryResponse> categoryrResponses=categoryService.getAllCategoryByPagination(filter,sort,pageRequest);
+    @RequestMapping(name = "getAllCategoryByPagination", value = "get/all/pagination", method = RequestMethod.POST)
+    public PageResponse<CategoryResponse> getAllCategoryByPagination(@RequestBody FilterSortRequest<CategoryFilter, CategorySortBy> filterSortRequest) {
+        PageResponse<CategoryResponse> pageResponse = new PageResponse<>();
+        Page<CategoryResponse> categoryrResponses = categoryService.getAllCategoryByPagination(filterSortRequest.getFilter(),filterSortRequest.getSort(),generalHelper.getPagination(filterSortRequest.getPagination().getPage(),filterSortRequest.getPagination().getLimit()));
         pageResponse.setData(categoryrResponses);
         pageResponse.setStatus(Response.getOkResponse());
         return pageResponse;

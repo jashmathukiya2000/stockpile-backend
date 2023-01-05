@@ -6,6 +6,7 @@ import com.example.auth.decorator.pagination.FilterSortRequest;
 import com.example.auth.decorator.pagination.UserFilterData;
 import com.example.auth.decorator.pagination.UserSortBy;
 import com.example.auth.decorator.user.*;
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.bson.Document;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -58,8 +59,8 @@ public class UserCustomRepositoryImpl implements UserCustomRepository {
         operations.add(new CustomAggregationOperation(new Document("$group",
                 new Document("id", "$salary")
                         .append("auth", new Document("$push", new Document("name", "$categoryName")
-                        .append("occupation", "$occupation")
-                        .append("age", "$age")))
+                                .append("occupation", "$occupation")
+                                .append("age", "$age")))
                         .append("count", new Document("$sum", 1))
                         .append("name", new Document("$first", "$categoryName"))
                         .append("occupation", new Document("$last", "$occupation")))));
@@ -81,7 +82,7 @@ public class UserCustomRepositoryImpl implements UserCustomRepository {
         operations.add(new CustomAggregationOperation(new Document("$match", new Document("result.spi", spi).append("softDelete", false))));
         operations.add(new CustomAggregationOperation(new Document("$group", new Document("id", "$result.spi")
                 .append("auth", new Document("$push", new Document("name", "$categoryName").append("email", "$email")
-                        .append("id", "$id").append("semester", "$result.semester")))
+                        .append("id", "$ids").append("semester", "$result.semester")))
                 .append("sum", new Document("$sum", "$result.semester"))
                 .append("count", new Document("$sum", 1))
                 .append("average", new Document("$avg", "$result.semester")))));
@@ -101,18 +102,18 @@ public class UserCustomRepositoryImpl implements UserCustomRepository {
 //        List<AggregationOperation> operations = new ArrayList<>();
 //        operations.add(new CustomAggregationOperation(new Document("$unwind", new Document("path", "$result"))));
 //        operations.add(new CustomAggregationOperation(new Document("$match", new Document("occupation", occupation).append("softDelete", false))));
-//        operations.add(new CustomAggregationOperation(new Document("$group", new Document("id", "$salary")
+//        operations.add(new CustomAggregationOperation(new Document("$group", new Document("ids", "$salary")
 //                .append("auth", new Document("$push", new Document("categoryName", "$categoryName")
 //                        .append("occupation", "$occupation")
 //                        .append("age", "$age").append("email", "$email")
-//                        .append("id", "$id")
+//                        .append("ids", "$ids")
 //                        .append("semester", "$result.semester").append("spi", "$result.spi")))
 //                .append("count", new Document("$sum", 1))
 //                .append("categoryName", new Document("$first", "$categoryName"))
 //                .append("occuption", new Document("$last", "$occupation").append("maxSpi",
 //                        new Document("$max","$result").append("minSpi",
 //                                new Document("$min","$result")))))));
-//        operations.add(new CustomAggregationOperation(new Document("$sort", new Document("id", 1))));
+//        operations.add(new CustomAggregationOperation(new Document("$sort", new Document("ids", 1))));
 //        operations.add(new CustomAggregationOperation(new Document("$limit", 1)));
 //        return operations;
 //    }
@@ -139,7 +140,6 @@ public class UserCustomRepositoryImpl implements UserCustomRepository {
         List<AggregationOperation> operationForCount = userFilterAggregation(filter, sort, pagination, false);
         operationForCount.add(group().count().as("count"));
         operationForCount.add(project("count"));
-        System.out.println("hello" + users);
         Aggregation aggregationCount = newAggregation(UserResponse.class, operationForCount);
         AggregationResults<CountQueryResult> countQueryResults = mongoTemplate.aggregate(aggregationCount, "auth", CountQueryResult.class);
         long count = countQueryResults.getMappedResults().size() == 0 ? 0 : countQueryResults.getMappedResults().get(0).getCount();
@@ -168,7 +168,9 @@ public class UserCustomRepositoryImpl implements UserCustomRepository {
                     Criteria.where("search").regex(".*" + userFilter.getSearch() + ".*", "i")
             );
         }
-        criteria = criteria.and("_id").in(userFilter.getId());
+        if (!CollectionUtils.isEmpty(userFilter.getId())) {
+            criteria = criteria.and("_id").is(userFilter.getId());
+        }
         criteria = criteria.and("softDelete").is(false);
         return criteria;
     }

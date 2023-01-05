@@ -1,13 +1,15 @@
 package com.example.auth.controller;
 
 import com.example.auth.commons.constant.ResponseConstant;
-import com.example.auth.decorator.*;
+import com.example.auth.commons.decorator.GeneralHelper;
+import com.example.auth.decorator.DataResponse;
+import com.example.auth.decorator.ListResponse;
+import com.example.auth.decorator.Response;
 import com.example.auth.decorator.pagination.*;
 import com.example.auth.decorator.user.*;
 import com.example.auth.service.ResultService;
 import com.example.auth.service.UserService;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.web.bind.annotation.*;
 
 import java.lang.reflect.InvocationTargetException;
@@ -18,10 +20,12 @@ import java.lang.reflect.InvocationTargetException;
 public class UserController {
     private final UserService userService;
     private final ResultService resultService;
+    private final GeneralHelper generalHelper;
 
-    public UserController(UserService userService, ResultService resultService) {
+    public UserController(UserService userService, ResultService resultService, GeneralHelper generalHelper) {
         this.userService = userService;
         this.resultService = resultService;
+        this.generalHelper = generalHelper;
     }
 
     @RequestMapping(name = "addOrUpdateUser", value = "/add", method = RequestMethod.POST)
@@ -31,7 +35,6 @@ public class UserController {
         dataResponse.setStatus(Response.getOkResponse(ResponseConstant.SAVED_SUCCESSFULLY));
         return dataResponse;
     }
-
 
 
     @RequestMapping(name = "getAllUser", value = "/getAll", method = RequestMethod.GET)
@@ -92,24 +95,21 @@ public class UserController {
         return dataResponse;
     }
 
-    @RequestMapping(name = "getAllUserByPagination", value = "get/all/pagination",method = RequestMethod.POST)
-    public PageResponse<UserResponse> getAllUserByPagination(@RequestBody FilterSortRequest<UserFilterData, UserSortBy> filterSortRequest){
-        PageResponse<UserResponse> pageResponse=new PageResponse<>();
-        UserFilterData filter= filterSortRequest.getFilter();
-        FilterSortRequest.SortRequest<UserSortBy> sort=filterSortRequest.getSort();
-        Pagination pagination= filterSortRequest.getPagination();
-        PageRequest pageRequest=PageRequest.of(pagination.getPage(), pagination.getLimit());
-        Page<UserResponse> userResponses=userService.getAllUserByPagination(filter,sort,pageRequest);
+    @RequestMapping(name = "getAllUserByPagination", value = "get/all/pagination", method = RequestMethod.POST)
+    public PageResponse<UserResponse> getAllUserByPagination(@RequestBody FilterSortRequest<UserFilterData, UserSortBy> filterSortRequest) {
+        PageResponse<UserResponse> pageResponse = new PageResponse<>();
+        Page<UserResponse> userResponses = userService.getAllUserByPagination(filterSortRequest.getFilter(),filterSortRequest.getSort(),generalHelper.getPagination(filterSortRequest.getPagination().getPage(),filterSortRequest.getPagination().getLimit()));
         pageResponse.setData(userResponses);
         pageResponse.setStatus(Response.getOkResponse());
         return pageResponse;
     }
-@RequestMapping(name = "getUserByMaxSpi",value = "/get{id}",method = RequestMethod.POST)
-    public ListResponse<MaxSpiResponse> getUserByMaxSpi(@PathVariable String id){
-    ListResponse<MaxSpiResponse> listResponse= new ListResponse<>();
-    listResponse.setData(userService.getUserByMaxSpi(id));
-    listResponse.setStatus(Response.getOkResponse(ResponseConstant.OK));
-    return listResponse;
-}
+
+    @RequestMapping(name = "getUserByMaxSpi", value = "/get{id}", method = RequestMethod.POST)
+    public ListResponse<MaxSpiResponse> getUserByMaxSpi(@PathVariable String id) {
+        ListResponse<MaxSpiResponse> listResponse = new ListResponse<>();
+        listResponse.setData(userService.getUserByMaxSpi(id));
+        listResponse.setStatus(Response.getOkResponse(ResponseConstant.OK));
+        return listResponse;
+    }
 
 }

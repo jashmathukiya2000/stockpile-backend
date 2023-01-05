@@ -6,8 +6,10 @@ import org.springframework.data.mongodb.repository.MongoRepository;
 
 import java.util.Optional;
 
-public interface CustomerRepository extends MongoRepository<Customer,String> {
+public interface CustomerRepository extends MongoRepository<Customer, String>, CustomerCustomRepository {
     Optional<Customer> findUserByEmailAndSoftDeleteIsFalse(String email);
-      boolean existsByEmailAndSoftDeleteIsFalse(String email);
-      Optional<Customer> findByIdAndSoftDeleteIsFalse(String id);
+
+    boolean existsByEmailAndSoftDeleteIsFalse(String email);
+
+    Optional<Customer> findByIdAndSoftDeleteIsFalse(String id);
 }

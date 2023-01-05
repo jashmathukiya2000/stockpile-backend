@@ -33,20 +33,23 @@ public class UserServiceImpl implements UserService {
     public UserResponse addOrUpdateUser(String id, UserAddRequest userAddRequest) throws InvocationTargetException, IllegalAccessException {
         if (id != null) {
             User user1 = getUserModel(id);
-            user1.setFirstName(userAddRequest.getFirstName());
-            user1.setMiddleName(userAddRequest.getMiddleName());
-            user1.setLastName(userAddRequest.getLastName());
-            user1.setFullName();
-            user1.setAge(userAddRequest.getAge());
-            user1.setEmail(userAddRequest.getEmail());
-            user1.setOccupation(userAddRequest.getOccupation());
-            user1.setSalary(userAddRequest.getSalary());
-            user1.setAddress(userAddRequest.getAddress());
-
-            UserResponse userResponse1 = modelMapper.map(userAddRequest, UserResponse.class);
-            nullAwareBeanUtilsBean.copyProperties(userResponse1, user1);
+//            user1.setFirstName(userAddRequest.getFirstName());
+//            user1.setMiddleName(userAddRequest.getMiddleName());
+//            user1.setLastName(userAddRequest.getLastName());
+//            user1.setFullName();
+//            user1.setAge(userAddRequest.getAge());
+//            user1.setEmail(userAddRequest.getEmail());
+//            user1.setOccupation(userAddRequest.getOccupation());
+//            user1.setSalary(userAddRequest.getSalary());
+//            user1.setAddress(userAddRequest.getAddress());
+            nullAwareBeanUtilsBean.copyProperties(user1,userAddRequest);
             userRepository.save(user1);
-            return userResponse1;
+            return modelMapper.map(user1,UserResponse.class);
+
+//            UserResponse userResponse1 = modelMapper.map(userAddRequest, UserResponse.class);
+//            nullAwareBeanUtilsBean.copyProperties(userResponse1, user1);
+//            userRepository.save(user1);
+//            return userResponse1;
         } else {
             User user = modelMapper.map(userAddRequest, User.class);
             user.setFullName();

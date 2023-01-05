@@ -1,38 +1,62 @@
 package com.example.auth.controller;
 
 import com.example.auth.commons.constant.ResponseConstant;
+import com.example.auth.commons.decorator.GeneralHelper;
 import com.example.auth.commons.enums.Role;
-import com.example.auth.decorator.*;
+import com.example.auth.decorator.DataResponse;
+import com.example.auth.decorator.Response;
 import com.example.auth.decorator.customer.CustomerLoginAddRequest;
 import com.example.auth.decorator.customer.CustomerSignupAddRequest;
 import com.example.auth.decorator.customer.CustomerSignupResponse;
+import com.example.auth.decorator.pagination.CustomerFilter;
+import com.example.auth.decorator.pagination.CustomerSortBy;
+import com.example.auth.decorator.pagination.FilterSortRequest;
+import com.example.auth.decorator.pagination.PageResponse;
+import com.example.auth.model.Customer;
 import com.example.auth.service.CustomerService;
-import lombok.SneakyThrows;
+import org.springframework.data.domain.Page;
 import org.springframework.web.bind.annotation.*;
+
+import java.lang.reflect.InvocationTargetException;
+import java.security.NoSuchAlgorithmException;
 
 @RestController("login")
 public class CustomerController {
-    private final CustomerService userModelService;
+    private final CustomerService customerService;
+    private final GeneralHelper generalHelper;
 
-    public CustomerController(CustomerService userModelService) {
-        this.userModelService = userModelService;
+    public CustomerController(CustomerService customerService, GeneralHelper generalHelper) {
+        this.customerService = customerService;
+        this.generalHelper = generalHelper;
     }
 
     @RequestMapping(name = "signUpUser", value = "/signup", method = RequestMethod.POST)
     public DataResponse<CustomerSignupResponse> signUpUser(@RequestBody CustomerSignupAddRequest customerSignupAddRequest, @RequestParam Role role) {
         DataResponse<CustomerSignupResponse> dataResponse = new DataResponse<>();
-        dataResponse.setData(userModelService.signUpUser(customerSignupAddRequest, role));
+        dataResponse.setData(customerService.signUpUser(customerSignupAddRequest, role));
         dataResponse.setStatus(Response.getOkResponse());
         return dataResponse;
 
     }
 
-    @SneakyThrows
+
     @RequestMapping(name = "login", value = "/login/email", method = RequestMethod.POST)
-    public DataResponse<CustomerSignupResponse> login(@RequestBody CustomerLoginAddRequest customerLoginAddRequest) {
+    public DataResponse<CustomerSignupResponse> login(@RequestBody CustomerLoginAddRequest customerLoginAddRequest) throws IllegalAccessException, NoSuchAlgorithmException, InvocationTargetException {
         DataResponse<CustomerSignupResponse> dataResponse = new DataResponse<>();
-        dataResponse.setData(userModelService.login(customerLoginAddRequest));
+        dataResponse.setData(customerService.login(customerLoginAddRequest));
         dataResponse.setStatus(Response.getOkResponse(ResponseConstant.LOGIN_SUCCESSFULL));
         return dataResponse;
     }
+
+    @RequestMapping(name = "getAllCustomerByPagination", value = "/get/all/pagination", method = RequestMethod.POST)
+    public PageResponse<Customer> getAllCustomerByPagination(@RequestBody FilterSortRequest<CustomerFilter, CustomerSortBy> filterSortRequest) {
+        PageResponse<Customer> pageResponse = new PageResponse<>();
+        Page<Customer> page = customerService.getAllCustomerByPagination(filterSortRequest.getFilter(), filterSortRequest.getSort(),
+                generalHelper.getPagination(filterSortRequest.getPagination().getPage(), filterSortRequest.getPagination().getLimit()));
+        pageResponse.setData(page);
+        pageResponse.setStatus(Response.getOkResponse(ResponseConstant.OK));
+        return pageResponse;
+    }
+
+
 }
