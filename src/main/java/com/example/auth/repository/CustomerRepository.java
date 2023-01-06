@@ -12,4 +12,6 @@ public interface CustomerRepository extends MongoRepository<Customer, String>, C
     boolean existsByEmailAndSoftDeleteIsFalse(String email);
 
     Optional<Customer> findByIdAndSoftDeleteIsFalse(String id);
+
+//    Optional<Customer> findCustomerNameById(String id);
 }

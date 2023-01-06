@@ -11,4 +11,5 @@ public interface CategoryRepository extends MongoRepository<Category, String>,Ca
     List<Category> findAllBySoftDeleteFalse();
     boolean existsBycategoryNameAndSoftDeleteIsFalse(String categoryName);
 
+
 }

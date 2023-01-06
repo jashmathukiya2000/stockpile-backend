@@ -18,6 +18,8 @@ public interface PurchaseLogHistoryRepository extends MongoRepository<PurchaseLo
 
     List<PurchaseLogHistory> findAllBySoftDeleteFalse();
 
+    List<PurchaseLogHistory> findByCustomerIdAndSoftDeleteFalse(String customerId);
+
 
 
 }

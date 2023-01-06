@@ -1,5 +1,5 @@
 server:
-  port: 5006
+  port: 5007
 spring:
   main:
     allow-circular-references: true

@@ -19,19 +19,21 @@ public class PurchaseLogHistoryServiceImplTestGenerator {
         return modelMapper;
     }
 
-    public static PurchaseLogHistory mockPurchaseLogHistory( ) {
+    public static PurchaseLogHistory mockPurchaseLogHistory(Date date ) {
         return PurchaseLogHistory
                 .builder()
-                .itemName("mouse")
-                .quantity(5)
+//                .id(customerId)
+                .softDelete(false)
                 .id(id)
+                .itemName("mouse")
+                .customerId(customerId)
+                .customerName("dency")
+                .quantity(5)
                 .discountInRupee(3000)
                 .totalPrice(57000)
-                .customerId(customerId)
-                .price(12000)
-                .date(new Date())
                 .discountInPercent(5)
-                .softDelete(false)
+                .date(date)
+                .price(12000)
                 .build();
     }
 
@@ -60,34 +62,36 @@ public class PurchaseLogHistoryServiceImplTestGenerator {
 
     }
 
-    public static PurchaseLogHistoryResponse mockPurchaseLogHistoryResponse() {
-        return PurchaseLogHistoryResponse.builder()
-                .itemName("mouse")
+    public static PurchaseLogHistoryResponse mockPurchaseLogHistoryResponse(Date date,String id) {
+        return PurchaseLogHistoryResponse
+                .builder()
                 .id(id)
-                .customerId(customerId)
-                .quantity(5)
-                .discountInRupee(3000)
-                .totalPrice(57000)
-                .date(new Date())
-                .discountInPercent(5)
-                .price(12000)
-                .build();
-
-    }
-
-    public static PurchaseLogHistoryResponse mockPurchaseHistoryResponse() {
-        return PurchaseLogHistoryResponse.builder()
                 .itemName("mouse")
                 .customerId(customerId)
+                .customerName("dency")
                 .quantity(5)
-                .discountInRupee(3000)
-                .totalPrice(57000)
-                .date(new Date())
+                .discountInRupee(3000.0)
+                .totalPrice(57000.0)
                 .discountInPercent(5)
+                .date(date)
                 .price(12000)
                 .build();
 
     }
+
+//    public static PurchaseLogHistoryResponse mockPurchaseHistoryResponse() {
+//        return PurchaseLogHistoryResponse.builder()
+//                .itemName("mouse")
+//                .customerId(customerId)
+//                .quantity(5)
+//                .discountInRupee(3000)
+//                .totalPrice(57000)
+//                .date(new Date())
+//                .discountInPercent(5)
+//                .price(12000)
+//                .build();
+//
+//    }
 
     public static List<PurchaseLogHistoryResponse> mockListPurchaseLogHistoryResponse() {
         return List.of(PurchaseLogHistoryResponse
@@ -105,6 +109,8 @@ public class PurchaseLogHistoryServiceImplTestGenerator {
     public static Customer mockCustomer() {
         return Customer.builder()
                 .id(customerId)
+                .name("dency")
+                .softDelete(false)
                 .build();
 
     }

@@ -21,6 +21,8 @@ public class PurchaseLogHistory {
 
     String customerId;
 
+    String customerName;
+
     String itemName;
 
     double price;

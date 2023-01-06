@@ -6,14 +6,16 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.util.Date;
+import java.util.List;
 
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
 @Builder
-public class PurchaseLogHistoryResponse {
+public class PurchaseLogHistoryResponse  {
     String id;
     String customerId;
+    String customerName;
 
     String itemName;
 

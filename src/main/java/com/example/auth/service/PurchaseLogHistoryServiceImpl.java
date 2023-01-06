@@ -12,6 +12,8 @@ import com.example.auth.model.Customer;
 import com.example.auth.model.PurchaseLogHistory;
 import com.example.auth.repository.CustomerRepository;
 import com.example.auth.repository.PurchaseLogHistoryRepository;
+import com.google.api.client.repackaged.com.google.common.annotations.VisibleForTesting;
+import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -19,20 +21,26 @@ import org.springframework.stereotype.Service;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
+import java.util.List;
 import java.util.*;
 
 @Service
+@Slf4j
 public class PurchaseLogHistoryServiceImpl implements PurchaseLogHistoryService {
     private final PurchaseLogHistoryRepository purchaseLogHistoryRepository;
+
     private final ModelMapper modelMapper;
     private final CustomerRepository customerRepository;
     private final NullAwareBeanUtilsBean nullAwareBeanUtilsBean;
 
-    public PurchaseLogHistoryServiceImpl(PurchaseLogHistoryRepository purchaseLogHistoryRepository, ModelMapper modelMapper, CustomerRepository customerRepository, NullAwareBeanUtilsBean nullAwareBeanUtilsBean) {
+
+    public PurchaseLogHistoryServiceImpl(PurchaseLogHistoryRepository purchaseLogHistoryRepository, ModelMapper modelMapper, CustomerRepository customerRepository, NullAwareBeanUtilsBean nullAwareBeanUtilsBean ) {
         this.purchaseLogHistoryRepository = purchaseLogHistoryRepository;
         this.modelMapper = modelMapper;
         this.customerRepository = customerRepository;
+
         this.nullAwareBeanUtilsBean = nullAwareBeanUtilsBean;
+
     }
 
     @Override
@@ -40,11 +48,18 @@ public class PurchaseLogHistoryServiceImpl implements PurchaseLogHistoryService 
         PurchaseLogHistory purchaseLogHistory = modelMapper.map(purchaseLogHistoryAddRequest, PurchaseLogHistory.class);
         Customer customer = getcustomerById(customerId);
         purchaseLogHistory.setCustomerId(customer.getId());
+        purchaseLogHistory.setCustomerName(customer.getName());
+
         findDiscountInRupee(purchaseLogHistory);
-        purchaseLogHistory.setDate(new Date());
+        purchaseLogHistory.setDate(currentDate());
         PurchaseLogHistoryResponse purchaseLogHistoryResponse = modelMapper.map(purchaseLogHistory, PurchaseLogHistoryResponse.class);
         purchaseLogHistoryRepository.save(purchaseLogHistory);
         return purchaseLogHistoryResponse;
+    }
+
+    @VisibleForTesting
+    Date currentDate(){
+        return new Date();
     }
 
     @Override
@@ -74,10 +89,9 @@ public class PurchaseLogHistoryServiceImpl implements PurchaseLogHistoryService 
         return list;
     }
 
-
     @Override
     public Object deletePurchaseLogById(String id) {
-        com.example.auth.model.PurchaseLogHistory purchaseLogHistory = getItemPurchaseLogById(id);
+       PurchaseLogHistory purchaseLogHistory = getItemPurchaseLogById(id);
         purchaseLogHistory.setSoftDelete(true);
         purchaseLogHistoryRepository.save(purchaseLogHistory);
         return null;
@@ -88,8 +102,14 @@ public class PurchaseLogHistoryServiceImpl implements PurchaseLogHistoryService 
         return purchaseLogHistoryRepository.getAllPurchaseLogByPagination(purchaseLogFilter, sort, pageRequest);
     }
 
+    @Override
+    public List<PurchaseLogHistory> findById(String customerId) {
+         List<PurchaseLogHistory> purchaseLogHistory=  purchaseLogHistoryRepository.findByCustomerIdAndSoftDeleteFalse(customerId);
+        return purchaseLogHistory ;
+    }
 
-    Customer getcustomerById(String id) {
+
+        Customer getcustomerById(String id) {
         return customerRepository.findByIdAndSoftDeleteIsFalse(id).orElseThrow(() -> new NotFoundException(MessageConstant.ID_NOT_FOUND));
     }
 
@@ -140,10 +160,10 @@ public class PurchaseLogHistoryServiceImpl implements PurchaseLogHistoryService 
         }
     }
 
+
     public void findDiscountInRupee(PurchaseLogHistory purchaseLogHistory) {
         purchaseLogHistory.setDiscountInRupee((purchaseLogHistory.getPrice() * purchaseLogHistory.getQuantity() * purchaseLogHistory.getDiscountInPercent()) / 100);
         purchaseLogHistory.setTotalPrice(purchaseLogHistory.getPrice() * purchaseLogHistory.getQuantity() - purchaseLogHistory.getDiscountInRupee());
-
     }
 
 }
