@@ -1,6 +1,5 @@
 package com.example.auth.model;
 
-import com.example.auth.decorator.PurchaseLogHistoryResponse;
 import com.lowagie.text.*;
 import com.lowagie.text.pdf.CMYKColor;
 import com.lowagie.text.pdf.PdfPCell;
@@ -9,6 +8,8 @@ import com.lowagie.text.pdf.PdfWriter;
 
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 
@@ -30,17 +31,22 @@ public class GeneratePdfReport {
         document.add(paragraph1);
         Font fontTiltle2 = FontFactory.getFont(FontFactory.TIMES_ROMAN);
         fontTiltle.setSize(15);
-        Paragraph paragraph= new Paragraph("Date:",fontTiltle );
-        paragraph1.setAlignment(Paragraph.ALIGN_LEFT);
+        Paragraph paragraph = new Paragraph("Date: ", fontTiltle);
+        paragraph.setAlignment(Paragraph.ALIGN_LEFT);
+        Date date = new Date();
+        DateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy hh:mm:ss a");
+        String format = dateFormat.format(date);
+        paragraph.add(String.valueOf(format));
         document.add(paragraph);
+
         // Adding the created paragraph in the document
 
         // Creating a table of the 4 columns
-        PdfPTable table = new PdfPTable(7);
+        PdfPTable table = new PdfPTable(6);
         // Setting width of the table, its columns and spacing
         table.setWidthPercentage(100f);
-        table.setWidths(new int[]{ 10, 10, 10, 10, 10,10,10});
-        table.setSpacingBefore(40);
+        table.setWidths(new int[]{10, 10, 10, 10, 10, 10});
+        table.setSpacingBefore(30);
         // Create Table Cells for the table header
         PdfPCell cell = new PdfPCell();
         // Setting the background color and padding of the table cell
@@ -68,19 +74,12 @@ public class GeneratePdfReport {
         table.addCell(cell);
         // Iterating the list of customers
         for (PurchaseLogHistory purchaseLogHistoryResponse : purchaseLogHistoryList) {
-            // Adding student id
             table.addCell(String.valueOf(purchaseLogHistoryResponse.getCustomerName()));
-            // Adding student name
             table.addCell(purchaseLogHistoryResponse.getItemName());
-            // Adding student email
             table.addCell(String.valueOf(purchaseLogHistoryResponse.getPrice()));
-            // Adding student mobile
             table.addCell(String.valueOf(purchaseLogHistoryResponse.getQuantity()));
-
             table.addCell(String.valueOf(purchaseLogHistoryResponse.getDiscountInPercent()));
-
             table.addCell(String.valueOf(purchaseLogHistoryResponse.getDiscountInRupee()));
-
             table.addCell(String.valueOf(purchaseLogHistoryResponse.getTotalPrice()));
 
         }

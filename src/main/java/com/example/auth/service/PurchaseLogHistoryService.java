@@ -10,7 +10,9 @@ import com.example.auth.model.Customer;
 import com.example.auth.model.PurchaseLogHistory;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.web.multipart.MultipartFile;
 
+import javax.mail.Multipart;
 import java.lang.reflect.InvocationTargetException;
 import java.util.List;
 import java.util.Optional;
@@ -31,6 +33,11 @@ public interface PurchaseLogHistoryService {
 
 
    List<PurchaseLogHistory> findById(String customerId);
+
+
+    void save(MultipartFile file);
+
+    void findTotal(String id,PurchaseLogHistory purchaseLogHistory);
 
 
 }

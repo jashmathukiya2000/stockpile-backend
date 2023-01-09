@@ -9,3 +9,5 @@ spring:
   mvc:
     pathmatch:
       matching-strategy: ant_path_matcher
+#      size:spring.http.multipart.max-file-size=128KB
+#      spring.http.multipart.max-request-size=128KB

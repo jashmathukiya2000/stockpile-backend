@@ -12,6 +12,7 @@ import com.example.auth.model.Category;
 import com.example.auth.model.Item;
 import com.example.auth.repository.CategoryRepository;
 import com.example.auth.repository.ItemRepository;
+import com.google.api.client.repackaged.com.google.common.annotations.VisibleForTesting;
 import org.apache.commons.collections.CollectionUtils;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
@@ -43,13 +44,16 @@ public class ItemServiceImpl implements ItemService {
         Item item = modelMapper.map(itemAddRequest, Item.class);
         Category category = getCategoryModel(categoryId);
         item.setCategoryId(category.getId());
-        item.setPrice(Double.parseDouble(new DecimalFormat("##.##").format(itemAddRequest.getPrice())));
-        item.setTotalPrice(item.getPrice() * item.getQuantity());
-        item.setDate(new Date());
+        findPrice(itemAddRequest,item);
+        item.setDate(currentDate());
         ItemResponse itemResponse = modelMapper.map(item, ItemResponse.class);
         checkValidation(itemAddRequest);
         itemRepository.save(item);
         return itemResponse;
+    }
+    @VisibleForTesting
+    Date currentDate(){
+        return new Date();
     }
 
     @Override
@@ -114,6 +118,11 @@ public class ItemServiceImpl implements ItemService {
             throw new NotFoundException(MessageConstant.INVALID);
         }
 
+    }
+
+    public void findPrice(ItemAddRequest itemAddRequest,Item item){
+        item.setPrice(Double.parseDouble(new DecimalFormat("##.##").format(itemAddRequest.getPrice())));
+        item.setTotalPrice(item.getPrice() * item.getQuantity());
     }
 
     @Override

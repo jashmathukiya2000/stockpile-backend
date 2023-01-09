@@ -19,6 +19,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 
 import java.lang.reflect.InvocationTargetException;
+import java.util.Date;
 import java.util.Optional;
 
 import static org.mockito.Mockito.*;
@@ -31,16 +32,17 @@ class ItemServiceImplTest {
     private final CategoryRepository categoryRepository = mock(CategoryRepository.class);
     private final ModelMapper modelMapper = ItemServiceImplTestGenerator.getModelMapper();
     private final NullAwareBeanUtilsBean nullAwareBeanUtilsBean = mock(NullAwareBeanUtilsBean.class);
-    public ItemService itemService = new ItemServiceImpl(categoryRepository, itemRepository, modelMapper, nullAwareBeanUtilsBean);
+    private final ItemServiceImpl itemService = new ItemServiceImpl(categoryRepository, itemRepository, modelMapper, nullAwareBeanUtilsBean);
 
 
     @Test
     void testUpdateItem() throws InvocationTargetException, IllegalAccessException {
 
         //given
-        var item = ItemServiceImplTestGenerator.getMockItem();
+        Date date = itemService.currentDate();
+        var item = ItemServiceImplTestGenerator.getMockItem(date);
         var itemAddRequest = ItemServiceImplTestGenerator.getMockItemAddRequest();
-        var itemResponse = ItemServiceImplTestGenerator.getMockItemResponse();
+        var itemResponse = ItemServiceImplTestGenerator.getMockItemResponse(date,id);
         when(itemRepository.findByIdAndSoftDeleteIsFalse(id)).thenReturn(java.util.Optional.ofNullable(item));
         //when
         var actualData = itemService.updateItem(id, itemAddRequest);
@@ -53,11 +55,13 @@ class ItemServiceImplTest {
     void testAddItem() throws InvocationTargetException, IllegalAccessException {
 
         //given
+        Date date = itemService.currentDate();
         var category = ItemServiceImplTestGenerator.getMockCategory();
-        var item = ItemServiceImplTestGenerator.getMockItem();
+        var item = ItemServiceImplTestGenerator.getMockItem(date);
         var itemAddRequest = ItemServiceImplTestGenerator.getMockItemAddRequest();
-        var itemResponse = ItemServiceImplTestGenerator.getMockItemResponse();
+        var itemResponse = ItemServiceImplTestGenerator.getMockItemResponse(date,null);
         when(categoryRepository.findByIdAndSoftDeleteIsFalse(categoryId)).thenReturn(category);
+        when(itemRepository.save(item)).thenReturn(item);
 
         //when
         var actualData = itemService.addItem(categoryId, itemAddRequest);
@@ -70,8 +74,10 @@ class ItemServiceImplTest {
     void testGetItemById() {
 
         //given
-        var item = ItemServiceImplTestGenerator.getMockItem();
-        var itemResponse = ItemServiceImplTestGenerator.getMockItemResponse();
+        Date date = itemService.currentDate();
+        var item = ItemServiceImplTestGenerator.getMockItem(date);
+        var itemResponse = ItemServiceImplTestGenerator.getMockItemResponse(date,id);
+
         when(itemRepository.findByIdAndSoftDeleteIsFalse(id)).thenReturn(Optional.ofNullable(item));
 
         //when
@@ -101,7 +107,9 @@ class ItemServiceImplTest {
     void testDeleteItem() {
 
         //given
-        var item = ItemServiceImplTestGenerator.getMockItem();
+        Date date = itemService.currentDate();
+        var item = ItemServiceImplTestGenerator.getMockItem(date);
+
         when(itemRepository.findByIdAndSoftDeleteIsFalse(id)).thenReturn(Optional.ofNullable(item));
 
         //when

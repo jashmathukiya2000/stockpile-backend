@@ -9,6 +9,7 @@ import com.example.auth.decorator.pagination.FilterSortRequest;
 import com.example.auth.decorator.pagination.PurchaseLogFilter;
 import com.example.auth.decorator.pagination.PurchaseLogSortBy;
 import com.example.auth.model.Customer;
+import com.example.auth.model.ExcelHelper;
 import com.example.auth.model.PurchaseLogHistory;
 import com.example.auth.repository.CustomerRepository;
 import com.example.auth.repository.PurchaseLogHistoryRepository;
@@ -18,7 +19,11 @@ import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
+import javax.mail.MessagingException;
+import javax.mail.Multipart;
+import java.io.IOException;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.util.List;
@@ -49,7 +54,6 @@ public class PurchaseLogHistoryServiceImpl implements PurchaseLogHistoryService 
         Customer customer = getcustomerById(customerId);
         purchaseLogHistory.setCustomerId(customer.getId());
         purchaseLogHistory.setCustomerName(customer.getName());
-
         findDiscountInRupee(purchaseLogHistory);
         purchaseLogHistory.setDate(currentDate());
         PurchaseLogHistoryResponse purchaseLogHistoryResponse = modelMapper.map(purchaseLogHistory, PurchaseLogHistoryResponse.class);
@@ -109,7 +113,19 @@ public class PurchaseLogHistoryServiceImpl implements PurchaseLogHistoryService 
     }
 
 
-        Customer getcustomerById(String id) {
+    @Override
+    public void save(MultipartFile file) {
+        try {
+            List<PurchaseLogHistory> purchaseLogHistoryList= ExcelHelper.excelTopurchaseLogHistoryList(file.getInputStream());
+            purchaseLogHistoryRepository.saveAll(purchaseLogHistoryList);
+
+        } catch (IOException e) {
+            throw new RuntimeException("fail to store excel data :"+e.getMessage());
+        }
+    }
+
+
+    Customer getcustomerById(String id) {
         return customerRepository.findByIdAndSoftDeleteIsFalse(id).orElseThrow(() -> new NotFoundException(MessageConstant.ID_NOT_FOUND));
     }
 
@@ -165,6 +181,17 @@ public class PurchaseLogHistoryServiceImpl implements PurchaseLogHistoryService 
         purchaseLogHistory.setDiscountInRupee((purchaseLogHistory.getPrice() * purchaseLogHistory.getQuantity() * purchaseLogHistory.getDiscountInPercent()) / 100);
         purchaseLogHistory.setTotalPrice(purchaseLogHistory.getPrice() * purchaseLogHistory.getQuantity() - purchaseLogHistory.getDiscountInRupee());
     }
+
+    @Override
+   public void findTotal(String id,PurchaseLogHistory purchaseLogHistory){
+        double total=0;
+        if (id.equals(purchaseLogHistoryRepository.findByCustomerIdAndSoftDeleteFalse(id))) {
+            double sum = purchaseLogHistory.getTotalPrice();
+            total += sum;
+        }
+        System.out.println("Total"+ " "+total);
+
+}
 
 }
 

@@ -125,8 +125,6 @@ class PurchaseLogHistoryResponseServiceImplTest {
 
         //then
         verify(purchaseLogHistoryRepository, times(1)).findByIdAndSoftDeleteIsFalse(id);
-
-
     }
 
     @Test
@@ -152,4 +150,18 @@ class PurchaseLogHistoryResponseServiceImplTest {
         //then
         Assertions.assertEquals(page, actualData);
     }
+
+
+    @Test
+    void testPdf(){
+        var customer=PurchaseLogHistoryServiceImplTestGenerator.mockCustomer();
+        var purchaseLogHistory=PurchaseLogHistoryServiceImplTestGenerator.mockListPurchaseLogHistory();
+        when(purchaseLogHistoryRepository.findByCustomerIdAndSoftDeleteFalse(customerId)).thenReturn(purchaseLogHistory);
+
+        var actualData=purchaseLogHistoryService.findById(customerId);
+
+        //then
+        Assertions.assertEquals(purchaseLogHistory,actualData);
+    }
+
 }

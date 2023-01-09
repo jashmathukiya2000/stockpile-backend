@@ -7,20 +7,17 @@ import com.example.auth.decorator.pagination.FilterSortRequest;
 import com.example.auth.decorator.pagination.PageResponse;
 import com.example.auth.decorator.pagination.PurchaseLogFilter;
 import com.example.auth.decorator.pagination.PurchaseLogSortBy;
+import com.example.auth.model.ExcelGenerator;
+import com.example.auth.model.ExcelHelper;
 import com.example.auth.model.GeneratePdfReport;
 import com.example.auth.model.PurchaseLogHistory;
 import com.example.auth.service.PurchaseLogHistoryService;
 import com.itextpdf.text.DocumentException;
-import org.springframework.core.io.ByteArrayResource;
-import org.springframework.core.io.InputStreamResource;
 import org.springframework.data.domain.Page;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletResponse;
-import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.text.DateFormat;
@@ -92,24 +89,44 @@ public class PurchaseLogHistoryController {
     }
 
 
-  @RequestMapping(name = "generatePdfFile" , value = "/export-to-pdf",method = RequestMethod.POST)
-    public void generatePdfFile(HttpServletResponse response,@RequestParam String customerId ) throws DocumentException, IOException
-    {
+    @RequestMapping(name = "generatePdfFile", value = "/export-to-pdf", method = RequestMethod.POST)
+    public void generatePdfFile(HttpServletResponse response, @RequestParam String customerId) throws DocumentException, IOException {
         response.setContentType("application/pdf");
         DateFormat dateFormat = new SimpleDateFormat("YYYY-MM-DD:HH:MM:SS");
         String currentDateTime = dateFormat.format(new Date());
         String headerkey = "Content-Disposition";
-        String headervalue = "attachment; filename=customerDetails" + currentDateTime + ".pdf";
+        String headervalue = "attachment; filename=Invoice" + currentDateTime + ".pdf";
         response.setHeader(headerkey, headervalue);
-        List < PurchaseLogHistory > purchaseLogHistoryList = purchaseLogHistoryService.findById(customerId);
-        GeneratePdfReport pdfReport =new GeneratePdfReport();
+        List<PurchaseLogHistory> purchaseLogHistoryList = purchaseLogHistoryService.findById(customerId);
+        GeneratePdfReport pdfReport = new GeneratePdfReport();
         pdfReport.generate(purchaseLogHistoryList, response);
     }
 
 
+    @RequestMapping(name = "generateExcelFile", value = "/export-to-excel", method = RequestMethod.POST)
+    public void exportIntoExcelFile(HttpServletResponse response, @RequestParam String customerId) throws IOException {
+        response.setContentType("application/octet-stream");
+        DateFormat dateFormatter = new SimpleDateFormat("yyyy-MM-dd_HH:mm:ss");
+        String currentDateTime = dateFormatter.format(new Date());
+        String headerKey = "Content-Disposition";
+        String headerValue = "attachment; filename=Invoice" + currentDateTime + ".xlsx";
+        response.setHeader(headerKey, headerValue);
 
-
+        List<PurchaseLogHistory> customerLog = purchaseLogHistoryService.findById(customerId);
+        ExcelGenerator generator = new ExcelGenerator(customerLog);
+        generator.generateExcelFile(response);
     }
 
-
-
+    @RequestMapping(name = "uploadExcelFile", value = "/upload/excelFile",method = RequestMethod.POST)
+    public DataResponse<Object> uploadFile(@RequestParam("file") MultipartFile file) {
+        DataResponse<Object> dataResponse = new DataResponse<>();
+        if (ExcelHelper.hasExcelFormat(file)) {
+            if (file!=null)
+            purchaseLogHistoryService.save(file);
+            dataResponse.setStatus(Response.getOkResponse(ResponseConstant.UPLOADED_FILE_SUCCESSFULLY));
+        } else {
+            dataResponse.setStatus(Response.getNotFoundResponse(ResponseConstant.PLEASE_UPLOAD_EXCEL_FILE));
+        }
+        return dataResponse;
+    }
+}
