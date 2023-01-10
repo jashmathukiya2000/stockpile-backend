@@ -13,8 +13,8 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 
-public class GeneratePdfReport {
-    public void generate(List<PurchaseLogHistory> purchaseLogHistoryList, HttpServletResponse response) throws DocumentException, IOException, IOException {
+public class GeneratePdf {
+    public void generate1(List<Invoice> invoices, HttpServletResponse response) throws DocumentException, IOException, IOException {
         Document document = new Document(PageSize.A3);
         // Getting instance of PdfWriter
         PdfWriter.getInstance(document, response.getOutputStream());
@@ -23,31 +23,13 @@ public class GeneratePdfReport {
         // Creating font
         // Setting font style and size
         Font fontTiltle = FontFactory.getFont(FontFactory.TIMES_ROMAN);
-        fontTiltle.setSize(35);
+        fontTiltle.setSize(20);
         // Creating paragraph
         Paragraph paragraph1 = new Paragraph("Invoice", fontTiltle);
+        // Aligning the paragraph in the document
         paragraph1.setAlignment(Paragraph.ALIGN_CENTER);
         document.add(paragraph1);
-        // Aligning the paragraph in the document
         Font fontTiltle2 = FontFactory.getFont(FontFactory.TIMES_ROMAN);
-        fontTiltle.setSize(20);
-        Paragraph paragraph4=new Paragraph("Customer Details",fontTiltle);
-        paragraph4.setAlignment(Paragraph.ALIGN_LEFT);
-        document.add(paragraph4);
-
-
-        Font fontTiltle3 = FontFactory.getFont(FontFactory.TIMES_ROMAN);
-        fontTiltle.setSize(15);
-        Paragraph paragraph3 = new Paragraph("CustomerName:", fontTiltle);
-        paragraph3.setAlignment(Element.ALIGN_LEFT);
-        for (PurchaseLogHistory purchaseLogHistoryResponse : purchaseLogHistoryList) {
-            String customerName= purchaseLogHistoryResponse.getCustomerName();
-            paragraph3.add(String.valueOf(customerName));
-            // Adding the created paragraph in the document
-            document.add(paragraph3);
-            break;
-        }
-        Font fontTiltle4 = FontFactory.getFont(FontFactory.TIMES_ROMAN);
         fontTiltle.setSize(15);
         Paragraph paragraph = new Paragraph("Date: ", fontTiltle);
         paragraph.setAlignment(Paragraph.ALIGN_LEFT);
@@ -55,17 +37,19 @@ public class GeneratePdfReport {
         DateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy hh:mm:ss a");
         String format = dateFormat.format(date);
         paragraph.add(String.valueOf(format));
-        // Adding the created paragraph in the document
         document.add(paragraph);
+        Paragraph paragraph2 = new Paragraph("total:", fontTiltle2);
+        paragraph2.setAlignment(Paragraph.ALIGN_BOTTOM);
 
+        document.add(paragraph2);
 
+        // Adding the created paragraph in the document
 
         // Creating a table of the 4 columns
-
-        PdfPTable table = new PdfPTable(6);
+        PdfPTable table = new PdfPTable(7);
         // Setting width of the table, its columns and spacing
         table.setWidthPercentage(100f);
-        table.setWidths(new int[]{10, 10, 10, 10, 10, 10});
+        table.setWidths(new int[]{10, 10, 10, 10, 10, 10, 10});
         table.setSpacingBefore(30);
         // Create Table Cells for the table header
         PdfPCell cell = new PdfPCell();
@@ -76,9 +60,10 @@ public class GeneratePdfReport {
         // Setting font style and size
         Font font = FontFactory.getFont(FontFactory.TIMES_ROMAN);
         font.setColor(CMYKColor.WHITE);
-
         // Adding headings in the created table cell or  header
         // Adding Cell to table
+        cell.setPhrase(new Phrase(" customerName", font));
+        table.addCell(cell);
         cell.setPhrase(new Phrase(" ItemName", font));
         table.addCell(cell);
         cell.setPhrase(new Phrase("price", font));
@@ -91,36 +76,18 @@ public class GeneratePdfReport {
         table.addCell(cell);
         cell.setPhrase(new Phrase("totalPrice", font));
         table.addCell(cell);
-//        cell.setPhrase(new Phrase("total",font));
-//        table.addCell(cell);
         // Iterating the list of customers
-        for (PurchaseLogHistory purchaseLogHistoryResponse : purchaseLogHistoryList) {
-            table.addCell(purchaseLogHistoryResponse.getItemName());
-            table.addCell(String.valueOf(purchaseLogHistoryResponse.getPrice()));
-            table.addCell(String.valueOf(purchaseLogHistoryResponse.getQuantity()));
-            table.addCell(String.valueOf(purchaseLogHistoryResponse.getDiscountInPercent()));
-            table.addCell(String.valueOf(purchaseLogHistoryResponse.getDiscountInRupee()));
-            table.addCell(String.valueOf(purchaseLogHistoryResponse.getTotalPrice()));
+        for (Invoice purchaseLogHistoryResponse : invoices) {
+            table.addCell(String.valueOf(purchaseLogHistoryResponse.getPurchaseLogHistory()));
+            table.addCell(String.valueOf(purchaseLogHistoryResponse.getTotal()));
 
 
         }
+
 
         // Adding the created table to the document
         document.add(table);
-        Font fontTiltle5 = FontFactory.getFont(FontFactory.TIMES_ROMAN);
-        fontTiltle.setSize(20);
-        Paragraph paragraph2 = new Paragraph("Total: ", fontTiltle);
-        paragraph2.setAlignment(Element.ALIGN_RIGHT);
-        for (PurchaseLogHistory purchaseLogHistoryResponse : purchaseLogHistoryList) {
-            double total = purchaseLogHistoryResponse.getTotal();
-            paragraph2.add(String.valueOf(total));
-            document.add(paragraph2);
-            break;
-        }
         // Closing the document
         document.close();
     }
-
-
 }
-

@@ -37,8 +37,10 @@ public class PurchaseLogHistory  {
     double totalPrice;
 
     Date date;
-
+    double total;
     @JsonIgnore
     boolean softDelete;
 
 }
+
+

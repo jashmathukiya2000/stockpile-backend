@@ -21,12 +21,9 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
-import javax.mail.MessagingException;
-import javax.mail.Multipart;
 import java.io.IOException;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
-import java.util.List;
 import java.util.*;
 
 @Service
@@ -39,7 +36,7 @@ public class PurchaseLogHistoryServiceImpl implements PurchaseLogHistoryService 
     private final NullAwareBeanUtilsBean nullAwareBeanUtilsBean;
 
 
-    public PurchaseLogHistoryServiceImpl(PurchaseLogHistoryRepository purchaseLogHistoryRepository, ModelMapper modelMapper, CustomerRepository customerRepository, NullAwareBeanUtilsBean nullAwareBeanUtilsBean ) {
+    public PurchaseLogHistoryServiceImpl(PurchaseLogHistoryRepository purchaseLogHistoryRepository, ModelMapper modelMapper, CustomerRepository customerRepository, NullAwareBeanUtilsBean nullAwareBeanUtilsBean) {
         this.purchaseLogHistoryRepository = purchaseLogHistoryRepository;
         this.modelMapper = modelMapper;
         this.customerRepository = customerRepository;
@@ -62,7 +59,7 @@ public class PurchaseLogHistoryServiceImpl implements PurchaseLogHistoryService 
     }
 
     @VisibleForTesting
-    Date currentDate(){
+    Date currentDate() {
         return new Date();
     }
 
@@ -95,7 +92,7 @@ public class PurchaseLogHistoryServiceImpl implements PurchaseLogHistoryService 
 
     @Override
     public Object deletePurchaseLogById(String id) {
-       PurchaseLogHistory purchaseLogHistory = getItemPurchaseLogById(id);
+        PurchaseLogHistory purchaseLogHistory = getItemPurchaseLogById(id);
         purchaseLogHistory.setSoftDelete(true);
         purchaseLogHistoryRepository.save(purchaseLogHistory);
         return null;
@@ -108,19 +105,24 @@ public class PurchaseLogHistoryServiceImpl implements PurchaseLogHistoryService 
 
     @Override
     public List<PurchaseLogHistory> findById(String customerId) {
-         List<PurchaseLogHistory> purchaseLogHistory=  purchaseLogHistoryRepository.findByCustomerIdAndSoftDeleteFalse(customerId);
-        return purchaseLogHistory ;
+        List<PurchaseLogHistory> purchaseLogHistory = purchaseLogHistoryRepository.findByCustomerIdAndSoftDeleteFalse(customerId);
+        List<PurchaseLogHistory> purchaseLogHistoryList= new ArrayList<>();
+        for (PurchaseLogHistory logHistory : purchaseLogHistory) {
+               logHistory.setTotal(findTotal(customerId));
+
+        }
+        return purchaseLogHistory;
     }
 
 
     @Override
     public void save(MultipartFile file) {
         try {
-            List<PurchaseLogHistory> purchaseLogHistoryList= ExcelHelper.excelTopurchaseLogHistoryList(file.getInputStream());
+            List<PurchaseLogHistory> purchaseLogHistoryList = ExcelHelper.excelTopurchaseLogHistoryList(file.getInputStream());
             purchaseLogHistoryRepository.saveAll(purchaseLogHistoryList);
 
         } catch (IOException e) {
-            throw new RuntimeException("fail to store excel data :"+e.getMessage());
+            throw new RuntimeException("fail to store excel data :" + e.getMessage());
         }
     }
 
@@ -128,7 +130,6 @@ public class PurchaseLogHistoryServiceImpl implements PurchaseLogHistoryService 
     Customer getcustomerById(String id) {
         return customerRepository.findByIdAndSoftDeleteIsFalse(id).orElseThrow(() -> new NotFoundException(MessageConstant.ID_NOT_FOUND));
     }
-
     PurchaseLogHistory getItemPurchaseLogById(String id) {
         return purchaseLogHistoryRepository.findByIdAndSoftDeleteIsFalse(id).orElseThrow(() -> new NotFoundException(MessageConstant.ID_NOT_FOUND));
     }
@@ -153,7 +154,6 @@ public class PurchaseLogHistoryServiceImpl implements PurchaseLogHistoryService 
                 findDiscountInRupee(purchaseLogHistory);
 
             }
-
             purchaseLogHistoryRepository.save(purchaseLogHistory);
         }
 
@@ -180,19 +180,18 @@ public class PurchaseLogHistoryServiceImpl implements PurchaseLogHistoryService 
     public void findDiscountInRupee(PurchaseLogHistory purchaseLogHistory) {
         purchaseLogHistory.setDiscountInRupee((purchaseLogHistory.getPrice() * purchaseLogHistory.getQuantity() * purchaseLogHistory.getDiscountInPercent()) / 100);
         purchaseLogHistory.setTotalPrice(purchaseLogHistory.getPrice() * purchaseLogHistory.getQuantity() - purchaseLogHistory.getDiscountInRupee());
+
     }
 
-    @Override
-   public void findTotal(String id,PurchaseLogHistory purchaseLogHistory){
-        double total=0;
-        if (id.equals(purchaseLogHistoryRepository.findByCustomerIdAndSoftDeleteFalse(id))) {
-            double sum = purchaseLogHistory.getTotalPrice();
-            total += sum;
+
+    public double findTotal(String customerId){
+        double total = 0;
+        List<PurchaseLogHistory> purchaseLogHistory = purchaseLogHistoryRepository.findByCustomerIdAndSoftDeleteFalse(customerId);
+        for (PurchaseLogHistory logHistory : purchaseLogHistory) {
+            total += logHistory.getTotalPrice();
         }
-        System.out.println("Total"+ " "+total);
-
-}
-
+        return total;
+    }
 }
 
 

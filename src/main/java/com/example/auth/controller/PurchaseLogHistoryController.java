@@ -117,11 +117,10 @@ public class PurchaseLogHistoryController {
         generator.generateExcelFile(response);
     }
 
-    @RequestMapping(name = "uploadExcelFile", value = "/upload/excelFile",method = RequestMethod.POST)
+    @RequestMapping(name = "uploadExcelFile", value = "/upload/excelFile", method = RequestMethod.POST)
     public DataResponse<Object> uploadFile(@RequestParam("file") MultipartFile file) {
         DataResponse<Object> dataResponse = new DataResponse<>();
         if (ExcelHelper.hasExcelFormat(file)) {
-            if (file!=null)
             purchaseLogHistoryService.save(file);
             dataResponse.setStatus(Response.getOkResponse(ResponseConstant.UPLOADED_FILE_SUCCESSFULLY));
         } else {
@@ -129,4 +128,6 @@ public class PurchaseLogHistoryController {
         }
         return dataResponse;
     }
+
+
 }

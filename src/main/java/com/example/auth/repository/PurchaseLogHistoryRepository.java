@@ -14,11 +14,13 @@ import java.util.List;
 import java.util.Optional;
 @Repository
 public interface PurchaseLogHistoryRepository extends MongoRepository<PurchaseLogHistory, String>,PurchaseLogHistoryCustomRepository {
-    Optional<PurchaseLogHistory> findByIdAndSoftDeleteIsFalse(String id);
+     Optional<PurchaseLogHistory> findByIdAndSoftDeleteIsFalse(String id);
 
-    List<PurchaseLogHistory> findAllBySoftDeleteFalse();
+      List<PurchaseLogHistory> findAllBySoftDeleteFalse();
 
-    List<PurchaseLogHistory> findByCustomerIdAndSoftDeleteFalse(String customerId);
+      List<PurchaseLogHistory> findByCustomerIdAndSoftDeleteFalse(String customerId);
+
+
 
 
 
