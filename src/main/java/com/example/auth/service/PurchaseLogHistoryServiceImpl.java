@@ -106,9 +106,9 @@ public class PurchaseLogHistoryServiceImpl implements PurchaseLogHistoryService 
     @Override
     public List<PurchaseLogHistory> findById(String customerId) {
         List<PurchaseLogHistory> purchaseLogHistory = purchaseLogHistoryRepository.findByCustomerIdAndSoftDeleteFalse(customerId);
-        List<PurchaseLogHistory> purchaseLogHistoryList= new ArrayList<>();
+        List<PurchaseLogHistory> purchaseLogHistoryList = new ArrayList<>();
         for (PurchaseLogHistory logHistory : purchaseLogHistory) {
-               logHistory.setTotal(findTotal(customerId));
+            logHistory.setTotal(findTotal(customerId));
 
         }
         return purchaseLogHistory;
@@ -126,10 +126,16 @@ public class PurchaseLogHistoryServiceImpl implements PurchaseLogHistoryService 
         }
     }
 
+    @Override
+    public List<PurchaseLogHistoryResponse> getPurchaseLogByMonth(int month) {
+        return purchaseLogHistoryRepository.getPurchaseLogByMonth(month);
+    }
+
 
     Customer getcustomerById(String id) {
         return customerRepository.findByIdAndSoftDeleteIsFalse(id).orElseThrow(() -> new NotFoundException(MessageConstant.ID_NOT_FOUND));
     }
+
     PurchaseLogHistory getItemPurchaseLogById(String id) {
         return purchaseLogHistoryRepository.findByIdAndSoftDeleteIsFalse(id).orElseThrow(() -> new NotFoundException(MessageConstant.ID_NOT_FOUND));
     }
@@ -157,7 +163,6 @@ public class PurchaseLogHistoryServiceImpl implements PurchaseLogHistoryService 
             purchaseLogHistoryRepository.save(purchaseLogHistory);
         }
 
-
     }
 
     public void difference(PurchaseLogHistory purchaseLogHistory, PurchaseLogHistoryAddRequest purchaseLogHistoryAddRequest, HashMap<String, String> changedProperties) throws InvocationTargetException, IllegalAccessException {
@@ -184,7 +189,7 @@ public class PurchaseLogHistoryServiceImpl implements PurchaseLogHistoryService 
     }
 
 
-    public double findTotal(String customerId){
+    public double findTotal(String customerId) {
         double total = 0;
         List<PurchaseLogHistory> purchaseLogHistory = purchaseLogHistoryRepository.findByCustomerIdAndSoftDeleteFalse(customerId);
         for (PurchaseLogHistory logHistory : purchaseLogHistory) {

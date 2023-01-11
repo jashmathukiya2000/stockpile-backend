@@ -34,4 +34,6 @@ public interface PurchaseLogHistoryService {
     void save(MultipartFile file);
 
 
+    List<PurchaseLogHistoryResponse> getPurchaseLogByMonth(int month);
+
 }

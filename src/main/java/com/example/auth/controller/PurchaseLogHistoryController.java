@@ -129,5 +129,13 @@ public class PurchaseLogHistoryController {
         return dataResponse;
     }
 
+    @RequestMapping(name = "getPurchaseLogByMonth", value = "/month/year", method = RequestMethod.POST)
+    public ListResponse<PurchaseLogHistoryResponse> getPurchaseLogByMonth(@RequestParam int month) {
+        ListResponse<PurchaseLogHistoryResponse> listResponse = new ListResponse<>();
+        listResponse.setData(purchaseLogHistoryService.getPurchaseLogByMonth(month));
+        listResponse.setStatus(Response.getOkResponse(ResponseConstant.OK));
+        return listResponse;
+    }
+
 
 }

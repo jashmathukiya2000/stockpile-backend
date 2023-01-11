@@ -115,4 +115,30 @@ public class PurchaseLogHistoryCustomRepositoryImpl implements PurchaseLogHistor
     }
 
 
+    public List<AggregationOperation> getPurchaseLogByMonthAndYear(int month) {
+        List<AggregationOperation> operations = new ArrayList<>();
+        Criteria criteria = new Criteria();
+        criteria = criteria.and("softDelete").is(false);
+        operations.add(match(criteria));
+        operations.add(new CustomAggregationOperation(new Document("$addFields",
+                new Document("month", new Document("$month", "$date"))
+                        .append("year", new Document("$year", "$date")))));
+        operations.add(new CustomAggregationOperation(new Document("$match", new Document("month", month))));
+
+
+        log.info("output:{}" + operations);
+        return operations;
+    }
+
+
+    @Override
+    public List<PurchaseLogHistoryResponse> getPurchaseLogByMonth(int month) {
+        List<AggregationOperation> operations = getPurchaseLogByMonthAndYear(month);
+        Aggregation aggregation = newAggregation(operations);
+        log.info("output:{}" + aggregation);
+        return mongoTemplate.aggregate(aggregation, "purchaseLogHistory", PurchaseLogHistoryResponse.class).getMappedResults();
+
+    }
+
+
 }
