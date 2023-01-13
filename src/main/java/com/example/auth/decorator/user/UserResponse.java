@@ -28,6 +28,7 @@ public class UserResponse {
     String email;
     String phoneNumber;
     Role role;
+    String token;
     List<Result> result;
     double cgpa;
     Date date;

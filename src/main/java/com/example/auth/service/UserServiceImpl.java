@@ -1,7 +1,10 @@
 package com.example.auth.service;
 
+import com.example.auth.commons.JWTUser;
+import com.example.auth.commons.JwtTokenUtil;
 import com.example.auth.commons.advice.NullAwareBeanUtilsBean;
 import com.example.auth.commons.constant.MessageConstant;
+import com.example.auth.commons.enums.Role;
 import com.example.auth.commons.exception.NotFoundException;
 import com.example.auth.decorator.user.*;
 import com.example.auth.decorator.pagination.UserFilterData;
@@ -18,6 +21,7 @@ import org.springframework.stereotype.Service;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 @Slf4j
@@ -27,6 +31,7 @@ public class UserServiceImpl implements UserService {
     private final ModelMapper modelMapper;
     private final UserRepository userRepository;
     private final NullAwareBeanUtilsBean nullAwareBeanUtilsBean;
+    private final JwtTokenUtil jwtTokenUtil;
 
 
     @Override
@@ -103,6 +108,18 @@ public class UserServiceImpl implements UserService {
     @Override
     public List<MaxSpiResponse> getUserByMaxSpi(String id) {
         return userRepository.getUserByMaxSpi(id);
+    }
+
+    @Override
+    public UserResponse getToken(String id) {
+        User user=getUserModel(id);
+        UserResponse userResponse= modelMapper.map(user,UserResponse.class);
+        JWTUser jwtUser= new JWTUser(user, Collections.singletonList(Role.ANONYMOUS).toString(),null);
+       String token= jwtTokenUtil.generateToken(jwtUser);
+       userResponse.setToken(token);
+       userRepository.save(user);
+       userResponse.setId(user.getId());
+        return userResponse;
     }
 
 

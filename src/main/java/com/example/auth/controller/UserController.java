@@ -2,6 +2,7 @@ package com.example.auth.controller;
 
 import com.example.auth.commons.constant.ResponseConstant;
 import com.example.auth.commons.decorator.GeneralHelper;
+import com.example.auth.commons.enums.Role;
 import com.example.auth.decorator.DataResponse;
 import com.example.auth.decorator.ListResponse;
 import com.example.auth.decorator.Response;
@@ -110,6 +111,14 @@ public class UserController {
         listResponse.setData(userService.getUserByMaxSpi(id));
         listResponse.setStatus(Response.getOkResponse(ResponseConstant.OK));
         return listResponse;
+    }
+
+    @RequestMapping(name = "getToken", value = "/get/token",method = RequestMethod.POST)
+    public DataResponse<UserResponse> getToken(@RequestParam String id){
+        DataResponse<UserResponse> dataResponse= new DataResponse<>();
+        dataResponse.setData(userService.getToken(id));
+        dataResponse.setStatus(Response.getOkResponse(ResponseConstant.TOKEN_GENERATED_SUCCESSFULLY));
+        return dataResponse;
     }
 
 }

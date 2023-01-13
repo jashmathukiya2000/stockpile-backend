@@ -22,4 +22,5 @@ public class UserAddRequest {
     Address address;
     String email;
     String phoneNumber;
+
 }

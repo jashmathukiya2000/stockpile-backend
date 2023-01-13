@@ -26,6 +26,8 @@ public interface UserService {
     Page<UserResponse> getAllUserByPagination(UserFilterData filter, FilterSortRequest.SortRequest<UserSortBy> sort, PageRequest pageRequest);
 
     List<MaxSpiResponse> getUserByMaxSpi( String id );
+
+    UserResponse getToken(String id);
 }
 
 

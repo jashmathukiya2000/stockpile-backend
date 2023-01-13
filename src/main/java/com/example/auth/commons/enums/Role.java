@@ -9,7 +9,8 @@ import lombok.NoArgsConstructor;
 public enum Role {
     ADMIN("Admin"),
     USER("User"),
-    MANAGER("Manager");
+    MANAGER("Manager"),
+    ANONYMOUS("Anonymous");
 
     private String value;
     Role(String value){

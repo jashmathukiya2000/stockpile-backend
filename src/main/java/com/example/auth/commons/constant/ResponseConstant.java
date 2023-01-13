@@ -13,6 +13,7 @@ public class ResponseConstant {
     public static final String DOWNLOADED_SUCCESSFULLY = "Downloaded successfully";
     public static final String UPLOADED_FILE_SUCCESSFULLY = "Uploaded_the_file_successfully";
     public static final String PLEASE_UPLOAD_EXCEL_FILE = "please upload an excel file";
+    public static final String TOKEN_GENERATED_SUCCESSFULLY = "Token generated successfully";
 
 
 //    public static final String DATA_NOT_FOUND ="DATA NOT FOUND" ;
