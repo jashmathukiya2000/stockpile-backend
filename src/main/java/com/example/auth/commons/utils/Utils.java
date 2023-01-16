@@ -1,74 +1,72 @@
 package com.example.auth.commons.utils;
 
 import com.amazonaws.services.alexaforbusiness.model.NotFoundException;
+import com.example.auth.commons.Access;
 import com.example.auth.commons.decorator.RequestSession;
 import com.example.auth.commons.enums.CustomHTTPHeaders;
+import com.example.auth.commons.model.RestAPI;
 import com.example.auth.model.User;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.codec.binary.Base64;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
-import org.springframework.mail.javamail.JavaMailSender;
-import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Component;
-import org.springframework.util.CollectionUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
-import javax.activation.DataHandler;
-import javax.activation.DataSource;
-import javax.activation.FileDataSource;
-import javax.mail.*;
-import javax.mail.internet.InternetAddress;
-import javax.mail.internet.MimeBodyPart;
-import javax.mail.internet.MimeMessage;
-import javax.mail.internet.MimeMultipart;
+
 import javax.servlet.http.HttpServletRequest;
-import javax.xml.transform.Result;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
-import java.text.SimpleDateFormat;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Random;
 import java.util.stream.Collectors;
+
 @Component
 @Slf4j
 public class Utils {
+    private static final String TOKEN_NOT_FOUND = "Token not found";
     @Autowired
     MessageSource messageSource;
-//    @Autowired
+    //    @Autowired
 //    private JavaMailSender mailSender;
 //    @Autowired
 //    AdminConfigurationService configurationService;
 //    @Autowired
     RequestSession requestSession;
-    private static final String TOKEN_NOT_FOUND = "Token not found";
+
     public static String generateVerificationToken(int length) {
         // Using random method
         Random random_method = new Random();
         StringBuilder otp = new StringBuilder();
-        for(int i =0; i< length; i++){
+        for (int i = 0; i < length; i++) {
             otp.append(random_method.nextInt(10));
         }
         return otp.toString();
     }
+
     public static String getTokenFromHeaders(HttpServletRequest request) throws NotFoundException {
         String jwtToken = request.getHeader(CustomHTTPHeaders.TOKEN.toString());
-        if(jwtToken ==null){
+        if (jwtToken == null) {
             throw new NotFoundException(TOKEN_NOT_FOUND);
         }
         return jwtToken;
     }
+
     public static String encodeBase64(String password) {
         byte[] pass = Base64.encodeBase64(password.getBytes());
         String actualString = new String(pass);
-        log.info("actual string:{}",actualString);
+        log.info("actual string:{}", actualString);
         return actualString;
     }
+
     public static String decodeBase64(String password) {
         byte[] actualByte = Base64.decodeBase64(password);
         String actualString = new String(actualByte);
         System.out.println(actualString);
         return actualString;
     }
+
     /*
     public static List<com.example.auth.enumUser.Role> getAllRoles(Class<com.example.auth.enumUser.Role> authorizationClass) {
         List<com.example.auth.common.model.Role> roleList = new ArrayList<>();
@@ -170,28 +168,28 @@ public class Utils {
 //            }
 //        } catch (Exception ignored) {}
 //    }
-//    public static List<RestAPI> getAllMethodNames(Class className) {
-//        Method[] allMethods = className.getDeclaredMethods();
-//        List<RestAPI> apis = new ArrayList<>();
-//        for (Method method : allMethods) {
-//            if (Modifier.isPublic(method.getModifiers())) {
-//                Access a = method.getAnnotation(Access.class);
-//                RequestMapping rm = method.getAnnotation(RequestMapping.class);
-//                log.info("Name : {} , Access : {} ", rm.name(), a);
-//                if (a != null) {
-//                    List<String> authList = new ArrayList<>(Arrays.asList(a.levels()))
-//                            .stream()
-//                            .map(Enum::toString)
-//                            .collect(Collectors.toList());
-//                    RestAPI api = new RestAPI();
-//                    api.setName(rm.name());
-//                    api.setRoles(authList);
-//                    apis.add(api);
-//                }
-//            }
-//        }
-//        return apis;
-//    }
+    public static List<RestAPI> getAllMethodNames(Class className) {
+        Method[] allMethods = className.getDeclaredMethods();
+        List<RestAPI> apis = new ArrayList<>();
+        for (Method method : allMethods) {
+            if (Modifier.isPublic(method.getModifiers())) {
+                Access a = method.getAnnotation(Access.class);
+                RequestMapping rm = method.getAnnotation(RequestMapping.class);
+                log.info("Name : {} , Access : {} ", rm.name(), a);
+                if (a != null) {
+                    List<String> authList = new ArrayList<>(Arrays.asList(a.levels()))
+                            .stream()
+                            .map(Enum::toString)
+                            .collect(Collectors.toList());
+                    RestAPI api = new RestAPI();
+                    api.setName(rm.name());
+                    api.setRoles(authList);
+                    apis.add(api);
+                }
+            }
+        }
+        return apis;
+    }
 //    public String generateReportMessage(List<Result> result, double cgpi) {
 //        StringBuilder stringBuilder = generateCommonHtmlHead();
 //        for (Result result1 : result) {
@@ -222,10 +220,12 @@ public class Utils {
                 .append("<th>semester</th><th>spi</th><th>Date</th>")
                 .append("</tr>");
     }
+
     private void generateCommonFooter(StringBuilder stringBuilder) {
         stringBuilder.append("</table></body>");
     }
-//    public String genearteUpdatedUserDetail(HashMap<String, String> changedProperties ) {
+
+    //    public String genearteUpdatedUserDetail(HashMap<String, String> changedProperties ) {
 //        StringBuilder stringBuilder = new StringBuilder();
 //        if(!CollectionUtils.isEmpty(changedProperties)) {
 //            stringBuilder.append("You updated following fields");
@@ -238,16 +238,16 @@ public class Utils {
 //        log.info(stringBuilder.toString());
 //        return stringBuilder.toString();
 //    }
-    public String sendOtp(User userModel, String confirmPassword) {
+    public String sendOtp(User user, String confirmPassword) {
         StringBuilder stringBuilder = new StringBuilder();
         stringBuilder.append("Your email is   :");
-        stringBuilder.append(userModel.getEmail());
+        stringBuilder.append(user.getEmail());
         stringBuilder.append("<br/>");
         stringBuilder.append("Your Password is  :");
-        stringBuilder.append(" " +confirmPassword);
+        stringBuilder.append(" " + confirmPassword);
         stringBuilder.append("<br/>");
 //        stringBuilder.append("Otp is  :");
-//        stringBuilder.append("" +userModel.getOtp());
+//        stringBuilder.append("" +user.getOtp());
         stringBuilder.append("<br/>");
         stringBuilder.append("Created by :");
 

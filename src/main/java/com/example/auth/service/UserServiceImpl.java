@@ -4,12 +4,11 @@ import com.example.auth.commons.JWTUser;
 import com.example.auth.commons.JwtTokenUtil;
 import com.example.auth.commons.advice.NullAwareBeanUtilsBean;
 import com.example.auth.commons.constant.MessageConstant;
-import com.example.auth.commons.enums.Role;
 import com.example.auth.commons.exception.NotFoundException;
-import com.example.auth.decorator.user.*;
-import com.example.auth.decorator.pagination.UserFilterData;
 import com.example.auth.decorator.pagination.FilterSortRequest;
+import com.example.auth.decorator.pagination.UserFilterData;
 import com.example.auth.decorator.pagination.UserSortBy;
+import com.example.auth.decorator.user.*;
 import com.example.auth.model.User;
 import com.example.auth.repository.UserRepository;
 import lombok.AllArgsConstructor;
@@ -47,9 +46,9 @@ public class UserServiceImpl implements UserService {
 //            user1.setOccupation(userAddRequest.getOccupation());
 //            user1.setSalary(userAddRequest.getSalary());
 //            user1.setAddress(userAddRequest.getAddress());
-            nullAwareBeanUtilsBean.copyProperties(user1,userAddRequest);
+            nullAwareBeanUtilsBean.copyProperties(user1, userAddRequest);
             userRepository.save(user1);
-            return modelMapper.map(user1,UserResponse.class);
+            return modelMapper.map(user1, UserResponse.class);
 
 //            UserResponse userResponse1 = modelMapper.map(userAddRequest, UserResponse.class);
 //            nullAwareBeanUtilsBean.copyProperties(userResponse1, user1);
@@ -102,7 +101,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public Page<UserResponse> getAllUserByPagination(UserFilterData filter, FilterSortRequest.SortRequest<UserSortBy> sort, PageRequest pageRequest) {
-        return userRepository.getAllUserByPagination(filter,sort,pageRequest);
+        return userRepository.getAllUserByPagination(filter, sort, pageRequest);
     }
 
     @Override
@@ -111,15 +110,16 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public UserResponse getToken(String id) {
-        User user=getUserModel(id);
-        UserResponse userResponse= modelMapper.map(user,UserResponse.class);
-        JWTUser jwtUser= new JWTUser(user, Collections.singletonList(Role.ANONYMOUS).toString(),null);
-       String token= jwtTokenUtil.generateToken(jwtUser);
-       userResponse.setToken(token);
-       userRepository.save(user);
-       userResponse.setId(user.getId());
-        return userResponse;
+    public UserResponse getToken(String id) throws InvocationTargetException, IllegalAccessException {
+         User user = getUserModel(id);
+         UserResponse userResponse = new UserResponse();
+         userResponse.setRole(user.getRole());
+         JWTUser jwtUser = new JWTUser(id, Collections.singletonList(userResponse.getRole().toString()));
+         String token = jwtTokenUtil.generateToken(jwtUser);
+         nullAwareBeanUtilsBean.copyProperties(userResponse, user);
+          userResponse.setToken(token);
+//        userResponse.setId(user.getId());
+          return userResponse;
     }
 
 

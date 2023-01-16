@@ -30,4 +30,8 @@ public class MessageConstant {
     public static final String EMAIL_ALREADY_EXIST = "Email already exist try new one";
     public static final String CUSTOMER_NAME_MUST_NOT_BE_NULL = "CustomerName must not be null";
     public static final String TOTAL_PRICE_MUST_NOT_BE_NULL = "Total price must not be null";
+    public static final Object AUTHORIZATION_IS_NOT_PRESENT_IN_REQUEST = "Authorization is not present in request";
+    public static final Object ROLE_NOT_ALLOWED = "Role not allowed" ;
+    public static final Object INVALID_TOKEN_SIGNATURE = "Invalid Token Signature";
+    public static final Object TOKEN_EXPIRED = "Token Expired";
 }

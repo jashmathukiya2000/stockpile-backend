@@ -40,7 +40,7 @@ public class CustomerServiceImpl implements CustomerService {
 
 
     @Override
-    public CustomerSignupResponse signUpUser(CustomerSignupAddRequest customerSignupAddRequest, Role role) {
+    public CustomerSignupResponse addCustomer(CustomerSignupAddRequest customerSignupAddRequest, Role role) {
         Customer signUpUser1 = modelMapper.map(customerSignupAddRequest, Customer.class);
         CustomerSignupResponse userResponse1 = modelMapper.map(customerSignupAddRequest, CustomerSignupResponse.class);
         if (signUpUser1.getPassword() != null) {
@@ -103,6 +103,5 @@ public class CustomerServiceImpl implements CustomerService {
     public Customer getUserByEmail(String email) {
         return customerRepository.findUserByEmailAndSoftDeleteIsFalse(email).orElseThrow(() -> new NotFoundException(MessageConstant.USER_NOT_FOUND));
     }
-
 
 }

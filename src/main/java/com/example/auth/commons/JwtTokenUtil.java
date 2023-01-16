@@ -13,7 +13,7 @@ import java.util.function.Function;
 @Slf4j
 public class JwtTokenUtil {
     /*@Value("${jwt.secret}")*/
-    private final String secret = "dev_generation_jwt_token_users_with_id_role";
+    private static final String secret = "dev_generation_jwt_token_users_with_id_role";
     /*@Value("${jwt.validity}")*/
     private final String validity= "86400";
     //retrieve username from jwt token
@@ -29,11 +29,11 @@ public class JwtTokenUtil {
         return claimsResolver.apply(claims);
     }
     //for retrieveing any information from token we will need the secret key
-    private Claims getAllClaimsFromToken(String token) {
+    private static Claims getAllClaimsFromToken(String token) {
         return Jwts.parser().setSigningKey(Utils.encodeBase64(secret)).parseClaimsJws(token).getBody();
     }
     // Get JWTUser From Token
-    public JWTUser getJwtUserFromToken(String token){
+    public static JWTUser getJwtUserFromToken(String token){
         return JWTUser.fromClaim(getAllClaimsFromToken(token));
     }
     //check if the token has expired

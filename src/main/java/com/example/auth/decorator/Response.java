@@ -55,5 +55,11 @@ public class Response {
     public static Response getUpdateResponse() {
         return new Response(HttpStatus.OK, ResponseConstant.UPDATED);
     }
+
+    public Response getResponse(HttpStatus unauthorized, Object authorizationIsNotPresentInRequest, Object authorizationIsNotPresentInRequest1) {
+        return  new Response(HttpStatus.UNAUTHORIZED,ResponseConstant.AUTHORIZATION_IS_NOT_PRESENT_IN_REQUEST);
+
+    }
 }
+
 

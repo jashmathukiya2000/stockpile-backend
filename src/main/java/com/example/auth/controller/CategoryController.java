@@ -7,7 +7,10 @@ import com.example.auth.decorator.ListResponse;
 import com.example.auth.decorator.Response;
 import com.example.auth.decorator.category.CategoryAddRequest;
 import com.example.auth.decorator.category.CategoryResponse;
-import com.example.auth.decorator.pagination.*;
+import com.example.auth.decorator.pagination.CategoryFilter;
+import com.example.auth.decorator.pagination.CategorySortBy;
+import com.example.auth.decorator.pagination.FilterSortRequest;
+import com.example.auth.decorator.pagination.PageResponse;
 import com.example.auth.service.CategoryService;
 import org.springframework.data.domain.Page;
 import org.springframework.web.bind.annotation.*;
@@ -48,7 +51,6 @@ public class CategoryController {
         return dataResponse;
     }
 
-
     @RequestMapping(name = "getAllCategory", value = "/getAllCategroy", method = RequestMethod.GET)
     public ListResponse<CategoryResponse> getAllCategory() {
         ListResponse<CategoryResponse> listResponse = new ListResponse<>();
@@ -69,7 +71,7 @@ public class CategoryController {
     @RequestMapping(name = "getAllCategoryByPagination", value = "get/all/pagination", method = RequestMethod.POST)
     public PageResponse<CategoryResponse> getAllCategoryByPagination(@RequestBody FilterSortRequest<CategoryFilter, CategorySortBy> filterSortRequest) {
         PageResponse<CategoryResponse> pageResponse = new PageResponse<>();
-        Page<CategoryResponse> categoryrResponses = categoryService.getAllCategoryByPagination(filterSortRequest.getFilter(),filterSortRequest.getSort(),generalHelper.getPagination(filterSortRequest.getPagination().getPage(),filterSortRequest.getPagination().getLimit()));
+        Page<CategoryResponse> categoryrResponses = categoryService.getAllCategoryByPagination(filterSortRequest.getFilter(), filterSortRequest.getSort(), generalHelper.getPagination(filterSortRequest.getPagination().getPage(), filterSortRequest.getPagination().getLimit()));
         pageResponse.setData(categoryrResponses);
         pageResponse.setStatus(Response.getOkResponse());
         return pageResponse;

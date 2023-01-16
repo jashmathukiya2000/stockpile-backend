@@ -34,7 +34,7 @@ public class CustomerServiceImplTest {
         when(customerRepository.save(userModel)).thenReturn(userModel);
 
         //when
-        var actualData = userModelService.signUpUser(signUpAddRequest, Role.USER);
+        var actualData = userModelService.addCustomer(signUpAddRequest, Role.USER);
 
         //then
         Assertions.assertEquals(signUpresponse, actualData);

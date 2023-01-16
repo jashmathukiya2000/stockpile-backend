@@ -27,7 +27,7 @@ public interface UserService {
 
     List<MaxSpiResponse> getUserByMaxSpi( String id );
 
-    UserResponse getToken(String id);
+    UserResponse getToken(String id) throws InvocationTargetException, IllegalAccessException;
 }
 
 

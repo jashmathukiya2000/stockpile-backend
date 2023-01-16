@@ -1,12 +1,17 @@
 package com.example.auth.controller;
 
+import com.example.auth.commons.Access;
 import com.example.auth.commons.constant.ResponseConstant;
 import com.example.auth.commons.decorator.GeneralHelper;
 import com.example.auth.commons.enums.Role;
 import com.example.auth.decorator.DataResponse;
 import com.example.auth.decorator.ListResponse;
 import com.example.auth.decorator.Response;
-import com.example.auth.decorator.pagination.*;
+import com.example.auth.decorator.TokenResponse;
+import com.example.auth.decorator.pagination.FilterSortRequest;
+import com.example.auth.decorator.pagination.PageResponse;
+import com.example.auth.decorator.pagination.UserFilterData;
+import com.example.auth.decorator.pagination.UserSortBy;
 import com.example.auth.decorator.user.*;
 import com.example.auth.service.ResultService;
 import com.example.auth.service.UserService;
@@ -48,6 +53,7 @@ public class UserController {
 
 
     @RequestMapping(name = "getUserById", value = "/user/{id}", method = RequestMethod.POST)
+    @Access(levels = Role.ADMIN)
     public DataResponse<UserResponse> getUserById(@PathVariable String id) throws InvocationTargetException, IllegalAccessException {
         DataResponse<UserResponse> dataResponse = new DataResponse<>();
         dataResponse.setData(userService.getUser(id));
@@ -56,6 +62,7 @@ public class UserController {
     }
 
     @RequestMapping(name = "deleteUser", value = "/delete/{id}", method = RequestMethod.DELETE)
+    @Access(levels = Role.ADMIN)
     public DataResponse<Object> deleteUser(@PathVariable String id) {
         DataResponse<Object> dataResponse = new DataResponse<>();
         userService.deleteUser(id);
@@ -81,6 +88,7 @@ public class UserController {
 
 
     @RequestMapping(name = "addResult", value = "/addResult/{id}", method = RequestMethod.POST)
+    @Access(levels = Role.ADMIN)
     public DataResponse<UserResponse> addResult(@PathVariable String id, @RequestBody Result result) throws InvocationTargetException, IllegalAccessException {
         DataResponse<UserResponse> dataResponse = new DataResponse<>();
         dataResponse.setData(resultService.addResult(id, result));
@@ -99,7 +107,7 @@ public class UserController {
     @RequestMapping(name = "getAllUserByPagination", value = "get/all/pagination", method = RequestMethod.POST)
     public PageResponse<UserResponse> getAllUserByPagination(@RequestBody FilterSortRequest<UserFilterData, UserSortBy> filterSortRequest) {
         PageResponse<UserResponse> pageResponse = new PageResponse<>();
-        Page<UserResponse> userResponses = userService.getAllUserByPagination(filterSortRequest.getFilter(),filterSortRequest.getSort(),generalHelper.getPagination(filterSortRequest.getPagination().getPage(),filterSortRequest.getPagination().getLimit()));
+        Page<UserResponse> userResponses = userService.getAllUserByPagination(filterSortRequest.getFilter(), filterSortRequest.getSort(), generalHelper.getPagination(filterSortRequest.getPagination().getPage(), filterSortRequest.getPagination().getLimit()));
         pageResponse.setData(userResponses);
         pageResponse.setStatus(Response.getOkResponse());
         return pageResponse;
@@ -113,12 +121,15 @@ public class UserController {
         return listResponse;
     }
 
-    @RequestMapping(name = "getToken", value = "/get/token",method = RequestMethod.POST)
-    public DataResponse<UserResponse> getToken(@RequestParam String id){
-        DataResponse<UserResponse> dataResponse= new DataResponse<>();
-        dataResponse.setData(userService.getToken(id));
-        dataResponse.setStatus(Response.getOkResponse(ResponseConstant.TOKEN_GENERATED_SUCCESSFULLY));
-        return dataResponse;
+    @RequestMapping(name = "getToken", value = "/get/token", method = RequestMethod.POST)
+    public TokenResponse<UserResponse> getToken(@RequestParam String id) throws InvocationTargetException, IllegalAccessException {
+        TokenResponse<UserResponse> tokenResponse = new TokenResponse<>();
+        UserResponse userResponse = userService.getToken(id);
+        tokenResponse.setData(userResponse);
+        tokenResponse.setStatus(Response.getOkResponse(ResponseConstant.TOKEN_GENERATED_SUCCESSFULLY));
+        tokenResponse.setToken(userResponse.getToken());
+        return tokenResponse;
     }
+
 
 }

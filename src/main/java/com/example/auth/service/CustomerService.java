@@ -15,7 +15,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.security.NoSuchAlgorithmException;
 
 public interface CustomerService {
-    CustomerSignupResponse signUpUser(CustomerSignupAddRequest signUpAddRequest, Role role);
+    CustomerSignupResponse addCustomer(CustomerSignupAddRequest signUpAddRequest, Role role);
 
     CustomerSignupResponse login(CustomerLoginAddRequest customerLoginAddRequest) throws InvocationTargetException, IllegalAccessException, NoSuchAlgorithmException;
 

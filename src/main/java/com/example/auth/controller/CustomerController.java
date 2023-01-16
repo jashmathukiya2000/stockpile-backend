@@ -1,5 +1,6 @@
 package com.example.auth.controller;
 
+import com.example.auth.commons.Access;
 import com.example.auth.commons.constant.ResponseConstant;
 import com.example.auth.commons.decorator.GeneralHelper;
 import com.example.auth.commons.enums.Role;
@@ -30,17 +31,18 @@ public class CustomerController {
         this.generalHelper = generalHelper;
     }
 
-    @RequestMapping(name = "signUpUser", value = "/signup", method = RequestMethod.POST)
-    public DataResponse<CustomerSignupResponse> signUpUser(@RequestBody CustomerSignupAddRequest customerSignupAddRequest, @RequestParam Role role) {
+    @RequestMapping(name = "addCustomer", value = "/addCustomer", method = RequestMethod.POST)
+    @Access(levels = Role.ANONYMOUS)
+    public DataResponse<CustomerSignupResponse> addCustomer(@RequestBody CustomerSignupAddRequest customerSignupAddRequest, @RequestParam Role role) {
         DataResponse<CustomerSignupResponse> dataResponse = new DataResponse<>();
-        dataResponse.setData(customerService.signUpUser(customerSignupAddRequest, role));
+        dataResponse.setData(customerService.addCustomer(customerSignupAddRequest, role));
         dataResponse.setStatus(Response.getOkResponse());
         return dataResponse;
 
     }
 
-
     @RequestMapping(name = "login", value = "/login/email", method = RequestMethod.POST)
+    @Access(levels = Role.ANONYMOUS)
     public DataResponse<CustomerSignupResponse> login(@RequestBody CustomerLoginAddRequest customerLoginAddRequest) throws IllegalAccessException, NoSuchAlgorithmException, InvocationTargetException {
         DataResponse<CustomerSignupResponse> dataResponse = new DataResponse<>();
         dataResponse.setData(customerService.login(customerLoginAddRequest));
@@ -49,6 +51,7 @@ public class CustomerController {
     }
 
     @RequestMapping(name = "getAllCustomerByPagination", value = "/get/all/pagination", method = RequestMethod.POST)
+    @Access(levels =Role.ADMIN)
     public PageResponse<Customer> getAllCustomerByPagination(@RequestBody FilterSortRequest<CustomerFilter, CustomerSortBy> filterSortRequest) {
         PageResponse<Customer> pageResponse = new PageResponse<>();
         Page<Customer> page = customerService.getAllCustomerByPagination(filterSortRequest.getFilter(), filterSortRequest.getSort(),
