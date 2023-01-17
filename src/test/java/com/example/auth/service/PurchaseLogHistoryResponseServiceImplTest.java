@@ -1,4 +1,5 @@
 package com.example.auth.service;
+
 import com.example.auth.commons.advice.NullAwareBeanUtilsBean;
 import com.example.auth.decorator.PurchaseLogHistoryResponse;
 import com.example.auth.decorator.pagination.FilterSortRequest;
@@ -6,7 +7,6 @@ import com.example.auth.decorator.pagination.Pagination;
 import com.example.auth.decorator.pagination.PurchaseLogFilter;
 import com.example.auth.decorator.pagination.PurchaseLogSortBy;
 import com.example.auth.helper.PurchaseLogHistoryServiceImplTestGenerator;
-import com.example.auth.model.PurchaseLogHistory;
 import com.example.auth.repository.CustomerRepository;
 import com.example.auth.repository.PurchaseLogHistoryRepository;
 import org.junit.jupiter.api.Assertions;
@@ -17,11 +17,11 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
+
 import java.lang.reflect.InvocationTargetException;
 import java.util.Date;
 
 import static org.mockito.Mockito.*;
-import static org.mockito.Mockito.doReturn;
 
 @SpringBootTest
 class PurchaseLogHistoryResponseServiceImplTest {
@@ -31,7 +31,7 @@ class PurchaseLogHistoryResponseServiceImplTest {
     private final ModelMapper modelMapper = PurchaseLogHistoryServiceImplTestGenerator.getModelMapper();
     private final CustomerRepository customerRepository = mock(CustomerRepository.class);
     private final NullAwareBeanUtilsBean nullAwareBeanUtilsBean = mock(NullAwareBeanUtilsBean.class);
-    private  final PurchaseLogHistoryServiceImpl purchaseLogHistoryService = spy(new PurchaseLogHistoryServiceImpl(purchaseLogHistoryRepository, modelMapper, customerRepository, nullAwareBeanUtilsBean));
+    private final PurchaseLogHistoryServiceImpl purchaseLogHistoryService = spy(new PurchaseLogHistoryServiceImpl(purchaseLogHistoryRepository, modelMapper, customerRepository, nullAwareBeanUtilsBean));
 
     @Test
     void testAddPurchaseLogHistory() {
@@ -40,7 +40,7 @@ class PurchaseLogHistoryResponseServiceImplTest {
         var customer = PurchaseLogHistoryServiceImplTestGenerator.mockCustomer();
         var purchaseLogHistory = PurchaseLogHistoryServiceImplTestGenerator.mockPurchaseLogHistory(date);
         var purchaseLogAddRequest = PurchaseLogHistoryServiceImplTestGenerator.mockPurchaseLogHistoryAddRequest();
-        var purchaseLogResponse = PurchaseLogHistoryServiceImplTestGenerator.mockPurchaseLogHistoryResponse(date,null );
+        var purchaseLogResponse = PurchaseLogHistoryServiceImplTestGenerator.mockPurchaseLogHistoryResponse(date, null);
 
         doReturn(date).when(purchaseLogHistoryService).currentDate();
 
@@ -63,8 +63,8 @@ class PurchaseLogHistoryResponseServiceImplTest {
 
         var purchaseLogHistory = PurchaseLogHistoryServiceImplTestGenerator.mockPurchaseLogHistory(date);
         var purchaseLogAddRequest = PurchaseLogHistoryServiceImplTestGenerator.mockPurchaseLogHistoryAddRequest();
-        var purchaseLogResponse = PurchaseLogHistoryServiceImplTestGenerator.mockPurchaseLogHistoryResponse(date,id );
-         doReturn(date).when(purchaseLogHistoryService).currentDate();
+        var purchaseLogResponse = PurchaseLogHistoryServiceImplTestGenerator.mockPurchaseLogHistoryResponse(date, id);
+        doReturn(date).when(purchaseLogHistoryService).currentDate();
 
         when(purchaseLogHistoryRepository.findByIdAndSoftDeleteIsFalse(id)).thenReturn(java.util.Optional.ofNullable(purchaseLogHistory));
 
@@ -82,7 +82,7 @@ class PurchaseLogHistoryResponseServiceImplTest {
         Date date = purchaseLogHistoryService.currentDate();
 
         var purchaseLogHistory = PurchaseLogHistoryServiceImplTestGenerator.mockPurchaseLogHistory(date);
-        var purchaseLogResponse = PurchaseLogHistoryServiceImplTestGenerator.mockPurchaseLogHistoryResponse(date,id );
+        var purchaseLogResponse = PurchaseLogHistoryServiceImplTestGenerator.mockPurchaseLogHistoryResponse(date, id);
         doReturn(date).when(purchaseLogHistoryService).currentDate();
 
         when(purchaseLogHistoryRepository.findByIdAndSoftDeleteIsFalse(id)).thenReturn(java.util.Optional.ofNullable(purchaseLogHistory));
@@ -153,15 +153,15 @@ class PurchaseLogHistoryResponseServiceImplTest {
 
 
     @Test
-    void testPdf(){
-        var customer=PurchaseLogHistoryServiceImplTestGenerator.mockCustomer();
-        var purchaseLogHistory=PurchaseLogHistoryServiceImplTestGenerator.mockListPurchaseLogHistory();
+    void testPdf() {
+        var customer = PurchaseLogHistoryServiceImplTestGenerator.mockCustomer();
+        var purchaseLogHistory = PurchaseLogHistoryServiceImplTestGenerator.mockListPurchaseLogHistory();
         when(purchaseLogHistoryRepository.findByCustomerIdAndSoftDeleteFalse(customerId)).thenReturn(purchaseLogHistory);
 
-        var actualData=purchaseLogHistoryService.findById(customerId);
+        var actualData = purchaseLogHistoryService.findById(customerId);
 
         //then
-        Assertions.assertEquals(purchaseLogHistory,actualData);
+        Assertions.assertEquals(purchaseLogHistory, actualData);
     }
 
 }

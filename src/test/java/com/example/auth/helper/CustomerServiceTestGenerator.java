@@ -1,10 +1,9 @@
 package com.example.auth.helper;
 
 import com.example.auth.commons.enums.Role;
-import com.example.auth.commons.utils.PasswordUtils;
 import com.example.auth.decorator.customer.CustomerLoginAddRequest;
-import com.example.auth.decorator.customer.CustomerSignupAddRequest;
-import com.example.auth.decorator.customer.CustomerSignupResponse;
+import com.example.auth.decorator.customer.CustomerAddRequest;
+import com.example.auth.decorator.customer.CustomerResponse;
 import com.example.auth.model.Customer;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.convention.MatchingStrategies;
@@ -30,8 +29,8 @@ public class CustomerServiceTestGenerator {
                 .build();
     }
 
-    public static CustomerSignupAddRequest getMockUserAddRequest() {
-        return CustomerSignupAddRequest.builder()
+    public static CustomerAddRequest getMockUserAddRequest() {
+        return CustomerAddRequest.builder()
                 .email(email)
                 .password("password")
                 .contact("6386580393")
@@ -42,8 +41,8 @@ public class CustomerServiceTestGenerator {
 
     }
 
-    public static CustomerSignupResponse getMockSignUpResponse(String password) {
-        return CustomerSignupResponse.builder()
+    public static CustomerResponse getMockSignUpResponse(String password) {
+        return CustomerResponse.builder()
                 .email(email)
                 .contact("6386580393")
                 .password(password)
@@ -60,8 +59,8 @@ public class CustomerServiceTestGenerator {
                 .build();
     }
 
-    public static CustomerSignupResponse getMockLoginResponse(String password) {
-        return CustomerSignupResponse.builder()
+    public static CustomerResponse getMockLoginResponse(String password) {
+        return CustomerResponse.builder()
                 .password(password)
                 .email(email)
                 .role(Role.USER)

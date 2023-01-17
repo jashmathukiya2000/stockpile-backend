@@ -4,6 +4,7 @@ package com.example.auth.repository;
 import com.example.auth.model.Customer;
 import org.springframework.data.mongodb.repository.MongoRepository;
 
+import java.util.List;
 import java.util.Optional;
 
 public interface CustomerRepository extends MongoRepository<Customer, String>, CustomerCustomRepository {
@@ -13,5 +14,7 @@ public interface CustomerRepository extends MongoRepository<Customer, String>, C
 
     Optional<Customer> findByIdAndSoftDeleteIsFalse(String id);
 
-//    Optional<Customer> findCustomerNameById(String id);
+      List<Customer> findAllBySoftDeleteFalse();
+
+
 }

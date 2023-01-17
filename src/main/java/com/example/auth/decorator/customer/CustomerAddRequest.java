@@ -11,7 +11,7 @@ import java.util.Date;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class CustomerSignupAddRequest {
+public class CustomerAddRequest {
     String name;
     String email;
     String contact;

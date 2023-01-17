@@ -1,9 +1,9 @@
 package com.example.auth.service;
 
-import com.example.auth.decorator.user.*;
-import com.example.auth.decorator.pagination.UserFilterData;
 import com.example.auth.decorator.pagination.FilterSortRequest;
+import com.example.auth.decorator.pagination.UserFilterData;
 import com.example.auth.decorator.pagination.UserSortBy;
+import com.example.auth.decorator.user.*;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 
@@ -25,7 +25,7 @@ public interface UserService {
 
     Page<UserResponse> getAllUserByPagination(UserFilterData filter, FilterSortRequest.SortRequest<UserSortBy> sort, PageRequest pageRequest);
 
-    List<MaxSpiResponse> getUserByMaxSpi( String id );
+    List<MaxSpiResponse> getUserByMaxSpi(String id);
 
     UserResponse getToken(String id) throws InvocationTargetException, IllegalAccessException;
 }

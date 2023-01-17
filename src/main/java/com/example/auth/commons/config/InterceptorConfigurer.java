@@ -1,3 +1,5 @@
+package com.example.auth.commons.config;
+
 import com.example.auth.commons.intercepter.Interceptor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,6 +13,7 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 public class InterceptorConfigurer implements WebMvcConfigurer {
     @Autowired
     Interceptor interceptor;
+
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
         registry.addInterceptor(interceptor).excludePathPatterns(
@@ -22,11 +25,11 @@ public class InterceptorConfigurer implements WebMvcConfigurer {
                 "/configuration/security",
                 "/configuration/ui",
                 "/error"
-
         );
         log.info("Adding Login authentication interceptor");
         WebMvcConfigurer.super.addInterceptors(registry);
     }
+
     @Override
     public void addCorsMappings (CorsRegistry registry){
         registry.addMapping("/**");
@@ -41,3 +44,5 @@ public class InterceptorConfigurer implements WebMvcConfigurer {
                 .addResourceLocations("classpath:/META-INF/resources/webjars/");
     }
 }
+
+

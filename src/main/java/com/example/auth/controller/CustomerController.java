@@ -5,10 +5,11 @@ import com.example.auth.commons.constant.ResponseConstant;
 import com.example.auth.commons.decorator.GeneralHelper;
 import com.example.auth.commons.enums.Role;
 import com.example.auth.decorator.DataResponse;
+import com.example.auth.decorator.ListResponse;
 import com.example.auth.decorator.Response;
 import com.example.auth.decorator.customer.CustomerLoginAddRequest;
-import com.example.auth.decorator.customer.CustomerSignupAddRequest;
-import com.example.auth.decorator.customer.CustomerSignupResponse;
+import com.example.auth.decorator.customer.CustomerAddRequest;
+import com.example.auth.decorator.customer.CustomerResponse;
 import com.example.auth.decorator.pagination.CustomerFilter;
 import com.example.auth.decorator.pagination.CustomerSortBy;
 import com.example.auth.decorator.pagination.FilterSortRequest;
@@ -33,9 +34,9 @@ public class CustomerController {
 
     @RequestMapping(name = "addCustomer", value = "/addCustomer", method = RequestMethod.POST)
     @Access(levels = Role.ANONYMOUS)
-    public DataResponse<CustomerSignupResponse> addCustomer(@RequestBody CustomerSignupAddRequest customerSignupAddRequest, @RequestParam Role role) {
-        DataResponse<CustomerSignupResponse> dataResponse = new DataResponse<>();
-        dataResponse.setData(customerService.addCustomer(customerSignupAddRequest, role));
+    public DataResponse<CustomerResponse> addCustomer(@RequestBody CustomerAddRequest customerAddRequest, @RequestParam Role role) {
+        DataResponse<CustomerResponse> dataResponse = new DataResponse<>();
+        dataResponse.setData(customerService.addCustomer(customerAddRequest, role));
         dataResponse.setStatus(Response.getOkResponse());
         return dataResponse;
 
@@ -43,10 +44,37 @@ public class CustomerController {
 
     @RequestMapping(name = "login", value = "/login/email", method = RequestMethod.POST)
     @Access(levels = Role.ANONYMOUS)
-    public DataResponse<CustomerSignupResponse> login(@RequestBody CustomerLoginAddRequest customerLoginAddRequest) throws IllegalAccessException, NoSuchAlgorithmException, InvocationTargetException {
-        DataResponse<CustomerSignupResponse> dataResponse = new DataResponse<>();
+    public DataResponse<CustomerResponse> login(@RequestBody CustomerLoginAddRequest customerLoginAddRequest) throws IllegalAccessException, NoSuchAlgorithmException, InvocationTargetException {
+        DataResponse<CustomerResponse> dataResponse = new DataResponse<>();
         dataResponse.setData(customerService.login(customerLoginAddRequest));
         dataResponse.setStatus(Response.getOkResponse(ResponseConstant.LOGIN_SUCCESSFULL));
+        return dataResponse;
+    }
+
+    @RequestMapping(name = "getCustomerById", value = "/id",method = RequestMethod.GET)
+    @Access(levels =Role.ADMIN)
+    public DataResponse<CustomerResponse> getCustomerById(@RequestParam String id){
+        DataResponse<CustomerResponse> dataResponse= new DataResponse<>();
+        dataResponse.setData(customerService.getCustomerById(id));
+        dataResponse.setStatus(Response.getOkResponse(ResponseConstant.OK));
+        return dataResponse;
+    }
+
+    @RequestMapping(name = "getAllCustomer",value = "get/All/Customer", method = RequestMethod.GET)
+    @Access(levels =Role.ADMIN)
+    public ListResponse<CustomerResponse> getAllCustomer(){
+        ListResponse<CustomerResponse> listResponse= new ListResponse<>();
+        listResponse.setData(customerService.getAllCustomer());
+        listResponse.setStatus(Response.getOkResponse(ResponseConstant.OK));
+        return listResponse;
+    }
+
+    @RequestMapping(name = "deleteCustomer", value = "/delete/By/Id",method = RequestMethod.DELETE)
+    @Access(levels =Role.ADMIN)
+    public DataResponse<Object> deleteCustomer(@RequestParam String id){
+        DataResponse<Object> dataResponse= new DataResponse<>();
+        dataResponse.setData(customerService.deleteCustomer(id));
+        dataResponse.setStatus(Response.getOkResponse(ResponseConstant.OK));
         return dataResponse;
     }
 

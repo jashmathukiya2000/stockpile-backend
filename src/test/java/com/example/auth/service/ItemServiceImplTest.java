@@ -42,7 +42,7 @@ class ItemServiceImplTest {
         Date date = itemService.currentDate();
         var item = ItemServiceImplTestGenerator.getMockItem(date);
         var itemAddRequest = ItemServiceImplTestGenerator.getMockItemAddRequest();
-        var itemResponse = ItemServiceImplTestGenerator.getMockItemResponse(date,id);
+        var itemResponse = ItemServiceImplTestGenerator.getMockItemResponse(date, id);
         when(itemRepository.findByIdAndSoftDeleteIsFalse(id)).thenReturn(java.util.Optional.ofNullable(item));
         //when
         var actualData = itemService.updateItem(id, itemAddRequest);
@@ -59,7 +59,8 @@ class ItemServiceImplTest {
         var category = ItemServiceImplTestGenerator.getMockCategory();
         var item = ItemServiceImplTestGenerator.getMockItem(date);
         var itemAddRequest = ItemServiceImplTestGenerator.getMockItemAddRequest();
-        var itemResponse = ItemServiceImplTestGenerator.getMockItemResponse(date,null);
+        var itemResponse = ItemServiceImplTestGenerator.getMockItemResponse(date, null);
+//        doReturn(date).when(itemService).currentDate();
         when(categoryRepository.findByIdAndSoftDeleteIsFalse(categoryId)).thenReturn(category);
         when(itemRepository.save(item)).thenReturn(item);
 
@@ -76,7 +77,7 @@ class ItemServiceImplTest {
         //given
         Date date = itemService.currentDate();
         var item = ItemServiceImplTestGenerator.getMockItem(date);
-        var itemResponse = ItemServiceImplTestGenerator.getMockItemResponse(date,id);
+        var itemResponse = ItemServiceImplTestGenerator.getMockItemResponse(date, id);
 
         when(itemRepository.findByIdAndSoftDeleteIsFalse(id)).thenReturn(Optional.ofNullable(item));
 

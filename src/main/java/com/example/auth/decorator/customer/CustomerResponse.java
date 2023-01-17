@@ -14,7 +14,7 @@ import java.util.Date;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class CustomerSignupResponse {
+public class CustomerResponse {
     Role role;
     String name;
     String userName;
