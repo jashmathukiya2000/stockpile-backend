@@ -221,9 +221,6 @@ public class Utils {
                 .append("</tr>");
     }
 
-    private void generateCommonFooter(StringBuilder stringBuilder) {
-        stringBuilder.append("</table></body>");
-    }
 
     //    public String genearteUpdatedUserDetail(HashMap<String, String> changedProperties ) {
 //        StringBuilder stringBuilder = new StringBuilder();

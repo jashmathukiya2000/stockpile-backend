@@ -1,7 +1,7 @@
 package com.example.auth.service;
 
 import com.example.auth.commons.JWTUser;
-import com.example.auth.commons.JwtTokenUtil;
+import com.example.auth.commons.utils.JwtTokenUtil;
 import com.example.auth.commons.advice.NullAwareBeanUtilsBean;
 import com.example.auth.commons.constant.MessageConstant;
 import com.example.auth.commons.exception.NotFoundException;
@@ -37,15 +37,15 @@ public class UserServiceImpl implements UserService {
     public UserResponse addOrUpdateUser(String id, UserAddRequest userAddRequest) throws InvocationTargetException, IllegalAccessException {
         if (id != null) {
             User user1 = getUserModel(id);
-//            user1.setFirstName(userAddRequest.getFirstName());
-//            user1.setMiddleName(userAddRequest.getMiddleName());
-//            user1.setLastName(userAddRequest.getLastName());
-//            user1.setFullName();
-//            user1.setAge(userAddRequest.getAge());
-//            user1.setEmail(userAddRequest.getEmail());
-//            user1.setOccupation(userAddRequest.getOccupation());
-//            user1.setSalary(userAddRequest.getSalary());
-//            user1.setAddress(userAddRequest.getAddress());
+            user1.setFirstName(userAddRequest.getFirstName());
+            user1.setMiddleName(userAddRequest.getMiddleName());
+            user1.setLastName(userAddRequest.getLastName());
+            user1.setFullName();
+            user1.setAge(userAddRequest.getAge());
+            user1.setEmail(userAddRequest.getEmail());
+            user1.setOccupation(userAddRequest.getOccupation());
+            user1.setSalary(userAddRequest.getSalary());
+            user1.setAddress(userAddRequest.getAddress());
             nullAwareBeanUtilsBean.copyProperties(user1, userAddRequest);
             userRepository.save(user1);
             return modelMapper.map(user1, UserResponse.class);
@@ -118,7 +118,7 @@ public class UserServiceImpl implements UserService {
          String token = jwtTokenUtil.generateToken(jwtUser);
          nullAwareBeanUtilsBean.copyProperties(userResponse, user);
           userResponse.setToken(token);
-//        userResponse.setId(user.getId());
+         userResponse.setId(user.getId());
           return userResponse;
     }
 

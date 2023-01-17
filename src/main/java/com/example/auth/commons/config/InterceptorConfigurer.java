@@ -22,6 +22,7 @@ public class InterceptorConfigurer implements WebMvcConfigurer {
                 "/configuration/security",
                 "/configuration/ui",
                 "/error"
+
         );
         log.info("Adding Login authentication interceptor");
         WebMvcConfigurer.super.addInterceptors(registry);

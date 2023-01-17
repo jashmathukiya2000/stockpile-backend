@@ -1,7 +1,9 @@
 package com.example.auth.controller;
 
+import com.example.auth.commons.Access;
 import com.example.auth.commons.constant.ResponseConstant;
 import com.example.auth.commons.decorator.GeneralHelper;
+import com.example.auth.commons.enums.Role;
 import com.example.auth.decorator.*;
 import com.example.auth.decorator.pagination.FilterSortRequest;
 import com.example.auth.decorator.pagination.PageResponse;
@@ -38,6 +40,7 @@ public class PurchaseLogHistoryController {
     }
 
     @RequestMapping(name = "addPurchaseLog", value = "/add", method = RequestMethod.POST)
+    @Access (levels = Role.ADMIN)
     public DataResponse<PurchaseLogHistoryResponse> addPurchaseLog(@RequestBody PurchaseLogHistoryAddRequest purchaseLogHistoryAddRequest, @RequestParam String customerId) {
         DataResponse<PurchaseLogHistoryResponse> dataResponse = new DataResponse<>();
         dataResponse.setData(purchaseLogHistoryService.addPurchaseLog(purchaseLogHistoryAddRequest, customerId));
@@ -46,6 +49,7 @@ public class PurchaseLogHistoryController {
     }
 
     @RequestMapping(name = "updatePurchaseLog", value = "/update/{id}", method = RequestMethod.POST)
+    @Access (levels = Role.ADMIN)
     public DataResponse<Object> updatePurchaseLog(@RequestBody PurchaseLogHistoryAddRequest purchaseLogHistoryAddRequest, @RequestParam String id) throws InvocationTargetException, IllegalAccessException {
         DataResponse<Object> dataResponse = new DataResponse<>();
         dataResponse.setData(purchaseLogHistoryService.updatePurchaseLog(purchaseLogHistoryAddRequest, id));
@@ -54,6 +58,7 @@ public class PurchaseLogHistoryController {
     }
 
     @RequestMapping(name = "getPurchaseLogById", value = "/get/{id}", method = RequestMethod.GET)
+    @Access (levels = Role.ADMIN)
     public DataResponse<PurchaseLogHistoryResponse> getPurchaseLogById(@RequestParam String id) {
         DataResponse<PurchaseLogHistoryResponse> dataResponse = new DataResponse<>();
         dataResponse.setData(purchaseLogHistoryService.getPurchaseLogById(id));
@@ -62,6 +67,7 @@ public class PurchaseLogHistoryController {
     }
 
     @RequestMapping(name = "getAllPurchaseLog", value = "/get/All", method = RequestMethod.GET)
+    @Access (levels = Role.ADMIN)
     public ListResponse<PurchaseLogHistoryResponse> getAllPurchaseLog() {
         ListResponse<PurchaseLogHistoryResponse> listResponse = new ListResponse<>();
         listResponse.setData(purchaseLogHistoryService.getAllPurchaseLog());
@@ -70,6 +76,7 @@ public class PurchaseLogHistoryController {
     }
 
     @RequestMapping(name = "deletePurchaseLogById", value = "/delete/{id}", method = RequestMethod.DELETE)
+    @Access (levels = Role.ADMIN)
     public DataResponse<Object> deletePurchaseLogById(@RequestParam String id) {
         DataResponse<Object> dataResponse = new DataResponse<>();
         dataResponse.setData(purchaseLogHistoryService.deletePurchaseLogById(id));
@@ -79,6 +86,7 @@ public class PurchaseLogHistoryController {
     }
 
     @RequestMapping(name = "getAllPurchaseLogByPagination", value = "get/all/pagination", method = RequestMethod.POST)
+    @Access (levels = Role.ADMIN)
     public PageResponse<PurchaseLogHistoryResponse> getAllPurchaseLogByPagination(@RequestBody FilterSortRequest<PurchaseLogFilter, PurchaseLogSortBy> filterSortRequest) {
         PageResponse<PurchaseLogHistoryResponse> pageResponse = new PageResponse<>();
         Page<PurchaseLogHistoryResponse> logHistoryResponse = purchaseLogHistoryService.getAllPurchaseLogByPagination(filterSortRequest.getFilter(), filterSortRequest.getSort(),
@@ -90,6 +98,7 @@ public class PurchaseLogHistoryController {
 
 
     @RequestMapping(name = "generatePdfFile", value = "/export-to-pdf", method = RequestMethod.POST)
+    @Access (levels = Role.ADMIN)
     public void generatePdfFile(HttpServletResponse response, @RequestParam String customerId) throws DocumentException, IOException {
         response.setContentType("application/pdf");
         DateFormat dateFormat = new SimpleDateFormat("YYYY-MM-DD:HH:MM:SS");
@@ -104,6 +113,7 @@ public class PurchaseLogHistoryController {
 
 
     @RequestMapping(name = "generateExcelFile", value = "/export-to-excel", method = RequestMethod.POST)
+    @Access (levels = Role.ADMIN)
     public void exportIntoExcelFile(HttpServletResponse response, @RequestParam String customerId) throws IOException {
         response.setContentType("application/octet-stream");
         DateFormat dateFormatter = new SimpleDateFormat("yyyy-MM-dd_HH:mm:ss");
@@ -118,6 +128,7 @@ public class PurchaseLogHistoryController {
     }
 
     @RequestMapping(name = "uploadExcelFile", value = "/upload/excelFile", method = RequestMethod.POST)
+    @Access (levels = Role.ADMIN)
     public DataResponse<Object> uploadFile(@RequestParam("file") MultipartFile file) {
         DataResponse<Object> dataResponse = new DataResponse<>();
         if (ExcelHelper.hasExcelFormat(file)) {
@@ -130,6 +141,7 @@ public class PurchaseLogHistoryController {
     }
 
     @RequestMapping(name = "getPurchaseLogByMonth", value = "/month/year", method = RequestMethod.POST)
+    @Access (levels = Role.ADMIN)
     public ListResponse<PurchaseLogHistoryResponse> getPurchaseLogByMonth(@RequestParam int month) {
         ListResponse<PurchaseLogHistoryResponse> listResponse = new ListResponse<>();
         listResponse.setData(purchaseLogHistoryService.getPurchaseLogByMonth(month));

@@ -10,7 +10,7 @@ public interface RestAPIRepository extends MongoRepository<RestAPI,String> {
 
   List<RestAPI> findAllBy();
 
-  boolean existsByRolesInAndName(String name, List<String> roles);
+  boolean existsByRolesInAndName( List<String> roles,String name);
 
     boolean existsByName(String name);
 

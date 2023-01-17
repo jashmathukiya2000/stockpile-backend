@@ -3,6 +3,7 @@ package com.example.auth.decorator.user;
 import com.example.auth.commons.enums.Role;
 import com.example.auth.decorator.user.Result;
 import com.example.auth.model.Address;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -28,10 +29,8 @@ public class UserResponse {
     String email;
     String phoneNumber;
     Role role;
-    String token;
     List<Result> result;
     double cgpa;
-    Date date;
-
+    String token;
 
 }

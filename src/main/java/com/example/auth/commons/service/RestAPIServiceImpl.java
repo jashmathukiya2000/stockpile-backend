@@ -20,7 +20,7 @@ public class RestAPIServiceImpl implements RestAPIService{
 
     @Override
     public boolean hasAccess(List<String> roles, String name) {
-        return restAPIRepository.existsByRolesInAndName(name, roles);
+        return restAPIRepository.existsByRolesInAndName(roles,name);
 
     }
 }

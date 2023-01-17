@@ -36,7 +36,6 @@ public class ResultServiceImpl implements ResultService {
     public UserResponse addResult(String id, Result result) {
         List<Result> results = new ArrayList<>();
         List<Result> finalResults = new ArrayList<>();
-
         User user1 = getUserModel(id);
 
         double sum = 0;

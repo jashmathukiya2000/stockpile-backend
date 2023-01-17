@@ -35,6 +35,7 @@ public class UserController {
     }
 
     @RequestMapping(name = "addOrUpdateUser", value = "/add", method = RequestMethod.POST)
+    @Access(levels = Role.ADMIN)
     public DataResponse<UserResponse> addOrUpdateUser(@RequestParam(required = false) String id, @RequestBody UserAddRequest userAddRequest) throws InvocationTargetException, IllegalAccessException {
         DataResponse<UserResponse> dataResponse = new DataResponse<>();
         dataResponse.setData(userService.addOrUpdateUser(id, userAddRequest));
@@ -44,6 +45,7 @@ public class UserController {
 
 
     @RequestMapping(name = "getAllUser", value = "/getAll", method = RequestMethod.GET)
+    @Access(levels = Role.ANONYMOUS)
     public ListResponse<UserResponse> getAllUser() {
         ListResponse<UserResponse> listResponse = new ListResponse<>();
         listResponse.setData(userService.getAllUser());
@@ -53,7 +55,7 @@ public class UserController {
 
 
     @RequestMapping(name = "getUserById", value = "/user/{id}", method = RequestMethod.POST)
-    @Access(levels = Role.ADMIN)
+    @Access(levels = {Role.ADMIN})
     public DataResponse<UserResponse> getUserById(@PathVariable String id) throws InvocationTargetException, IllegalAccessException {
         DataResponse<UserResponse> dataResponse = new DataResponse<>();
         dataResponse.setData(userService.getUser(id));
@@ -71,6 +73,7 @@ public class UserController {
     }
 
     @RequestMapping(name = "getUserByAge", value = "/age", method = RequestMethod.POST)
+    @Access(levels = Role.ADMIN)
     public ListResponse<UserResponse> getUserByAge(@RequestBody UserFilter userFilter) {
         ListResponse<UserResponse> listResponse = new ListResponse<>();
         listResponse.setData(userService.getUserByAge(userFilter));
@@ -79,6 +82,7 @@ public class UserController {
     }
 
     @RequestMapping(name = "getUserBySalaryAggregation", value = "/salary", method = RequestMethod.POST)
+    @Access(levels = Role.ADMIN)
     public ListResponse<UserAggregationResponse> getUserBySalary(@RequestBody UserFilter userFilter) {
         ListResponse<UserAggregationResponse> listResponse = new ListResponse<>();
         listResponse.setData(userService.getUserBySalary(userFilter));
@@ -88,7 +92,7 @@ public class UserController {
 
 
     @RequestMapping(name = "addResult", value = "/addResult/{id}", method = RequestMethod.POST)
-    @Access(levels = Role.ADMIN)
+    @Access(levels = {Role.ADMIN})
     public DataResponse<UserResponse> addResult(@PathVariable String id, @RequestBody Result result) throws InvocationTargetException, IllegalAccessException {
         DataResponse<UserResponse> dataResponse = new DataResponse<>();
         dataResponse.setData(resultService.addResult(id, result));
@@ -105,6 +109,7 @@ public class UserController {
     }
 
     @RequestMapping(name = "getAllUserByPagination", value = "get/all/pagination", method = RequestMethod.POST)
+    @Access(levels = Role.ADMIN)
     public PageResponse<UserResponse> getAllUserByPagination(@RequestBody FilterSortRequest<UserFilterData, UserSortBy> filterSortRequest) {
         PageResponse<UserResponse> pageResponse = new PageResponse<>();
         Page<UserResponse> userResponses = userService.getAllUserByPagination(filterSortRequest.getFilter(), filterSortRequest.getSort(), generalHelper.getPagination(filterSortRequest.getPagination().getPage(), filterSortRequest.getPagination().getLimit()));
@@ -114,6 +119,7 @@ public class UserController {
     }
 
     @RequestMapping(name = "getUserByMaxSpi", value = "/get{id}", method = RequestMethod.POST)
+    @Access(levels = Role.ADMIN)
     public ListResponse<MaxSpiResponse> getUserByMaxSpi(@PathVariable String id) {
         ListResponse<MaxSpiResponse> listResponse = new ListResponse<>();
         listResponse.setData(userService.getUserByMaxSpi(id));
@@ -121,13 +127,13 @@ public class UserController {
         return listResponse;
     }
 
-    @RequestMapping(name = "getToken", value = "/get/token", method = RequestMethod.POST)
+    @RequestMapping(name = "getToken", value = "/get/token", method = RequestMethod.GET)
+    @Access(levels = Role.ANONYMOUS)
     public TokenResponse<UserResponse> getToken(@RequestParam String id) throws InvocationTargetException, IllegalAccessException {
         TokenResponse<UserResponse> tokenResponse = new TokenResponse<>();
-        UserResponse userResponse = userService.getToken(id);
-        tokenResponse.setData(userResponse);
+        tokenResponse.setData(userService.getToken(id));
         tokenResponse.setStatus(Response.getOkResponse(ResponseConstant.TOKEN_GENERATED_SUCCESSFULLY));
-        tokenResponse.setToken(userResponse.getToken());
+
         return tokenResponse;
     }
 

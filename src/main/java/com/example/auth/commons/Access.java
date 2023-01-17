@@ -17,7 +17,7 @@ import java.lang.annotation.Target;
 @Target(ElementType.METHOD) // on Method level
 public @interface Access {
 
-    Role[] levels() default Role.ADMIN;
+    Role[] levels() default Role.USER;
 
     String createdBy() default "AUTH";
 }

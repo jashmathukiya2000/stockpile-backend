@@ -1,7 +1,9 @@
 package com.example.auth.controller;
 
+import com.example.auth.commons.Access;
 import com.example.auth.commons.constant.ResponseConstant;
 import com.example.auth.commons.decorator.GeneralHelper;
+import com.example.auth.commons.enums.Role;
 import com.example.auth.decorator.DataResponse;
 import com.example.auth.decorator.ListResponse;
 import com.example.auth.decorator.Response;
@@ -27,6 +29,7 @@ public class CategoryController {
     }
 
     @RequestMapping(name = "addCategory", value = "/add", method = RequestMethod.POST)
+    @Access(levels = Role.ADMIN)
     public DataResponse<CategoryResponse> addCategory(@RequestBody CategoryAddRequest categoryAddRequest) {
         DataResponse<CategoryResponse> dataResponse = new DataResponse<>();
         dataResponse.setData(categoryService.addCategory(categoryAddRequest));
@@ -35,6 +38,7 @@ public class CategoryController {
     }
 
     @RequestMapping(name = "updateCategory", value = "/update", method = RequestMethod.POST)
+    @Access (levels = Role.ADMIN)
     public DataResponse<CategoryResponse> updateCategory(@RequestParam String id, @RequestBody CategoryAddRequest categoryAddRequest) {
         DataResponse<CategoryResponse> dataResponse = new DataResponse<>();
         dataResponse.setData(categoryService.updateCategory(id, categoryAddRequest));
@@ -44,6 +48,7 @@ public class CategoryController {
 
 
     @RequestMapping(name = "getCategoryById", value = "/{id}", method = RequestMethod.GET)
+    @Access (levels = Role.ADMIN)
     public DataResponse<CategoryResponse> getCategoryById(@PathVariable String id) {
         DataResponse<CategoryResponse> dataResponse = new DataResponse<>();
         dataResponse.setData(categoryService.getCategoryById(id));
@@ -52,6 +57,7 @@ public class CategoryController {
     }
 
     @RequestMapping(name = "getAllCategory", value = "/getAllCategroy", method = RequestMethod.GET)
+    @Access (levels = Role.ADMIN)
     public ListResponse<CategoryResponse> getAllCategory() {
         ListResponse<CategoryResponse> listResponse = new ListResponse<>();
         listResponse.setData(categoryService.getAllCategory());
@@ -61,6 +67,7 @@ public class CategoryController {
     }
 
     @RequestMapping(name = "deleteCategory", value = "delete/{id}", method = RequestMethod.DELETE)
+    @Access (levels = Role.ADMIN)
     public DataResponse<Object> deleteCategory(@PathVariable String id) {
         DataResponse<Object> dataResponse = new DataResponse<>();
         categoryService.deleteCategory(id);
@@ -69,6 +76,7 @@ public class CategoryController {
     }
 
     @RequestMapping(name = "getAllCategoryByPagination", value = "get/all/pagination", method = RequestMethod.POST)
+    @Access (levels = Role.ADMIN)
     public PageResponse<CategoryResponse> getAllCategoryByPagination(@RequestBody FilterSortRequest<CategoryFilter, CategorySortBy> filterSortRequest) {
         PageResponse<CategoryResponse> pageResponse = new PageResponse<>();
         Page<CategoryResponse> categoryrResponses = categoryService.getAllCategoryByPagination(filterSortRequest.getFilter(), filterSortRequest.getSort(), generalHelper.getPagination(filterSortRequest.getPagination().getPage(), filterSortRequest.getPagination().getLimit()));

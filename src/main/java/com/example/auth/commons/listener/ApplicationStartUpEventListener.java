@@ -1,3 +1,4 @@
+package com.example.auth.commons.listener;
 
 import com.example.auth.commons.model.AdminConfiguration;
 import com.example.auth.commons.model.RestAPI;
@@ -5,7 +6,7 @@ import com.example.auth.commons.repository.AdminRepository;
 import com.example.auth.commons.repository.RestAPIRepository;
 import com.example.auth.commons.service.AdminConfigurationService;
 import com.example.auth.commons.utils.Utils;
-import com.example.auth.controller.UserController;
+import com.example.auth.controller.*;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.event.ContextRefreshedEvent;
@@ -27,7 +28,7 @@ public class ApplicationStartUpEventListener {
     RestAPIRepository restAPIRepository;
     @Autowired
     AdminRepository adminRepository;
-   /* @Autowired
+    /*@Autowired
     SchedulerService schedulerService;*/
     @Autowired
     AdminConfigurationService adminConfigurationService;
@@ -54,7 +55,10 @@ public class ApplicationStartUpEventListener {
         // On Application Start up , create the list of authorized services for authorized date
         if (!skip) {
             saveIfNotExits(Utils.getAllMethodNames(UserController.class));
-
+            saveIfNotExits(Utils.getAllMethodNames(CategoryController.class));
+            saveIfNotExits(Utils.getAllMethodNames(CustomerController.class));
+            saveIfNotExits(Utils.getAllMethodNames(ItemController.class));
+            saveIfNotExits(Utils.getAllMethodNames(PurchaseLogHistoryController.class));
         }
 /*        Date currentDate = new Date();
         SimpleDateFormat dateFormatter = new SimpleDateFormat("yyyy-MM-dd HH:mm (z)");
@@ -65,9 +69,9 @@ public class ApplicationStartUpEventListener {
         dateFormatter.setTimeZone(TimeZone.getTimeZone("IST"));
         String istTime = dateFormatter.format(currentDate);
         Set<String> emails = configuration.getTechAdmins();
-        *//*if (StringUtils.isEmpty(e.getTo())){
+        if (StringUtils.isEmpty(e.getTo())){
             emails.setTo(emails.iterator().next());
-        }*//*
+        }
         EmailModel emailModel = new EmailModel();
         AdminConfiguration adminConfiguration = adminConfigurationService.getConfigurationDetails();
         emailModel.setTo(emails.iterator().next());
@@ -87,7 +91,7 @@ public class ApplicationStartUpEventListener {
             }
         });
     }
-/*    private void scheduleCronJobs(AdminConfiguration configuration) {
+    /*private void scheduleCronJobs(AdminConfiguration configuration) {
         try {
             schedulerService.scheduleCronJob(GetLoginTrue.class, "0 15 17 ? * * *", "check_login", null, null);
          *//*   List<ComplianceHistory> complianceHistories = adminRepository.findByRunningTrueAndSoftDeleteIsFalse();
@@ -105,6 +109,7 @@ public class ApplicationStartUpEventListener {
             //schedulerService.scheduleOnDate(CommunityInactiveScheduleJob.class,date, "community_inactive_schedule_job");
             log.info("Scheduler job added");
         } catch (Exception e) {
-            log.error("Error occurred while creating scheduler job : {}", e.getMessage());*/
+            log.error("Error occurred while creating scheduler job : {}", e.getMessage());
         }
-
+    }*/
+}

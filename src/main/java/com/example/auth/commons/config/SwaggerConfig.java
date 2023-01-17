@@ -25,7 +25,7 @@ public class SwaggerConfig {
         return new Docket(
                 DocumentationType.SWAGGER_2)
                 .select()
-                .apis(RequestHandlerSelectors.basePackage("com.example.auth"))
+                .apis(RequestHandlerSelectors.basePackage("com.example.auth.controller"))
                 .paths(PathSelectors.regex("/*.*"))
                 .build()
                 .globalOperationParameters(getParameters())
@@ -78,7 +78,7 @@ public class SwaggerConfig {
 
     private ApiInfo apiEndPointsInfo() {
         return new ApiInfoBuilder()
-                .version("3.3")
+                .version("1.0.0")
                 .build();
     }
 }

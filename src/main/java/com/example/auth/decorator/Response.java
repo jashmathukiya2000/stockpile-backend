@@ -8,58 +8,63 @@ import lombok.ToString;
 import org.springframework.http.HttpStatus;
 
 @Data
-@AllArgsConstructor
 @NoArgsConstructor
 @ToString
 public class Response {
     HttpStatus code;
+    String status;
     String description;
 
+    public Response(HttpStatus ok, String ok1, String okDescription) {
+        this.code = ok;
+        this.status = ok1;
+        this.description = okDescription;
+    }
 
     public static Response getOkResponse(String message) {
-        return new Response(HttpStatus.OK, message);
+        return new Response(HttpStatus.OK, ResponseConstant.OK,message);
 
     }
 
     public static Response getEmptyResponse(String message) {
-        return new Response(HttpStatus.BAD_REQUEST, message);
+        return new Response(HttpStatus.BAD_REQUEST,ResponseConstant.OK, message);
 
     }
 
     public static Response getInvaildResponse(String message) {
-        return new Response(HttpStatus.BAD_REQUEST, message);
+        return new Response(HttpStatus.BAD_REQUEST,ResponseConstant.OK,message);
 
     }
 
     public static Response getAlreadyExists(String message) {
-        return new Response(HttpStatus.BAD_REQUEST, message);
+        return new Response(HttpStatus.BAD_REQUEST,ResponseConstant.OK, message);
 
     }
 
     public static Response getInvalidRequestException(String message) {
-        return new Response(HttpStatus.BAD_REQUEST, message);
+        return new Response(HttpStatus.BAD_REQUEST,ResponseConstant.OK, message);
     }
 
     public static Response getNotFoundResponse(String message) {
-        return new Response(HttpStatus.BAD_REQUEST, message);
+        return new Response(HttpStatus.BAD_REQUEST,ResponseConstant.OK, message);
     }
 
     public static Response getOkResponse() {
-        return new Response(HttpStatus.OK, ResponseConstant.OK);
+        return new Response(HttpStatus.OK, ResponseConstant.OK,ResponseConstant.OK);
     }
 
     public static Response getInternalServerErrorResponse() {
-        return new Response(HttpStatus.BAD_REQUEST, ResponseConstant.OK);
+        return new Response(HttpStatus.BAD_REQUEST, ResponseConstant.OK,ResponseConstant.OK);
     }
 
     public static Response getUpdateResponse() {
-        return new Response(HttpStatus.OK, ResponseConstant.UPDATED);
+        return new Response(HttpStatus.OK, ResponseConstant.UPDATED,ResponseConstant.OK);
     }
 
-    public Response getResponse(HttpStatus unauthorized, Object authorizationIsNotPresentInRequest, Object authorizationIsNotPresentInRequest1) {
-        return  new Response(HttpStatus.UNAUTHORIZED,ResponseConstant.AUTHORIZATION_IS_NOT_PRESENT_IN_REQUEST);
-
+        public Response getResponse(HttpStatus httpStatus,Object constant,Object constant1){
+            return new Response(httpStatus, constant.toString(),constant1.toString());
+        }
     }
-}
+
 
 

@@ -1,4 +1,5 @@
-package com.example.auth.commons;
+package com.example.auth.commons.utils;
+import com.example.auth.commons.JWTUser;
 import com.example.auth.commons.utils.Utils;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
