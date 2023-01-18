@@ -44,15 +44,16 @@ public class ItemServiceImpl implements ItemService {
         Item item = modelMapper.map(itemAddRequest, Item.class);
         Category category = getCategoryModel(categoryId);
         item.setCategoryId(category.getId());
-        findPrice(itemAddRequest,item);
+        findPrice(itemAddRequest, item);
         item.setDate(currentDate());
         ItemResponse itemResponse = modelMapper.map(item, ItemResponse.class);
         checkValidation(itemAddRequest);
         itemRepository.save(item);
         return itemResponse;
     }
+
     @VisibleForTesting
-    Date currentDate(){
+    Date currentDate() {
         return new Date();
     }
 
@@ -120,7 +121,7 @@ public class ItemServiceImpl implements ItemService {
 
     }
 
-    public void findPrice(ItemAddRequest itemAddRequest,Item item){
+    public void findPrice(ItemAddRequest itemAddRequest, Item item) {
         item.setPrice(Double.parseDouble(new DecimalFormat("##.##").format(itemAddRequest.getPrice())));
         item.setTotalPrice(item.getPrice() * item.getQuantity());
     }

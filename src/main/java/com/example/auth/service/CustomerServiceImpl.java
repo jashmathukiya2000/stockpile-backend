@@ -1,10 +1,13 @@
 package com.example.auth.service;
 
+import com.example.auth.commons.JWTUser;
+import com.example.auth.commons.advice.NullAwareBeanUtilsBean;
 import com.example.auth.commons.constant.MessageConstant;
 import com.example.auth.commons.enums.PasswordEncryptionType;
 import com.example.auth.commons.enums.Role;
 import com.example.auth.commons.exception.InvalidRequestException;
 import com.example.auth.commons.exception.NotFoundException;
+import com.example.auth.commons.utils.JwtTokenUtil;
 import com.example.auth.commons.utils.PasswordUtils;
 import com.example.auth.decorator.customer.CustomerAddRequest;
 import com.example.auth.decorator.customer.CustomerLoginAddRequest;
@@ -23,23 +26,26 @@ import org.springframework.stereotype.Service;
 
 import java.lang.reflect.InvocationTargetException;
 import java.security.NoSuchAlgorithmException;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 @Service
 @Slf4j
 public class CustomerServiceImpl implements CustomerService {
+    private static final long OTP_VALID_DURATION = 1 * 60 * 1000;
     private final CustomerRepository customerRepository;
     private final ModelMapper modelMapper;
     private final PasswordUtils passwordUtils;
+    private final JwtTokenUtil jwtTokenUtil;
+    private final NullAwareBeanUtilsBean nullAwareBeanUtilsBean;
 
-    public CustomerServiceImpl(CustomerRepository customerRepository, ModelMapper modelMapper, PasswordUtils passwordUtils) {
+
+    public CustomerServiceImpl(CustomerRepository customerRepository, ModelMapper modelMapper, PasswordUtils passwordUtils, JwtTokenUtil jwtTokenUtil, NullAwareBeanUtilsBean nullAwareBeanUtilsBean) {
         this.customerRepository = customerRepository;
         this.modelMapper = modelMapper;
         this.passwordUtils = passwordUtils;
+        this.jwtTokenUtil = jwtTokenUtil;
+        this.nullAwareBeanUtilsBean = nullAwareBeanUtilsBean;
     }
-
 
     @Override
     public CustomerResponse addCustomer(CustomerAddRequest customerAddRequest, Role role) {
@@ -65,17 +71,36 @@ public class CustomerServiceImpl implements CustomerService {
 
     @Override
     public CustomerResponse login(CustomerLoginAddRequest customerLoginAddRequest) throws InvocationTargetException, IllegalAccessException, NoSuchAlgorithmException {
-        Customer signUpUser = getUserByEmail(customerLoginAddRequest.getEmail());
-        String userPassworod = signUpUser.getPassword();
-        CustomerResponse signUpResponse = modelMapper.map(signUpUser, CustomerResponse.class);
+        Customer customer = getUserByEmail(customerLoginAddRequest.getEmail());
+        String userPassworod = customer.getPassword();
+        CustomerResponse customerResponse = modelMapper.map(customer, CustomerResponse.class);
         boolean passwords = passwordUtils.isPasswordAuthenticated(customerLoginAddRequest.getPassword(), userPassworod, PasswordEncryptionType.BCRYPT);
         if (passwords) {
-            modelMapper.map(signUpResponse, Customer.class);
+            modelMapper.map(customerResponse, Customer.class);
         } else {
             throw new InvalidRequestException(MessageConstant.INCORRECT_PASSWORD);
         }
-        signUpUser.setDate(new Date());
-        return signUpResponse;
+        customerResponse.setRole(customer.getRole());
+        JWTUser jwtUser = new JWTUser(customerLoginAddRequest.getEmail(), Collections.singletonList(customerResponse.getRole().toString()));
+        String token = jwtTokenUtil.generateToken(jwtUser);
+        nullAwareBeanUtilsBean.copyProperties(customerResponse, customer);
+        customerResponse.setToken(token);
+        customer.setDate(new Date());
+        customerResponse.setOtp(generateOtp());
+        customer.setOtp(generateOtp());
+        customer.setLogin(true);
+        customer.setOtpSendtime(new Date());
+        customer.setLoginTime(new Date());
+        customerRepository.save(customer);
+        System.out.println(customer.getOtpSendtime().getTime());
+        return customerResponse;
+    }
+
+    public String generateOtp() {
+        Random rnd = new Random();
+        int number = rnd.nextInt(999999);
+        String otp = String.format("%06d", number);
+        return otp;
     }
 
     @Override
@@ -92,10 +117,10 @@ public class CustomerServiceImpl implements CustomerService {
 
     @Override
     public List<CustomerResponse> getAllCustomer() {
-        List<Customer> customerResponses=customerRepository.findAllBySoftDeleteFalse();
-        List<CustomerResponse> list= new ArrayList<>();
+        List<Customer> customerResponses = customerRepository.findAllBySoftDeleteFalse();
+        List<CustomerResponse> list = new ArrayList<>();
         customerResponses.forEach(customer -> {
-            CustomerResponse customerResponse= modelMapper.map(customer,CustomerResponse.class);
+            CustomerResponse customerResponse = modelMapper.map(customer, CustomerResponse.class);
             list.add(customerResponse);
         });
 
@@ -104,10 +129,33 @@ public class CustomerServiceImpl implements CustomerService {
 
     @Override
     public Object deleteCustomer(String id) {
-        Customer customer= getById(id);
+        Customer customer = getById(id);
         customer.setSoftDelete(true);
         customerRepository.save(customer);
         return null;
+    }
+
+
+    @Override
+    public void otpVerification(String otp, String email) {
+        boolean customer1 = customerRepository.existsByOtpAndEmailAndSoftDeleteIsFalse(otp, email);
+        if (customer1) {
+            Customer customer = getUserByEmail(email);
+            if (customer.getOtpSendtime().getTime() + OTP_VALID_DURATION < System.currentTimeMillis()) {
+                throw new InvalidRequestException(MessageConstant.OTP_EXPIRED);
+            }
+        } else {
+            throw new NotFoundException(MessageConstant.INVAILD_OTP);
+        }
+
+    }
+
+    @Override
+    public void logout(String id) {
+        Customer customer = getById(id);
+        customer.setLogin(false);
+        customer.setLogoutTime(new Date());
+        customerRepository.save(customer);
     }
 
 
@@ -138,4 +186,6 @@ public class CustomerServiceImpl implements CustomerService {
 
     }
 
+
 }
+

@@ -27,6 +27,11 @@ public interface CustomerService {
     List<CustomerResponse> getAllCustomer();
 
     Object deleteCustomer(String id);
+
+    void otpVerification(String otp,String email);
+
+
+    void logout(String id);
 }
 
 

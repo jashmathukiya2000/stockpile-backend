@@ -22,6 +22,8 @@ public class CustomerResponse {
     String email;
     String password;
     Date date;
+    String token;
+    String otp;
     @JsonIgnore
     boolean login = false;
 

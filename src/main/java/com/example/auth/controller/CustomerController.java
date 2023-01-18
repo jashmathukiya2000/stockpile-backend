@@ -89,5 +89,24 @@ public class CustomerController {
         return pageResponse;
     }
 
+    @RequestMapping(name = "otpVerification", value = "otp/verification",method = RequestMethod.GET)
+    @Access(levels =Role.ANONYMOUS)
+    public DataResponse<Object> otpVerification(@RequestParam String otp,@RequestParam String email){
+        DataResponse<Object> dataResponse= new DataResponse<>();
+        customerService.otpVerification(otp,email);
+        dataResponse.setStatus(Response.getOkResponse(ResponseConstant.OTP_VERIFIED));
+        return dataResponse;
+
+
+    }
+    @RequestMapping(name = "logout", value = "logout/{id}",method = RequestMethod.POST)
+    @Access(levels =Role.ANONYMOUS)
+    public DataResponse<Object> logout(@RequestParam String id){
+        DataResponse<Object> dataResponse= new DataResponse<>();
+        customerService.logout(id);
+        dataResponse.setStatus(Response.getOkResponse(ResponseConstant.LOGOUT_SUCCESSFULLY));
+        return dataResponse;
+    }
+
 
 }

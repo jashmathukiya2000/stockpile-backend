@@ -15,6 +15,8 @@ public class ResponseConstant {
     public static final String PLEASE_UPLOAD_EXCEL_FILE = "please upload an excel file";
     public static final String TOKEN_GENERATED_SUCCESSFULLY = "Token generated successfully";
     public static final String AUTHORIZATION_IS_NOT_PRESENT_IN_REQUEST = "Authorization is not present in request";
+    public static final String OTP_VERIFIED ="Otp verification successfully" ;
+    public static final String LOGOUT_SUCCESSFULLY ="Logout successfully" ;
 
 
 //    public static final String DATA_NOT_FOUND ="DATA NOT FOUND" ;

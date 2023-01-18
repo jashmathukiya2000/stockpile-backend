@@ -34,4 +34,6 @@ public class MessageConstant {
     public static final Object ROLE_NOT_ALLOWED = "Role not allowed" ;
     public static final Object INVALID_TOKEN_SIGNATURE = "Invalid Token Signature";
     public static final Object TOKEN_EXPIRED = "Token Expired";
+    public static final String INVAILD_OTP ="Invalid otp" ;
+    public static final String OTP_EXPIRED ="Otp expired" ;
 }

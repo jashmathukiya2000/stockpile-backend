@@ -16,7 +16,8 @@ import java.util.Date;
 @NoArgsConstructor
 @Document(collection = "customer")
 @Builder
-public class Customer {
+public class
+Customer {
     @Id
     String id;
     Role role;
@@ -30,7 +31,18 @@ public class Customer {
     String email;
 
     String password;
+
     Date date;
+
+    String otp;
+
+    Date  otpSendtime;
+    Date loginTime;
+
+    Date logoutTime;
+
+   @JsonIgnore
+    boolean login;
 
     @JsonIgnore
     boolean softDelete = false;

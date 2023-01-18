@@ -10,11 +10,16 @@ import java.util.Optional;
 public interface CustomerRepository extends MongoRepository<Customer, String>, CustomerCustomRepository {
     Optional<Customer> findUserByEmailAndSoftDeleteIsFalse(String email);
 
-    boolean existsByEmailAndSoftDeleteIsFalse(String email);
+     boolean existsByEmailAndSoftDeleteIsFalse(String email);
 
-    Optional<Customer> findByIdAndSoftDeleteIsFalse(String id);
+     boolean existsByOtpAndEmailAndSoftDeleteIsFalse(String otp,String email);
+
+     Optional<Customer> findByIdAndSoftDeleteIsFalse(String id);
 
       List<Customer> findAllBySoftDeleteFalse();
+
+
+
 
 
 }
