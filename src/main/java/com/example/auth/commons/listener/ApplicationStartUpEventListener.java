@@ -1,6 +1,5 @@
 package com.example.auth.commons.listener;
 
-import com.amazonaws.services.ec2.model.Purchase;
 import com.example.auth.commons.model.AdminConfiguration;
 import com.example.auth.commons.model.RestAPI;
 import com.example.auth.commons.repository.AdminRepository;
@@ -9,7 +8,6 @@ import com.example.auth.commons.service.AdminConfigurationService;
 import com.example.auth.commons.utils.Utils;
 import com.example.auth.controller.*;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.context.event.EventListener;
@@ -23,10 +21,11 @@ import java.util.Date;
 import java.util.List;
 import java.util.Set;
 import java.util.TimeZone;
+
 @Component
 @Slf4j
 public class ApplicationStartUpEventListener {
-    boolean skip =  false;
+    boolean skip = false;
 
     @Autowired
     RestAPIRepository restAPIRepository;
@@ -51,10 +50,10 @@ public class ApplicationStartUpEventListener {
         log.debug("Landed in here");
         AdminConfiguration configuration = new AdminConfiguration();
         List<AdminConfiguration> configurations = adminRepository.findAll();
-        if(!CollectionUtils.isEmpty(configurations)){
+        if (!CollectionUtils.isEmpty(configurations)) {
             log.debug("Module Technical configurations exists");
             configuration = configurations.get(0);
-        }else {
+        } else {
             configuration = new AdminConfiguration();
             configuration.setCreatedBy("SYSTEM");
             configuration.setCreated(new Date());
@@ -64,24 +63,25 @@ public class ApplicationStartUpEventListener {
             log.debug("Automatically create the module technical configurations");
         }
         // On Application Start up , create the list of authorized services for authorized data
-        if(!skip){
+        if (!skip) {
             saveIfNotExits(Utils.getAllMethodNames(UserController.class));
             saveIfNotExits(Utils.getAllMethodNames(CategoryController.class));
             saveIfNotExits(Utils.getAllMethodNames(PurchaseLogHistoryController.class));
             saveIfNotExits(Utils.getAllMethodNames(ItemController.class));
             saveIfNotExits(Utils.getAllMethodNames(CustomerController.class));
+            saveIfNotExits(Utils.getAllMethodNames(AdminController.class));
         }
 
-//        Date currentDate = new Date();
-//        SimpleDateFormat dateFormatter = new SimpleDateFormat("yyyy-MM-dd HH:mm (z)");
-//        dateFormatter.setTimeZone(TimeZone.getTimeZone("CST"));
-//        String cstTime = dateFormatter.format(currentDate);
-//        dateFormatter.setTimeZone(TimeZone.getTimeZone("GMT"));
-//        String gmtTime = dateFormatter.format(currentDate);
-//        dateFormatter.setTimeZone(TimeZone.getTimeZone("IST"));
-//        String istTime = dateFormatter.format(currentDate);
+        Date currentDate = new Date();
+        SimpleDateFormat dateFormatter = new SimpleDateFormat("yyyy-MM-dd HH:mm (z)");
+        dateFormatter.setTimeZone(TimeZone.getTimeZone("CST"));
+        String cstTime = dateFormatter.format(currentDate);
+        dateFormatter.setTimeZone(TimeZone.getTimeZone("GMT"));
+        String gmtTime = dateFormatter.format(currentDate);
+        dateFormatter.setTimeZone(TimeZone.getTimeZone("IST"));
+        String istTime = dateFormatter.format(currentDate);
 
-//        Set<String> emails = configuration.getTechAdmins();
+        Set<String> emails = configuration.getTechAdmins();
 
         /*if (StringUtils.isEmpty(e.getTo())){
             emails.setTo(emails.iterator().next());
@@ -97,10 +97,11 @@ public class ApplicationStartUpEventListener {
         log.info("Module started mail sent to tech-admins");
         //scheduleCronJobs(adminRepository.findAll().get(0));*/
     }
-    public  void saveIfNotExits(List<RestAPI> apis){
-        apis.forEach(api->{
-            if(!restAPIRepository.existsByName(api.getName())){
-                log.info("Added API : {}",api.getName());
+
+    public void saveIfNotExits(List<RestAPI> apis) {
+        apis.forEach(api -> {
+            if (!restAPIRepository.existsByName(api.getName())) {
+                log.info("Added API : {}", api.getName());
                 restAPIRepository.insert(api);
             }
         });

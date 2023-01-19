@@ -17,7 +17,7 @@ public class UserFilterData {
     Set<String> id;
 
     @JsonIgnore
-    boolean softDelete =false;
+    boolean softDelete = false;
 
     public String getSearch() {
         if (search != null) {

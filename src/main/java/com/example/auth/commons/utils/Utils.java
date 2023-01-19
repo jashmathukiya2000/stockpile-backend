@@ -4,22 +4,34 @@ import com.amazonaws.services.alexaforbusiness.model.NotFoundException;
 import com.example.auth.commons.Access;
 import com.example.auth.commons.decorator.RequestSession;
 import com.example.auth.commons.enums.CustomHTTPHeaders;
+import com.example.auth.commons.model.AdminConfiguration;
+import com.example.auth.commons.model.EmailModel;
 import com.example.auth.commons.model.RestAPI;
+import com.example.auth.commons.service.AdminConfigurationService;
+import com.example.auth.model.Customer;
 import com.example.auth.model.User;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.codec.binary.Base64;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
+import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.RequestMapping;
 
+import javax.activation.DataHandler;
+import javax.activation.DataSource;
+import javax.activation.FileDataSource;
+import javax.mail.*;
+import javax.mail.internet.InternetAddress;
+import javax.mail.internet.MimeBodyPart;
+import javax.mail.internet.MimeMessage;
+import javax.mail.internet.MimeMultipart;
 import javax.servlet.http.HttpServletRequest;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Random;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Component
@@ -30,9 +42,9 @@ public class Utils {
     MessageSource messageSource;
     //    @Autowired
 //    private JavaMailSender mailSender;
-//    @Autowired
-//    AdminConfigurationService configurationService;
-//    @Autowired
+    @Autowired
+    AdminConfigurationService configurationService;
+    //    @Autowired
     RequestSession requestSession;
 
     public static String generateVerificationToken(int length) {
@@ -67,107 +79,20 @@ public class Utils {
         return actualString;
     }
 
-    /*
-    public static List<com.example.auth.enumUser.Role> getAllRoles(Class<com.example.auth.enumUser.Role> authorizationClass) {
-        List<com.example.auth.common.model.Role> roleList = new ArrayList<>();
-        com.example.auth.enumUser.Role[] authList = com.example.auth.enumUser.Role.values();
-        for (com.example.auth.enumUser.Role authorization : authList) {
-            com.example.auth.common.model.Role role = new com.example.auth.common.model.Role();
-            role.setSoftDelete(false);
-            role.setRoleDescription(authorization.name());
-            role.setSpecificRole(authorization.name());
-            roleList.add(role);
-        }
-        return roleList;
-    }
-     */
-//    public void sendEmailNow( EmailModel emailModel) {
-//        try {
-//            if(StringUtils.isEmpty(emailModel.getSubject())){
-//                emailModel.setSubject(emailModel.getSubject());
-//            }
-//            // Recipient's email ID needs to be mentioned.
-//            // Sender's email ID needs to be mentioned
-//            AdminConfiguration adminConfiguration= configurationService.getConfiguration();
-//            Properties props = new Properties();
-//            props.put("mail.smtp.auth", adminConfiguration.isSmptAuth());//true
-//            props.put("mail.smtp.starttls.enable", adminConfiguration.isStarttls());//true
-//            props.put("mail.smtp.host", adminConfiguration.getHost());//smtp.office365.com
-//            props.put("mail.smtp.port", adminConfiguration.getPort());//587
-//            // Get the Session object.
-//            log.info("getting session object:");
-//            Session session = Session.getInstance(props, new Authenticator() {
-//                protected PasswordAuthentication getPasswordAuthentication() {
-//                    return new PasswordAuthentication(adminConfiguration.getUsername(), adminConfiguration.getPassword());
-//                }
-//            });
-//            log.info("got session object:");
-//            try {
-//                // Create a default MimeMessage object.
-//                MimeMessage message = new MimeMessage(session);
-//                log.info("helper object initialization");
-//                MimeMessageHelper helper = new MimeMessageHelper(message, "utf-8");
-//                // Set From: header field of the header.
-//                helper.setFrom(new InternetAddress(adminConfiguration.getFrom()));
-//                log.info("helper from set");
-//                // Set To: header field of the header.
-//                helper.setTo(emailModel.getTo());
-//                log.info("helper to  set");
-//                if(emailModel.getCc() != null && emailModel.getCc().size() != 0){
-//                    String[] cc = new String[emailModel.getCc().size()];
-//                    emailModel.getCc().toArray(cc);
-//                    helper.setCc(cc);
-//                }
-//              /*  if(emailModel.getBcc() != null && emailModel.getBcc().size() != 0){
-//                    String[] bcc = new String[emailModel.getBcc().size()];
-//                    emailModel.getBcc().toArray(bcc);
-//                    helper.setBcc(bcc);
-//                }*/
-//                // Set Subject: header field
-//                helper.setSubject(emailModel.getSubject());
-//                log.info("helper set subject ");
-//                // Now set the actual message
-//                if(emailModel.getFile()!=null) {
-//                    DataSource source = new FileDataSource(emailModel.getFile().getName());
-//                    Multipart multipart = new MimeMultipart();
-//                    MimeBodyPart messageBodyPart = new MimeBodyPart();
-//                    MimeBodyPart messageBodyPart1 = new MimeBodyPart();
-//                    messageBodyPart.setDataHandler(new DataHandler(source));
-//                    messageBodyPart.setFileName(emailModel.getFile().getName());
-//                    multipart.addBodyPart(messageBodyPart);
-//                    message.setContent(multipart);
-//                 /* FileSystemResource fileSystemResource= new FileSystemResource("C:\\excelFiles\\"+emailModel.getFile().getName());
-//                  helper.addAttachment(Objects.requireNonNull(fileSystemResource.getFilename()),fileSystemResource);*/
-//                    log.info("helper set attachment");
-//                }
-//                /*log.info("email model attachment list size:{}",emailModel.getAttachmentList().size());
-//                log.info("email model attachment list size:{}",emailModel.getAttachmentList().toString());
-//                if(emailModel.getAttachmentList() != null && emailModel.getAttachmentList().size() != 0){
-//                    emailModel.getAttachmentList().forEach(attachment->{
-//                        try {
-//                            helper.addAttachment(attachment.getFileName(), new URLDataSource(new URL(attachment.getAttachmentUrl())));
-//                            log.info("helper set attachment");
-//                        } catch (MessagingException | IOException e) {
-//                            log.info("Unable to attach File");
-//                            e.printStackTrace();
-//                        }
-//                    });
-//                }*/
-//                // Send message
-//                new Thread(() ->{
-//                    try {
-//                        log.info("email send start...");
-//                        Transport.send(message);
-//                        log.info("email send ended");
-//                    } catch (MessagingException e) {
-//                        e.printStackTrace();
-//                    }
-//                }).start();
-//            } catch (MessagingException e) {
-//                throw new RuntimeException(e);
-//            }
-//        } catch (Exception ignored) {}
+
+//    public static List<com.example.auth.enumUser.Role> getAllRoles(Class<com.example.auth.enumUser.Role> authorizationClass) {
+//        List<com.example.auth.common.model.Role> roleList = new ArrayList<>();
+//        com.example.auth.enumUser.Role[] authList = com.example.auth.enumUser.Role.values();
+//        for (com.example.auth.enumUser.Role authorization : authList) {
+//            com.example.auth.common.model.Role role = new com.example.auth.common.model.Role();
+//            role.setSoftDelete(false);
+//            role.setRoleDescription(authorization.name());
+//            role.setSpecificRole(authorization.name());
+//            roleList.add(role);
+//        }
+//        return roleList;
 //    }
+
     public static List<RestAPI> getAllMethodNames(Class className) {
         Method[] allMethods = className.getDeclaredMethods();
         List<RestAPI> apis = new ArrayList<>();
@@ -190,7 +115,103 @@ public class Utils {
         }
         return apis;
     }
-//    public String generateReportMessage(List<Result> result, double cgpi) {
+
+    public void sendEmailNow(EmailModel emailModel) throws InvocationTargetException, IllegalAccessException {
+        try {
+
+            if (StringUtils.isEmpty(emailModel.getSubject())) {
+                emailModel.setSubject(emailModel.getSubject());
+            }
+
+            // Recipient's email ID needs to be mentioned.
+            // Sender's email ID needs to be mentioned
+            AdminConfiguration adminConfiguration = configurationService.getConfiguration();
+            Properties props = new Properties();
+            props.put("mail.smtp.auth", adminConfiguration.isSmptAuth());//true
+            props.put("mail.smtp.starttls.enable", adminConfiguration.isStarttls());//true
+            props.put("mail.smtp.host", adminConfiguration.getHost());//smtp.office365.com
+            props.put("mail.smtp.port", adminConfiguration.getPort());//587
+            // Get the Session object.
+            log.info("getting session object:");
+            Session session = Session.getInstance(props, new Authenticator() {
+                protected PasswordAuthentication getPasswordAuthentication() {
+                    return new PasswordAuthentication(adminConfiguration.getUsername(), adminConfiguration.getPassword());
+                }
+            });
+            log.info("got session object:");
+
+            try {
+                // Create a default MimeMessage object.
+                MimeMessage message = new MimeMessage(session);
+                log.info("helper object initialization");
+                MimeMessageHelper helper = new MimeMessageHelper(message, "utf-8");
+                // Set From: header field of the header.
+                helper.setFrom(new InternetAddress(adminConfiguration.getFrom()));
+                log.info("helper from set");
+                // Set To: header field of the header.
+                helper.setTo(emailModel.getTo());
+                log.info("helper to  set");
+                if (emailModel.getCc() != null && emailModel.getCc().size() != 0) {
+                    String[] cc = new String[emailModel.getCc().size()];
+                    emailModel.getCc().toArray(cc);
+                    helper.setCc(cc);
+                }
+              /*  if(emailModel.getBcc() != null && emailModel.getBcc().size() != 0){
+                    String[] bcc = new String[emailModel.getBcc().size()];
+                    emailModel.getBcc().toArray(bcc);
+                    helper.setBcc(bcc);
+                }*/
+
+
+                // Set Subject: header field
+                helper.setSubject(emailModel.getSubject());
+                log.info("helper set subject ");
+
+                // Now set the actual message
+                if (emailModel.getFile() != null) {
+                    DataSource source = new FileDataSource(emailModel.getFile().getName());
+                    Multipart multipart = new MimeMultipart();
+                    MimeBodyPart messageBodyPart = new MimeBodyPart();
+                    MimeBodyPart messageBodyPart1 = new MimeBodyPart();
+                    messageBodyPart.setDataHandler(new DataHandler(source));
+                    messageBodyPart.setFileName(emailModel.getFile().getName());
+                    multipart.addBodyPart(messageBodyPart);
+                    message.setContent(multipart);
+                 /* FileSystemResource fileSystemResource= new FileSystemResource("C:\\excelFiles\\"+emailModel.getFile().getName());
+                  helper.addAttachment(Objects.requireNonNull(fileSystemResource.getFilename()),fileSystemResource);*/
+                    log.info("helper set attachment");
+                }
+              /*log.info("email model attachment list size:{}",emailModel.getAttachmentList().size());
+                log.info("email model attachment list size:{}",emailModel.getAttachmentList().toString());
+                if(emailModel.getAttachmentList() != null && emailModel.getAttachmentList().size() != 0){
+                    emailModel.getAttachmentList().forEach(attachment->{
+                        try {
+                            helper.addAttachment(attachment.getFileName(), new URLDataSource(new URL(attachment.getAttachmentUrl())));
+                            log.info("helper set attachment");
+                        } catch (MessagingException | IOException e) {
+                            log.info("Unable to attach File");
+                            e.printStackTrace();
+                        }
+                    });
+                }*/
+                // Send message
+                new Thread(() -> {
+                    try {
+                        log.info("email send start...");
+                        Transport.send(message);
+                        log.info("email send ended");
+                    } catch (MessagingException e) {
+                        e.printStackTrace();
+                    }
+                }).start();
+            } catch (MessagingException e) {
+                throw new RuntimeException(e);
+            }
+        } catch (Exception ignored) {
+        }
+    }
+
+    //    public String generateReportMessage(List<Result> result, double cgpi) {
 //        StringBuilder stringBuilder = generateCommonHtmlHead();
 //        for (Result result1 : result) {
 //            stringBuilder.append("<tr>");
@@ -235,16 +256,16 @@ public class Utils {
 //        log.info(stringBuilder.toString());
 //        return stringBuilder.toString();
 //    }
-    public String sendOtp(User user, String confirmPassword) {
+    public String sendOtp(Customer customer, String confirmPassword) {
         StringBuilder stringBuilder = new StringBuilder();
         stringBuilder.append("Your email is   :");
-        stringBuilder.append(user.getEmail());
+        stringBuilder.append(customer.getEmail());
         stringBuilder.append("<br/>");
         stringBuilder.append("Your Password is  :");
         stringBuilder.append(" " + confirmPassword);
         stringBuilder.append("<br/>");
-//        stringBuilder.append("Otp is  :");
-//        stringBuilder.append("" +user.getOtp());
+        stringBuilder.append("Otp is  :");
+        stringBuilder.append("" +customer.getOtp());
         stringBuilder.append("<br/>");
         stringBuilder.append("Created by :");
 

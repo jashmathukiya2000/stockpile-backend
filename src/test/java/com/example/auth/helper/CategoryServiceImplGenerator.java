@@ -48,7 +48,6 @@ public class CategoryServiceImplGenerator {
         return List.of(CategoryResponse
                 .builder()
                 .categoryName("computer")
-
                 .build());
     }
 }

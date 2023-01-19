@@ -13,10 +13,8 @@ import java.lang.reflect.InvocationTargetException;
 
 @Service
 public class AdminConfigurationServiceImpl implements AdminConfigurationService {
-
     @Autowired
     AdminRepository adminRepository;
-
 
     @Autowired
     NullAwareBeanUtilsBean nullAwareBeanUtilsBean;

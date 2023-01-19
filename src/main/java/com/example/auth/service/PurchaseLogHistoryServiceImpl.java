@@ -30,7 +30,6 @@ import java.util.*;
 @Slf4j
 public class PurchaseLogHistoryServiceImpl implements PurchaseLogHistoryService {
     private final PurchaseLogHistoryRepository purchaseLogHistoryRepository;
-
     private final ModelMapper modelMapper;
     private final CustomerRepository customerRepository;
     private final NullAwareBeanUtilsBean nullAwareBeanUtilsBean;
@@ -40,7 +39,6 @@ public class PurchaseLogHistoryServiceImpl implements PurchaseLogHistoryService 
         this.purchaseLogHistoryRepository = purchaseLogHistoryRepository;
         this.modelMapper = modelMapper;
         this.customerRepository = customerRepository;
-
         this.nullAwareBeanUtilsBean = nullAwareBeanUtilsBean;
 
     }

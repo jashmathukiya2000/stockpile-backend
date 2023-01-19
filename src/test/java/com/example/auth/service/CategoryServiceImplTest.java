@@ -1,6 +1,7 @@
 package com.example.auth.service;
 
 import com.example.auth.commons.advice.NullAwareBeanUtilsBean;
+import com.example.auth.commons.service.AdminConfigurationService;
 import com.example.auth.decorator.category.CategoryResponse;
 import com.example.auth.decorator.pagination.*;
 import com.example.auth.helper.CategoryServiceImplGenerator;
@@ -15,6 +16,7 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.Optional;
 
 import static org.mockito.Mockito.*;
@@ -26,7 +28,8 @@ class CategoryServiceImplTest {
     private final ModelMapper modelMapper = CategoryServiceImplGenerator.getModelMapper();
     private final NullAwareBeanUtilsBean nullAwareBeanUtilsBean = Mockito.mock(NullAwareBeanUtilsBean.class);
     private final ItemService itemService = Mockito.mock(ItemService.class);
-    public CategoryService categoryService = new CategoryServiceImpl(categoryRepository, modelMapper, nullAwareBeanUtilsBean, itemService);
+    private final AdminConfigurationService adminConfigurationService=Mockito.mock(AdminConfigurationService.class);
+    public CategoryService categoryService = new CategoryServiceImpl(categoryRepository, modelMapper, nullAwareBeanUtilsBean, itemService, adminConfigurationService);
 
 
     @Test
@@ -46,7 +49,7 @@ class CategoryServiceImplTest {
     }
 
     @Test
-    void testAddCategory() {
+    void testAddCategory() throws InvocationTargetException, IllegalAccessException {
         //given
         var category = CategoryServiceImplGenerator.MockCategory();
         var addCategory = CategoryServiceImplGenerator.MockAddCategory();

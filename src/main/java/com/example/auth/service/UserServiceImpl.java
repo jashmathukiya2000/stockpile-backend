@@ -1,10 +1,10 @@
 package com.example.auth.service;
 
 import com.example.auth.commons.JWTUser;
-import com.example.auth.commons.utils.JwtTokenUtil;
 import com.example.auth.commons.advice.NullAwareBeanUtilsBean;
 import com.example.auth.commons.constant.MessageConstant;
 import com.example.auth.commons.exception.NotFoundException;
+import com.example.auth.commons.utils.JwtTokenUtil;
 import com.example.auth.decorator.pagination.FilterSortRequest;
 import com.example.auth.decorator.pagination.UserFilterData;
 import com.example.auth.decorator.pagination.UserSortBy;
@@ -81,7 +81,6 @@ public class UserServiceImpl implements UserService {
         return modelMapper.map(user, UserResponse.class);
     }
 
-
     @Override
     public void deleteUser(String id) {
         User user = getUserModel(id);
@@ -111,15 +110,15 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserResponse getToken(String id) throws InvocationTargetException, IllegalAccessException {
-         User user = getUserModel(id);
-         UserResponse userResponse = new UserResponse();
-         userResponse.setRole(user.getRole());
-         JWTUser jwtUser = new JWTUser(id, Collections.singletonList(userResponse.getRole().toString()));
-         String token = jwtTokenUtil.generateToken(jwtUser);
-         nullAwareBeanUtilsBean.copyProperties(userResponse, user);
-          userResponse.setToken(token);
-         userResponse.setId(user.getId());
-          return userResponse;
+        User user = getUserModel(id);
+        UserResponse userResponse = new UserResponse();
+        userResponse.setRole(user.getRole());
+        JWTUser jwtUser = new JWTUser(id, Collections.singletonList(userResponse.getRole().toString()));
+        String token = jwtTokenUtil.generateToken(jwtUser);
+        nullAwareBeanUtilsBean.copyProperties(userResponse, user);
+        userResponse.setToken(token);
+        userResponse.setId(user.getId());
+        return userResponse;
     }
 
 

@@ -2,7 +2,6 @@ package com.example.auth.commons.config;
 
 import com.example.auth.commons.intercepter.Interceptor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
@@ -11,8 +10,11 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 @Configuration
 @Slf4j
 public class InterceptorConfigurer implements WebMvcConfigurer {
-    @Autowired
-    Interceptor interceptor;
+    private final Interceptor interceptor;
+
+    public InterceptorConfigurer(Interceptor interceptor) {
+        this.interceptor = interceptor;
+    }
 
     @Override
     public void addInterceptors(InterceptorRegistry registry) {

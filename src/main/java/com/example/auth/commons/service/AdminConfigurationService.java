@@ -10,5 +10,4 @@ public interface AdminConfigurationService {
 
     AdminConfiguration getConfiguration() throws InvocationTargetException, IllegalAccessException;
 
-//    CCAdminConfiguration getCCAdminDetails() throws InvocationTargetException, IllegalAccessException;
 }

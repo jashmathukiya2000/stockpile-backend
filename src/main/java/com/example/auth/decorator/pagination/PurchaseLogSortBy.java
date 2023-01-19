@@ -14,9 +14,10 @@ public enum PurchaseLogSortBy {
     @JsonIgnore
 
 
-     private String value;
+    private String value;
+
     PurchaseLogSortBy(String itemName) {
-        this.value=itemName;
+        this.value = itemName;
     }
 
 

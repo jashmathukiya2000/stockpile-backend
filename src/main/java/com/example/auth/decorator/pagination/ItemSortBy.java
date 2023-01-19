@@ -6,20 +6,22 @@ import lombok.NoArgsConstructor;
 
 import java.util.HashMap;
 import java.util.Map;
+
 @Getter
 @NoArgsConstructor
 public enum ItemSortBy {
     ITEM_NAME("itemName"),
-      QUANTITY("quantity"),
+    QUANTITY("quantity"),
 
-         PRICE("price");
+    PRICE("price");
     @JsonIgnore
-      private String value;
+    private String value;
 
     ItemSortBy(String value) {
-        this.value=value;
+        this.value = value;
 
     }
+
     Map<String, String> toMap() {
         Map<String, String> map = new HashMap<>();
         map.put("value", this.toString());

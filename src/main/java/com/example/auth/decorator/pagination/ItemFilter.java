@@ -16,10 +16,10 @@ public class ItemFilter {
     String search;
     Set<String> id;
     @JsonIgnore
-    boolean softDelete =false;
+    boolean softDelete = false;
 
-    public String getSearch(){
-        if (search!=null){
+    public String getSearch() {
+        if (search != null) {
             return search.trim();
         }
         return search;

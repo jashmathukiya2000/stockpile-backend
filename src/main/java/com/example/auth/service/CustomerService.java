@@ -16,7 +16,7 @@ import java.security.NoSuchAlgorithmException;
 import java.util.List;
 
 public interface CustomerService {
-    CustomerResponse addCustomer(CustomerAddRequest signUpAddRequest, Role role);
+    CustomerResponse addCustomer(CustomerAddRequest signUpAddRequest, Role role) throws InvocationTargetException, IllegalAccessException;
 
     CustomerResponse login(CustomerLoginAddRequest customerLoginAddRequest) throws InvocationTargetException, IllegalAccessException, NoSuchAlgorithmException;
 
@@ -26,7 +26,7 @@ public interface CustomerService {
 
     List<CustomerResponse> getAllCustomer();
 
-    Object deleteCustomer(String id);
+    void deleteCustomer(String id);
 
     void otpVerification(String otp,String email);
 

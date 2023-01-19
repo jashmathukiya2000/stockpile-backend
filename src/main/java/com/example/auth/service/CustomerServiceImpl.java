@@ -7,8 +7,12 @@ import com.example.auth.commons.enums.PasswordEncryptionType;
 import com.example.auth.commons.enums.Role;
 import com.example.auth.commons.exception.InvalidRequestException;
 import com.example.auth.commons.exception.NotFoundException;
+import com.example.auth.commons.model.AdminConfiguration;
+import com.example.auth.commons.model.EmailModel;
+import com.example.auth.commons.service.AdminConfigurationService;
 import com.example.auth.commons.utils.JwtTokenUtil;
 import com.example.auth.commons.utils.PasswordUtils;
+import com.example.auth.commons.utils.Utils;
 import com.example.auth.decorator.customer.CustomerAddRequest;
 import com.example.auth.decorator.customer.CustomerLoginAddRequest;
 import com.example.auth.decorator.customer.CustomerResponse;
@@ -37,18 +41,21 @@ public class CustomerServiceImpl implements CustomerService {
     private final PasswordUtils passwordUtils;
     private final JwtTokenUtil jwtTokenUtil;
     private final NullAwareBeanUtilsBean nullAwareBeanUtilsBean;
+    private final AdminConfigurationService adminConfigurationService;
+    private final Utils utils;
 
-
-    public CustomerServiceImpl(CustomerRepository customerRepository, ModelMapper modelMapper, PasswordUtils passwordUtils, JwtTokenUtil jwtTokenUtil, NullAwareBeanUtilsBean nullAwareBeanUtilsBean) {
+    public CustomerServiceImpl(CustomerRepository customerRepository, ModelMapper modelMapper, PasswordUtils passwordUtils, JwtTokenUtil jwtTokenUtil, NullAwareBeanUtilsBean nullAwareBeanUtilsBean, AdminConfigurationService adminConfigurationService, Utils utils) {
         this.customerRepository = customerRepository;
         this.modelMapper = modelMapper;
         this.passwordUtils = passwordUtils;
         this.jwtTokenUtil = jwtTokenUtil;
         this.nullAwareBeanUtilsBean = nullAwareBeanUtilsBean;
+        this.adminConfigurationService = adminConfigurationService;
+        this.utils = utils;
     }
 
     @Override
-    public CustomerResponse addCustomer(CustomerAddRequest customerAddRequest, Role role) {
+    public CustomerResponse addCustomer(CustomerAddRequest customerAddRequest, Role role) throws InvocationTargetException, IllegalAccessException {
         Customer signUpUser1 = modelMapper.map(customerAddRequest, Customer.class);
         CustomerResponse userResponse1 = modelMapper.map(customerAddRequest, CustomerResponse.class);
         if (signUpUser1.getPassword() != null) {
@@ -69,8 +76,10 @@ public class CustomerServiceImpl implements CustomerService {
         return PasswordUtils.encryptPassword(password);
     }
 
+
     @Override
     public CustomerResponse login(CustomerLoginAddRequest customerLoginAddRequest) throws InvocationTargetException, IllegalAccessException, NoSuchAlgorithmException {
+        AdminConfiguration adminConfiguration = adminConfigurationService.getConfiguration();
         Customer customer = getUserByEmail(customerLoginAddRequest.getEmail());
         String userPassworod = customer.getPassword();
         CustomerResponse customerResponse = modelMapper.map(customer, CustomerResponse.class);
@@ -90,11 +99,18 @@ public class CustomerServiceImpl implements CustomerService {
         customer.setOtp(generateOtp());
         customer.setLogin(true);
         customer.setOtpSendtime(new Date());
+        EmailModel emailModel = new EmailModel();
+        emailModel.setMessage(generateOtp());
+        emailModel.setTo(customer.getEmail());
+        emailModel.setCc(adminConfiguration.getTechAdmins());
+        emailModel.setSubject("OTP Verification");
+        utils.sendEmailNow(emailModel);
         customer.setLoginTime(new Date());
         customerRepository.save(customer);
         System.out.println(customer.getOtpSendtime().getTime());
         return customerResponse;
     }
+
 
     public String generateOtp() {
         Random rnd = new Random();
@@ -128,11 +144,11 @@ public class CustomerServiceImpl implements CustomerService {
     }
 
     @Override
-    public Object deleteCustomer(String id) {
+    public void deleteCustomer(String id) {
         Customer customer = getById(id);
         customer.setSoftDelete(true);
         customerRepository.save(customer);
-        return null;
+
     }
 
 
@@ -159,21 +175,29 @@ public class CustomerServiceImpl implements CustomerService {
     }
 
 
-    public void checkValidation(CustomerAddRequest customerAddRequest) {
+    public void checkValidation(CustomerAddRequest customerAddRequest) throws InvocationTargetException, IllegalAccessException {
+        AdminConfiguration adminConfiguration = adminConfigurationService.getConfiguration();
+
         if (!customerAddRequest.getPassword().equals(customerAddRequest.getConfirmPassword())) {
             throw new InvalidRequestException(MessageConstant.INCORRECT_PASSWORD);
         }
-        if (!customerAddRequest.getContact().matches("^\\d{10}$")) {
+        if (!customerAddRequest.getContact().matches(adminConfiguration.getMobileNoRegex())) {
             throw new NotFoundException(MessageConstant.INVALID_PHONE_NUMBER);
         }
-        if (customerAddRequest.getName().isEmpty()) {
+        if (!customerAddRequest.getName().matches(adminConfiguration.getNameRegex())) {
             throw new InvalidRequestException(MessageConstant.NAME_MUST_NOT_BE_NULL);
         }
-        if (customerAddRequest.getUserName().isEmpty()) {
+        if (!customerAddRequest.getUserName().matches(adminConfiguration.getNameRegex())) {
             throw new InvalidRequestException(MessageConstant.USERNAME_MUST_NOT_BE_NULL);
         }
         if (customerRepository.existsByEmailAndSoftDeleteIsFalse(customerAddRequest.getEmail())) {
             throw new InvalidRequestException(MessageConstant.EMAIL_ALREADY_EXIST);
+        }
+        if (!customerAddRequest.getEmail().matches(adminConfiguration.getEmailRegex())) {
+            throw new InvalidRequestException(MessageConstant.INVALID_EMAIL);
+        }
+        if (!customerAddRequest.getPassword().matches(adminConfiguration.getPasswordRegex())) {
+            throw new InvalidRequestException(MessageConstant.WRONG_PASSWORD_FORMAT);
         }
     }
 

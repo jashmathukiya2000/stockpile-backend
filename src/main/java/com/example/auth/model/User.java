@@ -33,6 +33,7 @@ public class User {
     String email;
     String phoneNumber;
     Role role;
+    String otp;
     @JsonIgnore
     boolean softDelete = false;
     List<Result> result;

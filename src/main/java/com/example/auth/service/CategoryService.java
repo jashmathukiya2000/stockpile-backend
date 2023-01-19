@@ -6,10 +6,11 @@ import com.example.auth.decorator.pagination.*;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.List;
 
 public interface CategoryService {
-    CategoryResponse addCategory(CategoryAddRequest categoryAddRequest);
+    CategoryResponse addCategory(CategoryAddRequest categoryAddRequest) throws InvocationTargetException, IllegalAccessException;
 
     CategoryResponse getCategoryById(String id);
 

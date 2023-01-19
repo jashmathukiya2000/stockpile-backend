@@ -28,7 +28,7 @@ public interface PurchaseLogHistoryService {
     Page<PurchaseLogHistoryResponse> getAllPurchaseLogByPagination(PurchaseLogFilter purchaseLogFilter, FilterSortRequest.SortRequest<PurchaseLogSortBy> sort, PageRequest pageRequest);
 
 
-   List<PurchaseLogHistory> findById(String customerId);
+    List<PurchaseLogHistory> findById(String customerId);
 
 
     void save(MultipartFile file);

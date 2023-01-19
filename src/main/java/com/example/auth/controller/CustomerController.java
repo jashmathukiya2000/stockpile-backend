@@ -34,7 +34,7 @@ public class CustomerController {
 
     @RequestMapping(name = "addCustomer", value = "/addCustomer", method = RequestMethod.POST)
     @Access(levels = Role.ANONYMOUS)
-    public DataResponse<CustomerResponse> addCustomer(@RequestBody CustomerAddRequest customerAddRequest, @RequestParam Role role) {
+    public DataResponse<CustomerResponse> addCustomer(@RequestBody CustomerAddRequest customerAddRequest, @RequestParam Role role) throws InvocationTargetException, IllegalAccessException {
         DataResponse<CustomerResponse> dataResponse = new DataResponse<>();
         dataResponse.setData(customerService.addCustomer(customerAddRequest, role));
         dataResponse.setStatus(Response.getOkResponse());
@@ -73,7 +73,7 @@ public class CustomerController {
     @Access(levels =Role.ADMIN)
     public DataResponse<Object> deleteCustomer(@RequestParam String id){
         DataResponse<Object> dataResponse= new DataResponse<>();
-        dataResponse.setData(customerService.deleteCustomer(id));
+        customerService.deleteCustomer(id);
         dataResponse.setStatus(Response.getOkResponse(ResponseConstant.OK));
         return dataResponse;
     }

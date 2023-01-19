@@ -19,7 +19,7 @@ public class MessageConstant {
     public static final String DISCOUNT_MUST_NOT_BE_NULL = "Discount Must not be empty";
     public static final String PRICE_MUST_NOT_BE_NULL = "Price Must not be empty";
     public static final String ALREADY_EXIST ="Item categoryName already exist" ;
-    public static final String NAME_MUST_NOT_BE_NULL ="Name must not be empty" ;
+    public static final String NAME_MUST_NOT_BE_NULL ="Name must not be null" ;
     public static final String ITEM_NAME_MUST_NOT_BE_NULL ="ItemName must not be empty" ;
     public static final String ITEM_ALREADY_EXIST ="Item categoryName already exist try new one" ;
     public static final String INVALID = "Invalid";
@@ -36,4 +36,6 @@ public class MessageConstant {
     public static final Object TOKEN_EXPIRED = "Token Expired";
     public static final String INVAILD_OTP ="Invalid otp" ;
     public static final String OTP_EXPIRED ="Otp expired" ;
+    public static final String INVALID_SEMESTER ="Invalid semester" ;
+    public static final String WRONG_PASSWORD_FORMAT = "Your password must be at least 8 characters long, contain at least one number and have a mixture of uppercase and lowercase letters.";
 }

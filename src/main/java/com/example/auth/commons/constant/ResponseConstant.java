@@ -18,8 +18,5 @@ public class ResponseConstant {
     public static final String OTP_VERIFIED ="Otp verification successfully" ;
     public static final String LOGOUT_SUCCESSFULLY ="Logout successfully" ;
 
-
-//    public static final String DATA_NOT_FOUND ="DATA NOT FOUND" ;
-//    public static final String INVALID_REQUEST_EXCEPTION ="invalid request exception" ;
 }
 

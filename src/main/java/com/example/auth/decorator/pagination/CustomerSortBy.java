@@ -14,13 +14,16 @@ public enum CustomerSortBy {
     USER_NAME("userName");
 
 
-      @JsonIgnore
-      private String value;
-      CustomerSortBy(String value) {
-        this.value=value;
+    @JsonIgnore
+    private String value;
+
+    CustomerSortBy(String value) {
+        this.value = value;
     }
+
     Map<String, String> toMap() {
         Map<String, String> map = new HashMap<>();
         map.put("value", this.toString());
         return map;
-}}
+    }
+}

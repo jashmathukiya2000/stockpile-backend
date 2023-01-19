@@ -17,6 +17,8 @@ import com.example.auth.service.CategoryService;
 import org.springframework.data.domain.Page;
 import org.springframework.web.bind.annotation.*;
 
+import java.lang.reflect.InvocationTargetException;
+
 @RestController
 @RequestMapping("categroies")
 public class CategoryController {
@@ -30,7 +32,7 @@ public class CategoryController {
 
     @RequestMapping(name = "addCategory", value = "/add", method = RequestMethod.POST)
     @Access(levels = Role.ADMIN)
-    public DataResponse<CategoryResponse> addCategory(@RequestBody CategoryAddRequest categoryAddRequest) {
+    public DataResponse<CategoryResponse> addCategory(@RequestBody CategoryAddRequest categoryAddRequest) throws InvocationTargetException, IllegalAccessException {
         DataResponse<CategoryResponse> dataResponse = new DataResponse<>();
         dataResponse.setData(categoryService.addCategory(categoryAddRequest));
         dataResponse.setStatus(Response.getOkResponse(ResponseConstant.SAVED_SUCCESSFULLY));

@@ -4,6 +4,8 @@ import com.example.auth.commons.advice.NullAwareBeanUtilsBean;
 import com.example.auth.commons.constant.MessageConstant;
 import com.example.auth.commons.exception.InvalidRequestException;
 import com.example.auth.commons.exception.NotFoundException;
+import com.example.auth.commons.model.AdminConfiguration;
+import com.example.auth.commons.service.AdminConfigurationService;
 import com.example.auth.decorator.category.CategoryAddRequest;
 import com.example.auth.decorator.category.CategoryResponse;
 import com.example.auth.decorator.pagination.*;
@@ -15,6 +17,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -26,15 +29,17 @@ public class CategoryServiceImpl implements CategoryService {
     private final ModelMapper modelMapper;
     private final NullAwareBeanUtilsBean nullAwareBeanUtilsBean;
     private final ItemService itemService;
+    private final AdminConfigurationService adminConfigurationService;
 
-    public CategoryServiceImpl(CategoryRepository categoryRepository, ModelMapper modelMapper, NullAwareBeanUtilsBean nullAwareBeanUtilsBean, ItemService itemService) {
+    public CategoryServiceImpl(CategoryRepository categoryRepository, ModelMapper modelMapper, NullAwareBeanUtilsBean nullAwareBeanUtilsBean, ItemService itemService, AdminConfigurationService adminConfigurationService) {
         this.categoryRepository = categoryRepository;
         this.modelMapper = modelMapper;
         this.nullAwareBeanUtilsBean = nullAwareBeanUtilsBean;
         this.itemService = itemService;
+        this.adminConfigurationService = adminConfigurationService;
     }
 
-    public CategoryResponse addCategory(CategoryAddRequest categoryAddRequest) {
+    public CategoryResponse addCategory(CategoryAddRequest categoryAddRequest) throws InvocationTargetException, IllegalAccessException {
         Category category = modelMapper.map(categoryAddRequest, Category.class);
         category.setDate(new Date());
         CategoryResponse categoryResponse = modelMapper.map(categoryAddRequest, CategoryResponse.class);
@@ -80,8 +85,10 @@ public class CategoryServiceImpl implements CategoryService {
     }
 
 
-    public void checkValidation(CategoryAddRequest categoryAddRequest) {
-        if (categoryAddRequest.getCategoryName().isEmpty()) {
+    public void checkValidation(CategoryAddRequest categoryAddRequest) throws InvocationTargetException, IllegalAccessException {
+        AdminConfiguration adminConfiguration=adminConfigurationService.getConfiguration();
+
+        if (!categoryAddRequest.getCategoryName().matches(adminConfiguration.getNameRegex())) {
             throw new InvalidRequestException(MessageConstant.NAME_MUST_NOT_BE_NULL);
         }
         if (categoryRepository.existsBycategoryNameAndSoftDeleteIsFalse(categoryAddRequest.getCategoryName())) {

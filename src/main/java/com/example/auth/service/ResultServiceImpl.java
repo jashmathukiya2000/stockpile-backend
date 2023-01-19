@@ -2,7 +2,10 @@ package com.example.auth.service;
 
 import com.example.auth.commons.advice.NullAwareBeanUtilsBean;
 import com.example.auth.commons.constant.MessageConstant;
+import com.example.auth.commons.exception.InvalidRequestException;
 import com.example.auth.commons.exception.NotFoundException;
+import com.example.auth.commons.model.AdminConfiguration;
+import com.example.auth.commons.service.AdminConfigurationService;
 import com.example.auth.decorator.user.Result;
 import com.example.auth.decorator.user.UserResponse;
 import com.example.auth.decorator.user.UserSpiResponse;
@@ -13,6 +16,7 @@ import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
+import java.lang.reflect.InvocationTargetException;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
@@ -25,19 +29,20 @@ public class ResultServiceImpl implements ResultService {
     private final UserRepository userRepository;
     private final NullAwareBeanUtilsBean nullAwareBeanUtilsBean;
     private final ModelMapper modelMapper;
+    private final AdminConfigurationService adminConfigurationService;
 
-    public ResultServiceImpl(UserRepository userRepository, NullAwareBeanUtilsBean nullAwareBeanUtilsBean, ModelMapper modelMapper) {
+    public ResultServiceImpl(UserRepository userRepository, NullAwareBeanUtilsBean nullAwareBeanUtilsBean, ModelMapper modelMapper, AdminConfigurationService adminConfigurationService) {
         this.userRepository = userRepository;
         this.nullAwareBeanUtilsBean = nullAwareBeanUtilsBean;
         this.modelMapper = modelMapper;
+        this.adminConfigurationService = adminConfigurationService;
     }
 
     @Override
-    public UserResponse addResult(String id, Result result) {
+    public UserResponse addResult(String id, Result result) throws InvocationTargetException, IllegalAccessException {
         List<Result> results = new ArrayList<>();
         List<Result> finalResults = new ArrayList<>();
         User user1 = getUserModel(id);
-
         double sum = 0;
         double cgpa = 0;
         if (!CollectionUtils.isEmpty(user1.getResult())) {
@@ -80,14 +85,18 @@ public class ResultServiceImpl implements ResultService {
         return userRepository.findByIdAndSoftDeleteIsFalse(id).orElseThrow(() -> new NotFoundException(MessageConstant.USER_ID_NOT_FOUND));
     }
 
+    public void checkResultValidation(Result result) throws InvocationTargetException, IllegalAccessException {
+        AdminConfiguration adminConfiguration = adminConfigurationService.getConfiguration();
+        String sem = String.valueOf(result.getSemester());
 
-    public void checkResultValidation(Result result) {
-        if (result.getSemester() > 8) {
-            throw new NotFoundException(MessageConstant.SEMESTER_NOT_VALID);
+        if (!sem.matches(adminConfiguration.getSemesterRegex())) {
+            throw new InvalidRequestException(MessageConstant.INVALID_SEMESTER);
+
         }
         if (result.getSpi() > 10) {
             throw new NotFoundException(MessageConstant.SPI_NOT_VALID);
         }
+
 
     }
 
