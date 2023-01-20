@@ -133,7 +133,6 @@ public class UserController {
         TokenResponse<UserResponse> tokenResponse = new TokenResponse<>();
         tokenResponse.setData(userService.getToken(id));
         tokenResponse.setStatus(Response.getOkResponse(ResponseConstant.TOKEN_GENERATED_SUCCESSFULLY));
-
         return tokenResponse;
     }
 

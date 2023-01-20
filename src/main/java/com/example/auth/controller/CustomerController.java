@@ -5,6 +5,7 @@ import com.example.auth.commons.constant.ResponseConstant;
 import com.example.auth.commons.decorator.GeneralHelper;
 import com.example.auth.commons.enums.Role;
 import com.example.auth.decorator.DataResponse;
+import com.example.auth.decorator.EmailRequest;
 import com.example.auth.decorator.ListResponse;
 import com.example.auth.decorator.Response;
 import com.example.auth.decorator.customer.CustomerLoginAddRequest;
@@ -107,6 +108,7 @@ public class CustomerController {
         dataResponse.setStatus(Response.getOkResponse(ResponseConstant.LOGOUT_SUCCESSFULLY));
         return dataResponse;
     }
+
 
 
 }

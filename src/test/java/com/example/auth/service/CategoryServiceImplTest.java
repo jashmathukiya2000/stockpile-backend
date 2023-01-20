@@ -1,6 +1,7 @@
 package com.example.auth.service;
 
 import com.example.auth.commons.advice.NullAwareBeanUtilsBean;
+import com.example.auth.commons.model.AdminConfiguration;
 import com.example.auth.commons.service.AdminConfigurationService;
 import com.example.auth.decorator.category.CategoryResponse;
 import com.example.auth.decorator.pagination.*;
@@ -33,8 +34,9 @@ class CategoryServiceImplTest {
 
 
     @Test
-    void testUpdateCategory() {
+    void testUpdateCategory() throws InvocationTargetException, IllegalAccessException {
         //given
+        AdminConfiguration adminConfiguration = adminConfigurationService.getConfiguration();
         var category = CategoryServiceImplGenerator.MockCategory();
         var addCategory = CategoryServiceImplGenerator.MockAddCategory();
         var categoryresponse = CategoryServiceImplGenerator.MockCategoryResponse();
@@ -51,6 +53,8 @@ class CategoryServiceImplTest {
     @Test
     void testAddCategory() throws InvocationTargetException, IllegalAccessException {
         //given
+        AdminConfiguration adminConfiguration = adminConfigurationService.getConfiguration();
+        var adminConfig=CategoryServiceImplGenerator.getMockAdminConfig();
         var category = CategoryServiceImplGenerator.MockCategory();
         var addCategory = CategoryServiceImplGenerator.MockAddCategory();
         var categoryresponse = CategoryServiceImplGenerator.MockCategoryResponse();

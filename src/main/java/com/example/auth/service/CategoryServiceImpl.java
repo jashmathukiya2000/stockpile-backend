@@ -88,12 +88,13 @@ public class CategoryServiceImpl implements CategoryService {
     public void checkValidation(CategoryAddRequest categoryAddRequest) throws InvocationTargetException, IllegalAccessException {
         AdminConfiguration adminConfiguration=adminConfigurationService.getConfiguration();
 
-        if (!categoryAddRequest.getCategoryName().matches(adminConfiguration.getNameRegex())) {
-            throw new InvalidRequestException(MessageConstant.NAME_MUST_NOT_BE_NULL);
-        }
+
         if (categoryRepository.existsBycategoryNameAndSoftDeleteIsFalse(categoryAddRequest.getCategoryName())) {
             throw new InvalidRequestException(MessageConstant.ALREADY_EXIST);
         }
+        if (!categoryAddRequest.getCategoryName().matches(adminConfiguration.getNameRegex())) {
+           throw new InvalidRequestException(MessageConstant.NAME_MUST_NOT_BE_NULL);
+      }
 
     }
 

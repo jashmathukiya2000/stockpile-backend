@@ -1,12 +1,12 @@
 package com.example.auth.helper;
 
+import com.example.auth.commons.model.AdminConfiguration;
 import com.example.auth.decorator.category.CategoryAddRequest;
 import com.example.auth.decorator.category.CategoryResponse;
 import com.example.auth.model.Category;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.convention.MatchingStrategies;
 
-import java.util.Date;
 import java.util.List;
 
 public class CategoryServiceImplGenerator {
@@ -25,7 +25,7 @@ public class CategoryServiceImplGenerator {
                 .build();
     }
 
-    public static CategoryAddRequest MockAddCategory() {
+    public static CategoryAddRequest MockAddCategory( ) {
         return CategoryAddRequest.builder()
                 .categoryName("computer")
                 .build();
@@ -49,5 +49,11 @@ public class CategoryServiceImplGenerator {
                 .builder()
                 .categoryName("computer")
                 .build());
+    }
+
+    public static AdminConfiguration getMockAdminConfig(){
+        return AdminConfiguration.builder()
+                .nameRegex("^[a-zA-Z]+$")
+                .build();
     }
 }

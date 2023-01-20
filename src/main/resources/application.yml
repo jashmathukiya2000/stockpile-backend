@@ -6,6 +6,12 @@ spring:
   data:
     mongodb:
       uri: mongodb://localhost:27017/AuthModule
+#      mail:
+#        host: smtp.office365.com
+#        port: 587
+#        username: dency.g@techroversolutions.com
+#        password: Rakshit@05
+
   mvc:
     pathmatch:
       matching-strategy: ant_path_matcher

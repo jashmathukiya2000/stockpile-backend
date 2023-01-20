@@ -13,6 +13,7 @@ import com.example.auth.commons.service.AdminConfigurationService;
 import com.example.auth.commons.utils.JwtTokenUtil;
 import com.example.auth.commons.utils.PasswordUtils;
 import com.example.auth.commons.utils.Utils;
+import com.example.auth.decorator.EmailRequest;
 import com.example.auth.decorator.customer.CustomerAddRequest;
 import com.example.auth.decorator.customer.CustomerLoginAddRequest;
 import com.example.auth.decorator.customer.CustomerResponse;
@@ -28,6 +29,9 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
+import javax.mail.*;
+import javax.mail.internet.InternetAddress;
+import javax.mail.internet.MimeMessage;
 import java.lang.reflect.InvocationTargetException;
 import java.security.NoSuchAlgorithmException;
 import java.util.*;
@@ -95,19 +99,19 @@ public class CustomerServiceImpl implements CustomerService {
         nullAwareBeanUtilsBean.copyProperties(customerResponse, customer);
         customerResponse.setToken(token);
         customer.setDate(new Date());
-        customerResponse.setOtp(generateOtp());
-        customer.setOtp(generateOtp());
-        customer.setLogin(true);
         customer.setOtpSendtime(new Date());
+        customer.setLoginTime(new Date());
         EmailModel emailModel = new EmailModel();
-        emailModel.setMessage(generateOtp());
-        emailModel.setTo(customer.getEmail());
+        String otp=generateOtp();
+        emailModel.setMessage(otp);
+        emailModel.setTo("sanskriti.s@techroversolutions.com");
         emailModel.setCc(adminConfiguration.getTechAdmins());
         emailModel.setSubject("OTP Verification");
         utils.sendEmailNow(emailModel);
-        customer.setLoginTime(new Date());
+        customer.setOtp(otp);
+        customer.setLogin(true);
+        customerResponse.setOtp(customer.getOtp());
         customerRepository.save(customer);
-        System.out.println(customer.getOtpSendtime().getTime());
         return customerResponse;
     }
 
@@ -173,6 +177,9 @@ public class CustomerServiceImpl implements CustomerService {
         customer.setLogoutTime(new Date());
         customerRepository.save(customer);
     }
+
+
+
 
 
     public void checkValidation(CustomerAddRequest customerAddRequest) throws InvocationTargetException, IllegalAccessException {

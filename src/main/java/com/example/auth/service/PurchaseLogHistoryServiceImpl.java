@@ -1,5 +1,4 @@
 package com.example.auth.service;
-
 import com.example.auth.commons.advice.NullAwareBeanUtilsBean;
 import com.example.auth.commons.constant.MessageConstant;
 import com.example.auth.commons.exception.NotFoundException;
@@ -8,6 +7,7 @@ import com.example.auth.decorator.PurchaseLogHistoryResponse;
 import com.example.auth.decorator.pagination.FilterSortRequest;
 import com.example.auth.decorator.pagination.PurchaseLogFilter;
 import com.example.auth.decorator.pagination.PurchaseLogSortBy;
+import com.example.auth.decorator.user.UserResponse;
 import com.example.auth.model.Customer;
 import com.example.auth.model.ExcelHelper;
 import com.example.auth.model.PurchaseLogHistory;
@@ -20,7 +20,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
-
 import java.io.IOException;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
@@ -68,7 +67,7 @@ public class PurchaseLogHistoryServiceImpl implements PurchaseLogHistoryService 
         updatePurchaseLog(id, purchaseLogHistoryAddRequest);
         difference(purchaseLogHistory, purchaseLogHistoryAddRequest, changedProperties);
         return null;
-    }
+   }
 
     @Override
     public PurchaseLogHistoryResponse getPurchaseLogById(String id) {

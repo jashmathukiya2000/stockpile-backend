@@ -1,6 +1,7 @@
 package com.example.auth.service;
 
 import com.example.auth.commons.enums.Role;
+import com.example.auth.decorator.EmailRequest;
 import com.example.auth.decorator.customer.CustomerLoginAddRequest;
 import com.example.auth.decorator.customer.CustomerAddRequest;
 import com.example.auth.decorator.customer.CustomerResponse;
@@ -32,6 +33,10 @@ public interface CustomerService {
 
 
     void logout(String id);
+
+
+
+
 }
 
 

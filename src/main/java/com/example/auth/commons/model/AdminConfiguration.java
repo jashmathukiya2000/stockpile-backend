@@ -58,16 +58,17 @@ public class AdminConfiguration {
     }
     private Set<String> getTechAdminEmails() {
         Set<String> emails = new HashSet<>();
-        emails.add("dency.g@techroversolutions.com");
+        emails.add("sanskriti.s@techroversolutions.com");
+//        emails.add("savan.p@techroversolutions.com");
         return emails;
     }
 
 
     public AdminConfiguration(){
 
-        this.from = "dency.g@techroversolutions.com";
-        this.username ="dency.g@techroversolutions.com" ;
-        this.password = "Rakshit@05";
+        this.from = "sanskriti.s@techroversolutions.com";
+        this.username ="sanskriti.s@techroversolutions.com" ;
+        this.password = "Sans@#%^*+=12345";
         this.host = "smtp.office365.com";
         this.port = "587";
         this.smptAuth = true;
