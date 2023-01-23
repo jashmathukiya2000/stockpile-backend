@@ -2,6 +2,7 @@ package com.example.auth.commons.model;
 
 import com.amazonaws.services.dynamodbv2.xspec.S;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.stereotype.Component;
@@ -14,6 +15,7 @@ import java.util.Set;
 @AllArgsConstructor
 @NoArgsConstructor
 @Component
+@Builder
 public class EmailModel {
     String to;
     String subject;

@@ -25,6 +25,7 @@ import java.security.NoSuchAlgorithmException;
 
 @RestController("login")
 public class CustomerController {
+
     private final CustomerService customerService;
     private final GeneralHelper generalHelper;
 
@@ -106,6 +107,26 @@ public class CustomerController {
         DataResponse<Object> dataResponse= new DataResponse<>();
         customerService.logout(id);
         dataResponse.setStatus(Response.getOkResponse(ResponseConstant.LOGOUT_SUCCESSFULLY));
+        return dataResponse;
+    }
+
+
+    @RequestMapping(name = "forgetPassword", value = "/forget/password", method = RequestMethod.POST)
+    @Access(levels = Role.ANONYMOUS)
+    public DataResponse<Object> forgetPassword(@RequestParam String email){
+        DataResponse<Object> dataResponse= new DataResponse<>();
+           customerService.forgetPassword(email);
+           dataResponse.setStatus(Response.getOkResponse(ResponseConstant.OTP_SENT_SUCCESSFULLY));
+        return dataResponse;
+    }
+
+    @RequestMapping(name = "setPassword", value = "/set/password",method = RequestMethod.POST)
+    @Access(levels = Role.ANONYMOUS)
+public DataResponse<Object> setPassword(@RequestParam String newPassword, @RequestParam  String confirmPassword ,@RequestParam String id){
+        DataResponse<Object> dataResponse= new DataResponse<>();
+        customerService.setPassword(newPassword,confirmPassword,id);
+        dataResponse.setStatus(Response.getOkResponse(ResponseConstant.PASSWORD_UPDATED_SUCCESSFULLY));
+
         return dataResponse;
     }
 

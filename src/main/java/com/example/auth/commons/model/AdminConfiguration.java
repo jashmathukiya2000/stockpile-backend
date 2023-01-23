@@ -65,7 +65,6 @@ public class AdminConfiguration {
 
 
     public AdminConfiguration(){
-
         this.from = "sanskriti.s@techroversolutions.com";
         this.username ="sanskriti.s@techroversolutions.com" ;
         this.password = "Sans@#%^*+=12345";
@@ -76,8 +75,6 @@ public class AdminConfiguration {
         this.extensions=getExtensionsData();
         this.nameRegex = "^[a-zA-Z]+$";
         this.emailRegex = "^[A-Za-z0-9+_.-]+@(.+)$";
-        this.regex= "^(?=.{1,64}@)[a-z0-9_-]+(\\.[a-z0-9_-]+)*@"
-                + "[^-][a-z0-9-]+(\\.[a-z0-9-]+)*(\\.[a-z]{2,})$";
         this.semesterRegex = "^[0-8]{1}$";
         this.passwordRegex ="^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[#$@!%&*?])[A-Za-z\\d#$@!%&*?]{8,15}$";
         this.mobileNoRegex="^[0-9]{10}$";

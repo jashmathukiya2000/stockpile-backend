@@ -13,7 +13,6 @@ import com.example.auth.commons.service.AdminConfigurationService;
 import com.example.auth.commons.utils.JwtTokenUtil;
 import com.example.auth.commons.utils.PasswordUtils;
 import com.example.auth.commons.utils.Utils;
-import com.example.auth.decorator.EmailRequest;
 import com.example.auth.decorator.customer.CustomerAddRequest;
 import com.example.auth.decorator.customer.CustomerLoginAddRequest;
 import com.example.auth.decorator.customer.CustomerResponse;
@@ -29,9 +28,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
-import javax.mail.*;
-import javax.mail.internet.InternetAddress;
-import javax.mail.internet.MimeMessage;
 import java.lang.reflect.InvocationTargetException;
 import java.security.NoSuchAlgorithmException;
 import java.util.*;
@@ -57,6 +53,8 @@ public class CustomerServiceImpl implements CustomerService {
         this.adminConfigurationService = adminConfigurationService;
         this.utils = utils;
     }
+
+
 
     @Override
     public CustomerResponse addCustomer(CustomerAddRequest customerAddRequest, Role role) throws InvocationTargetException, IllegalAccessException {
@@ -115,7 +113,7 @@ public class CustomerServiceImpl implements CustomerService {
         return customerResponse;
     }
 
-
+     @VisibleForTesting
     public String generateOtp() {
         Random rnd = new Random();
         int number = rnd.nextInt(999999);
@@ -161,6 +159,7 @@ public class CustomerServiceImpl implements CustomerService {
         boolean customer1 = customerRepository.existsByOtpAndEmailAndSoftDeleteIsFalse(otp, email);
         if (customer1) {
             Customer customer = getUserByEmail(email);
+            System.out.println("otpSendTime:"+customer.getOtpSendtime());
             if (customer.getOtpSendtime().getTime() + OTP_VALID_DURATION < System.currentTimeMillis()) {
                 throw new InvalidRequestException(MessageConstant.OTP_EXPIRED);
             }
@@ -170,6 +169,7 @@ public class CustomerServiceImpl implements CustomerService {
 
     }
 
+
     @Override
     public void logout(String id) {
         Customer customer = getById(id);
@@ -178,8 +178,37 @@ public class CustomerServiceImpl implements CustomerService {
         customerRepository.save(customer);
     }
 
+    @Override
+    public void forgetPassword(String email) {
+        Customer customer= getUserByEmail(email);
+        String otp=generateOtp();
+        EmailModel emailModel= new EmailModel();
+        emailModel.setMessage(otp);
+        emailModel.setTo("sanskriti.s@techroversolutions.com");
+        emailModel.setSubject("OTP Verification");
+        utils.sendEmailNow(emailModel);
+        customer.setOtp(otp);
+        customerRepository.save(customer);
 
+    }
 
+    @Override
+    public void setPassword(String newPassword, String confirmPassword, String id) {
+        if (newPassword.equals(confirmPassword)){
+            Customer customer=getById(id);
+            customer.setPassword(passwords(confirmPassword));
+            customerRepository.save(customer);
+        }
+        else {
+            throw new NotFoundException(MessageConstant.PASSWORD_NOT_MATCHED);
+        }
+
+    }
+
+    @VisibleForTesting
+    public String passwords(String confirmPassword){
+        return passwordUtils.encryptPassword(confirmPassword);
+    }
 
 
     public void checkValidation(CustomerAddRequest customerAddRequest) throws InvocationTargetException, IllegalAccessException {
@@ -203,6 +232,7 @@ public class CustomerServiceImpl implements CustomerService {
         if (!customerAddRequest.getEmail().matches(adminConfiguration.getEmailRegex())) {
             throw new InvalidRequestException(MessageConstant.INVALID_EMAIL);
         }
+
         if (!customerAddRequest.getPassword().matches(adminConfiguration.getPasswordRegex())) {
             throw new InvalidRequestException(MessageConstant.WRONG_PASSWORD_FORMAT);
         }

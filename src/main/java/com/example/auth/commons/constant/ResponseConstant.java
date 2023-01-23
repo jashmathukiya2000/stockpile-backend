@@ -19,5 +19,7 @@ public class ResponseConstant {
     public static final String LOGOUT_SUCCESSFULLY ="Logout successfully" ;
 
     public static final String EMAIL_SEND_SUCCESSFULLY ="Email sent successfully" ;
+    public static final String OTP_SENT_SUCCESSFULLY ="Otp sent successfully" ;
+    public static final String PASSWORD_UPDATED_SUCCESSFULLY = "Password updated successfully";
 }
 

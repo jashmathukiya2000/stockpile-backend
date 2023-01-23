@@ -53,12 +53,13 @@ class CategoryServiceImplTest {
     @Test
     void testAddCategory() throws InvocationTargetException, IllegalAccessException {
         //given
-        AdminConfiguration adminConfiguration = adminConfigurationService.getConfiguration();
+
         var adminConfig=CategoryServiceImplGenerator.getMockAdminConfig();
         var category = CategoryServiceImplGenerator.MockCategory();
         var addCategory = CategoryServiceImplGenerator.MockAddCategory();
         var categoryresponse = CategoryServiceImplGenerator.MockCategoryResponse();
         when(categoryRepository.findByIdAndSoftDeleteIsFalse(id)).thenReturn(Optional.ofNullable(category));
+        when(adminConfigurationService.getConfiguration()).thenReturn(adminConfig);
         when(categoryRepository.save(category)).thenReturn(category);
 
         //when
