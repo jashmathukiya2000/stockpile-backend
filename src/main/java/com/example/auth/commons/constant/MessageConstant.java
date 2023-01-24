@@ -39,4 +39,6 @@ public class MessageConstant {
     public static final String INVALID_SEMESTER ="Invalid semester" ;
     public static final String WRONG_PASSWORD_FORMAT = "Your password must be at least 8 characters long, contain at least one number and have a mixture of uppercase and lowercase letters.";
     public static final String PASSWORD_NOT_MATCHED = "Password not matched";
+    public static final String INVALID_TOKEN ="Invalid token" ;
+    public static final String PASSWORD_EMPTY ="Password empty" ;
 }

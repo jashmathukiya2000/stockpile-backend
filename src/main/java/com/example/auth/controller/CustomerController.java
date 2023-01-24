@@ -1,5 +1,6 @@
 package com.example.auth.controller;
 
+import com.amazonaws.services.dynamodbv2.xspec.S;
 import com.example.auth.commons.Access;
 import com.example.auth.commons.constant.ResponseConstant;
 import com.example.auth.commons.decorator.GeneralHelper;
@@ -129,6 +130,16 @@ public DataResponse<Object> setPassword(@RequestParam String newPassword, @Reque
 
         return dataResponse;
     }
+
+    @RequestMapping(name = "getEncryptPassword", value = "/encryptedPassword", method = RequestMethod.POST)
+    @Access(levels = Role.ANONYMOUS)
+    public DataResponse<String> getEncryptPassword(@RequestParam String id){
+        DataResponse<String> dataResponse= new DataResponse<>();
+        dataResponse.setData(customerService.getEncryptPassword(id));
+        dataResponse.setStatus(Response.getOkResponse());
+        return dataResponse;
+    }
+
 
 
 

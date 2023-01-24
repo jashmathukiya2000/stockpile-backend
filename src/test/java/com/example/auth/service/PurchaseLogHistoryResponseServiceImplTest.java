@@ -1,6 +1,7 @@
 package com.example.auth.service;
 
 import com.example.auth.commons.advice.NullAwareBeanUtilsBean;
+import com.example.auth.commons.exception.NotFoundException;
 import com.example.auth.decorator.PurchaseLogHistoryResponse;
 import com.example.auth.decorator.pagination.FilterSortRequest;
 import com.example.auth.decorator.pagination.Pagination;
@@ -54,6 +55,25 @@ class PurchaseLogHistoryResponseServiceImplTest {
         Assertions.assertEquals(purchaseLogResponse, actualData);
 
     }
+
+    @Test
+    void testIdNotFound(){
+        //given
+        var customer = PurchaseLogHistoryServiceImplTestGenerator.mockCustomer();
+
+        var purchaseLogAddRequest = PurchaseLogHistoryServiceImplTestGenerator.mockPurchaseLogHistoryAddRequest();
+
+        when(customerRepository.findByIdAndSoftDeleteIsFalse(customerId)).thenReturn(java.util.Optional.ofNullable(customer));
+
+       //when
+        Throwable exception= Assertions.assertThrows(NotFoundException.class, ()-> purchaseLogHistoryService.addPurchaseLog(purchaseLogAddRequest,null));
+
+        //then
+        Assertions.assertEquals("Id not found", exception.getMessage());
+
+
+    }
+
 
 
     @Test
@@ -163,5 +183,21 @@ class PurchaseLogHistoryResponseServiceImplTest {
         //then
         Assertions.assertEquals(purchaseLogHistory, actualData);
     }
+
+    @Test
+    void testItemPurchaseLogByIdNotFound(){
+         //given
+        var purchaseLogHistory= PurchaseLogHistoryServiceImplTestGenerator.mockPurchaseLogHistory(null);
+
+        when(purchaseLogHistoryRepository.findByIdAndSoftDeleteIsFalse(customerId)).thenReturn(java.util.Optional.ofNullable(purchaseLogHistory));
+
+        //when
+        Throwable exception= Assertions.assertThrows(NotFoundException.class ,()-> purchaseLogHistoryService.getItemPurchaseLogById(null));
+
+        //then
+        Assertions.assertEquals("Id not found", exception.getMessage());
+
+    }
+
 
 }

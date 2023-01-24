@@ -38,6 +38,7 @@ public interface CustomerService {
 
     void setPassword(String newPassword, String confirmPassword, String id);
 
+    String getEncryptPassword(String id);
 }
 
 

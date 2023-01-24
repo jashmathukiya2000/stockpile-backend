@@ -21,7 +21,7 @@ public class ItemServiceImplTestGenerator {
         return modelMapper;
     }
 
-    public static Item getMockItem(Date date) {
+    public static Item getMockItem(Date  date) {
         return Item.builder()
                 .id(id)
                 .categoryId(categoryId)
@@ -33,7 +33,7 @@ public class ItemServiceImplTestGenerator {
                 .build();
     }
 
-    public static ItemResponse getMockItemResponse(Date date,String id) {
+    public static ItemResponse getMockItemResponse(Date date, String id) {
         return ItemResponse.builder()
                 .itemName("monitor")
                 .id(id)
@@ -69,10 +69,11 @@ public class ItemServiceImplTestGenerator {
                 .quantity(2).build());
     }
 
-    public static Optional<Category> getMockCategory() {
+    public static Optional<Category> getMockCategory(Date date) {
         return Optional.of(Category.builder()
                 .id(categoryId)
                 .softDelete(false)
+                .date(date)
                 .categoryName("computer")
                 .build());
     }

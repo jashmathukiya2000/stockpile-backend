@@ -8,6 +8,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 
 import java.lang.reflect.InvocationTargetException;
+import java.util.Date;
 import java.util.List;
 
 public interface UserService {
@@ -28,6 +29,12 @@ public interface UserService {
     List<MaxSpiResponse> getUserByMaxSpi(String id);
 
     UserResponse getToken(String id) throws InvocationTargetException, IllegalAccessException;
+
+    String getIdFromToken(String token);
+
+    Date getExpirationDateFromToken(String token);
+
+    boolean isTokenExpired(String token);
 }
 
 

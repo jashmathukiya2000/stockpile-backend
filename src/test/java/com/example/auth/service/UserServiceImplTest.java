@@ -23,6 +23,7 @@ import org.springframework.data.domain.Sort;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.Collections;
+import java.util.Date;
 import java.util.Optional;
 
 import static org.mockito.Mockito.*;
@@ -31,6 +32,7 @@ import static org.mockito.Mockito.*;
 class UserServiceImplTest {
     private final static String id = "id";
     private final Role role = Role.ADMIN;
+    private final String token = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJST0xFIjpbIlVTRVIiXSwic3ViIjoiNjM4NzM1Y2NhNjc5ODkwZmYxNTA3YTFmIiwiSUQiOiI2Mzg3MzVjY2E2Nzk4OTBmZjE1MDdhMWYiLCJleHAiOjE2NzQ2NDI5MDcsImlhdCI6MTY3NDU1NjUwN30.fZCV0ei64hZJGUZ1stmaOd_yb34PO21_aHh16kowM9U";
     private final UserRepository userRepository = Mockito.mock(UserRepository.class);
     private final ModelMapper modelMapper = UserServiceImplTestGenerator.getModelMapper();
     private final NullAwareBeanUtilsBean nullAwareBeanUtilsBean = Mockito.mock(NullAwareBeanUtilsBean.class);
@@ -189,4 +191,60 @@ class UserServiceImplTest {
 
 
     }
+
+    @Test
+    void testgetIdFromToken() {
+        //given
+        var user = UserServiceImplTestGenerator.getMockUser(role);
+
+        JWTUser jwtUser = new JWTUser(id, Collections.singletonList(user.getRole().toString()));
+
+        String id = jwtTokenUtil.getUserIdFromToken(token);
+
+        when(userRepository.existsById(id)).thenReturn(true);
+
+        //when
+        var actualData = userService.getIdFromToken(token);
+
+        //then
+        Assertions.assertEquals(id, actualData);
+
+    }
+
+    @Test
+    void testgetExpirationDateFromToken() {
+        var user = UserServiceImplTestGenerator.getMockUser(role);
+
+        JWTUser jwtUser = new JWTUser(id, Collections.singletonList(user.getRole().toString()));
+
+        Date date = jwtTokenUtil.getExpirationDateFromToken(token);
+
+        //when
+        var actualData = userService.getExpirationDateFromToken(token);
+
+        //then
+        Assertions.assertEquals(date, actualData);
+
+    }
+
+    @Test
+    void testisTokenExpired() {
+        //given
+        var user = UserServiceImplTestGenerator.getMockUser(role);
+
+        JWTUser jwtUser = new JWTUser(id, Collections.singletonList(user.getRole().toString()));
+
+        var date = jwtTokenUtil.isTokenExpired(token);
+
+        when(jwtTokenUtil.isTokenExpired(token)).thenReturn(false);
+
+        //when
+        var actualData = userService.isTokenExpired(token);
+
+        //then
+        Assertions.assertEquals(date, actualData);
+
+    }
+
+
 }

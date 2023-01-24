@@ -1,5 +1,6 @@
 package com.example.auth.controller;
 
+import com.amazonaws.services.dynamodbv2.xspec.B;
 import com.example.auth.commons.Access;
 import com.example.auth.commons.constant.ResponseConstant;
 import com.example.auth.commons.decorator.GeneralHelper;
@@ -19,6 +20,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.web.bind.annotation.*;
 
 import java.lang.reflect.InvocationTargetException;
+import java.util.Date;
 
 @RestController
 @RequestMapping("/users")
@@ -136,6 +138,36 @@ public class UserController {
         return tokenResponse;
     }
 
+    @RequestMapping(name = "getIdFromToken", value = "/{id}", method = RequestMethod.POST)
+    @Access(levels = Role.ANONYMOUS)
+    public  TokenResponse<String> getIdFromToken(@RequestParam String token){
+        TokenResponse<String> tokenResponse= new TokenResponse<>();
+        tokenResponse.setData(userService.getIdFromToken(token));
+        tokenResponse.setStatus(Response.getOkResponse(ResponseConstant.OK));
+        tokenResponse.setToken(token);
+        return tokenResponse;
+    }
+
+    @RequestMapping(name = "getExpirationDateFromToken", value = "/expirationDate/token", method = RequestMethod.POST)
+    @Access(levels = Role.ANONYMOUS)
+   public TokenResponse<Date> getExpirationDateFromToken(@RequestParam String token){
+        TokenResponse<Date> tokenResponse= new TokenResponse<>();
+        tokenResponse.setData(userService.getExpirationDateFromToken(token));
+        tokenResponse.setStatus(Response.getOkResponse());
+        tokenResponse.setToken(token);
+        return tokenResponse;
+    }
+
+    @RequestMapping(name = "isTokenExpired",value = "/tokenExpired", method = RequestMethod.POST)
+    @Access(levels = Role.ANONYMOUS)
+    public TokenResponse<Boolean> isTokenExpired(@RequestParam String token){
+        TokenResponse<Boolean> tokenResponse= new TokenResponse<>();
+        tokenResponse.setData(userService.isTokenExpired(token));
+        tokenResponse.setStatus(Response.getOkResponse());
+        tokenResponse.setToken(token);
+
+        return tokenResponse;
+    }
 
 
 

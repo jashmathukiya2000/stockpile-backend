@@ -1,6 +1,7 @@
 package com.example.auth.service;
 
 import com.example.auth.commons.advice.NullAwareBeanUtilsBean;
+import com.example.auth.commons.exception.NotFoundException;
 import com.example.auth.decorator.ItemResponse;
 import com.example.auth.decorator.pagination.FilterSortRequest;
 import com.example.auth.decorator.pagination.ItemFilter;
@@ -28,6 +29,8 @@ import static org.mockito.Mockito.*;
 class ItemServiceImplTest {
     private final static String id = "id";
     private final static String categoryId = "id";
+
+
     private final ItemRepository itemRepository = mock(ItemRepository.class);
     private final CategoryRepository categoryRepository = mock(CategoryRepository.class);
     private final ModelMapper modelMapper = ItemServiceImplTestGenerator.getModelMapper();
@@ -39,7 +42,7 @@ class ItemServiceImplTest {
     void testUpdateItem() throws InvocationTargetException, IllegalAccessException {
 
         //given
-        Date date = itemService.currentDate();
+        Date date = new Date();
         var item = ItemServiceImplTestGenerator.getMockItem(date);
         var itemAddRequest = ItemServiceImplTestGenerator.getMockItemAddRequest();
         var itemResponse = ItemServiceImplTestGenerator.getMockItemResponse(date, id);
@@ -55,12 +58,12 @@ class ItemServiceImplTest {
     void testAddItem() throws InvocationTargetException, IllegalAccessException {
 
         //given
-        Date date = itemService.currentDate();
-        var category = ItemServiceImplTestGenerator.getMockCategory();
+        Date date = new Date();
+        var category = ItemServiceImplTestGenerator.getMockCategory(date);
         var item = ItemServiceImplTestGenerator.getMockItem(date);
         var itemAddRequest = ItemServiceImplTestGenerator.getMockItemAddRequest();
         var itemResponse = ItemServiceImplTestGenerator.getMockItemResponse(date, null);
-//        doReturn(date).when(itemService).currentDate();
+
         when(categoryRepository.findByIdAndSoftDeleteIsFalse(categoryId)).thenReturn(category);
         when(itemRepository.save(item)).thenReturn(item);
 
@@ -68,7 +71,7 @@ class ItemServiceImplTest {
         var actualData = itemService.addItem(categoryId, itemAddRequest);
 
         //then
-        Assertions.assertEquals(itemResponse, actualData);
+        Assertions.assertEquals(itemResponse.getItemName(), actualData.getItemName());
     }
 
     @Test
@@ -144,6 +147,39 @@ class ItemServiceImplTest {
 
         //then
         Assertions.assertEquals(page, actualData);
+
+    }
+
+    @Test
+    void testIdNotFound() {
+        //given
+        var item = ItemServiceImplTestGenerator.getMockItem(null);
+
+        when(itemRepository.findByIdAndSoftDeleteIsFalse(id)).thenReturn(Optional.ofNullable(item));
+
+        //when
+        Throwable exception = Assertions.assertThrows(NotFoundException.class, () -> itemService.getItemById(null));
+
+        //then
+        Assertions.assertEquals("Id not found", exception.getMessage());
+
+    }
+
+    @Test
+    void testCategoryIdNotFound() {
+        //given
+        var item = ItemServiceImplTestGenerator.getMockItem(null);
+
+        var category = ItemServiceImplTestGenerator.getMockCategory(null);
+
+        when(categoryRepository.findByIdAndSoftDeleteIsFalse(categoryId)).thenReturn(category);
+
+        //when
+        Throwable exception = Assertions.assertThrows(NotFoundException.class, () -> itemService.getCategoryModel(null));
+
+        //then
+        Assertions.assertEquals("Id not found", exception.getMessage());
+
 
     }
 

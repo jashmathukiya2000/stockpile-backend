@@ -70,6 +70,7 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook;
                 createCell(row, columnCount++, record.getDiscountInPercent(), style);
                 createCell(row, columnCount++, record.getDiscountInRupee(), style);
                 createCell(row, columnCount++, record.getTotalPrice(), style);
+
             }
         }
         public void generateExcelFile(HttpServletResponse response) throws IOException {

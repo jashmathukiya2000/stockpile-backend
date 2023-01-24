@@ -1,5 +1,6 @@
 package com.example.auth.model;
 
+import com.example.auth.decorator.PurchaseLogHistoryResponse;
 import com.lowagie.text.*;
 import com.lowagie.text.pdf.CMYKColor;
 import com.lowagie.text.pdf.PdfPCell;
@@ -14,7 +15,7 @@ import java.util.Date;
 import java.util.List;
 
 public class GeneratePdf {
-    public void generate1(List<Invoice> invoices, HttpServletResponse response) throws DocumentException, IOException, IOException {
+    public void generate1(List<PurchaseLogHistoryResponse> invoices, HttpServletResponse response) throws DocumentException, IOException, IOException {
         Document document = new Document(PageSize.A3);
         // Getting instance of PdfWriter
         PdfWriter.getInstance(document, response.getOutputStream());
@@ -77,12 +78,6 @@ public class GeneratePdf {
         cell.setPhrase(new Phrase("totalPrice", font));
         table.addCell(cell);
         // Iterating the list of customers
-        for (Invoice purchaseLogHistoryResponse : invoices) {
-            table.addCell(String.valueOf(purchaseLogHistoryResponse.getPurchaseLogHistory()));
-            table.addCell(String.valueOf(purchaseLogHistoryResponse.getTotal()));
-
-
-        }
 
 
         // Adding the created table to the document

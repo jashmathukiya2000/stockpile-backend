@@ -44,11 +44,11 @@ public class CustomerServiceTestGenerator {
                 .build();
     }
 
-    public static CustomerAddRequest getMockUserAddRequest() {
+    public static CustomerAddRequest getMockUserAddRequest(String contact) {
         return CustomerAddRequest.builder()
                 .email(email)
                 .password("Sans@12345")
-                .contact("6386580393")
+                .contact(contact)
                 .userName(userName)
                 .confirmPassword("Sans@12345")
                 .name(name)

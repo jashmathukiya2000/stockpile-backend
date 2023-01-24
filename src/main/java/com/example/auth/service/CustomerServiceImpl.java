@@ -55,7 +55,6 @@ public class CustomerServiceImpl implements CustomerService {
     }
 
 
-
     @Override
     public CustomerResponse addCustomer(CustomerAddRequest customerAddRequest, Role role) throws InvocationTargetException, IllegalAccessException {
         Customer signUpUser1 = modelMapper.map(customerAddRequest, Customer.class);
@@ -100,7 +99,7 @@ public class CustomerServiceImpl implements CustomerService {
         customer.setOtpSendtime(new Date());
         customer.setLoginTime(new Date());
         EmailModel emailModel = new EmailModel();
-        String otp=generateOtp();
+        String otp = generateOtp();
         emailModel.setMessage(otp);
         emailModel.setTo("sanskriti.s@techroversolutions.com");
         emailModel.setCc(adminConfiguration.getTechAdmins());
@@ -113,7 +112,7 @@ public class CustomerServiceImpl implements CustomerService {
         return customerResponse;
     }
 
-     @VisibleForTesting
+    @VisibleForTesting
     public String generateOtp() {
         Random rnd = new Random();
         int number = rnd.nextInt(999999);
@@ -159,12 +158,12 @@ public class CustomerServiceImpl implements CustomerService {
         boolean customer1 = customerRepository.existsByOtpAndEmailAndSoftDeleteIsFalse(otp, email);
         if (customer1) {
             Customer customer = getUserByEmail(email);
-            System.out.println("otpSendTime:"+customer.getOtpSendtime());
+            System.out.println("otpSendTime:" + customer.getOtpSendtime());
             if (customer.getOtpSendtime().getTime() + OTP_VALID_DURATION < System.currentTimeMillis()) {
                 throw new InvalidRequestException(MessageConstant.OTP_EXPIRED);
             }
         } else {
-            throw new NotFoundException(MessageConstant.INVAILD_OTP);
+            throw new InvalidRequestException(MessageConstant.INVAILD_OTP);
         }
 
     }
@@ -180,9 +179,9 @@ public class CustomerServiceImpl implements CustomerService {
 
     @Override
     public void forgetPassword(String email) {
-        Customer customer= getUserByEmail(email);
-        String otp=generateOtp();
-        EmailModel emailModel= new EmailModel();
+        Customer customer = getUserByEmail(email);
+        String otp = generateOtp();
+        EmailModel emailModel = new EmailModel();
         emailModel.setMessage(otp);
         emailModel.setTo("sanskriti.s@techroversolutions.com");
         emailModel.setSubject("OTP Verification");
@@ -194,19 +193,34 @@ public class CustomerServiceImpl implements CustomerService {
 
     @Override
     public void setPassword(String newPassword, String confirmPassword, String id) {
-        if (newPassword.equals(confirmPassword)){
-            Customer customer=getById(id);
+        if (newPassword.equals(confirmPassword)) {
+            Customer customer = getById(id);
             customer.setPassword(passwords(confirmPassword));
             customerRepository.save(customer);
-        }
-        else {
+        } else {
             throw new NotFoundException(MessageConstant.PASSWORD_NOT_MATCHED);
         }
 
     }
 
+    @Override
+    public String getEncryptPassword(String id) {
+        Customer customer= getById(id);
+        CustomerResponse customerResponse= new CustomerResponse();
+        customerResponse.setName(customer.getName());
+        customerResponse.setPassword(customer.getPassword());
+        if(customer.getPassword()!=null){
+            String password= PasswordUtils.encryptPassword(customer.getPassword());
+            customer.setPassword(password);
+            customerRepository.save(customer);
+            return password;
+        }else {
+            throw new NotFoundException(MessageConstant.PASSWORD_EMPTY);
+        }
+    }
+
     @VisibleForTesting
-    public String passwords(String confirmPassword){
+    public String passwords(String confirmPassword) {
         return passwordUtils.encryptPassword(confirmPassword);
     }
 
@@ -218,7 +232,7 @@ public class CustomerServiceImpl implements CustomerService {
             throw new InvalidRequestException(MessageConstant.INCORRECT_PASSWORD);
         }
         if (!customerAddRequest.getContact().matches(adminConfiguration.getMobileNoRegex())) {
-            throw new NotFoundException(MessageConstant.INVALID_PHONE_NUMBER);
+            throw new InvalidRequestException(MessageConstant.INVALID_PHONE_NUMBER);
         }
         if (!customerAddRequest.getName().matches(adminConfiguration.getNameRegex())) {
             throw new InvalidRequestException(MessageConstant.NAME_MUST_NOT_BE_NULL);

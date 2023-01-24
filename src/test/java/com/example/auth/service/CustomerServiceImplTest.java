@@ -2,6 +2,8 @@ package com.example.auth.service;
 
 import com.example.auth.commons.advice.NullAwareBeanUtilsBean;
 import com.example.auth.commons.enums.Role;
+import com.example.auth.commons.exception.InvalidRequestException;
+import com.example.auth.commons.exception.NotFoundException;
 import com.example.auth.commons.service.AdminConfigurationService;
 import com.example.auth.commons.utils.JwtTokenUtil;
 import com.example.auth.commons.utils.PasswordUtils;
@@ -25,6 +27,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.security.NoSuchAlgorithmException;
 import java.util.Optional;
 
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.*;
 
 public class CustomerServiceImplTest {
@@ -32,6 +35,8 @@ public class CustomerServiceImplTest {
     private static final String id = "id";
     private static final String otp = "234565";
     private static final String password = "Sans@12345";
+    private static final String INVALID_OTP = "Invalid otp";
+    private static final String contact = "6386580393";
 
 
     private final CustomerRepository customerRepository = mock(CustomerRepository.class);
@@ -52,7 +57,7 @@ public class CustomerServiceImplTest {
 
         var userModel = CustomerServiceTestGenerator.getMockuserModel(password);
 
-        var signUpAddRequest = CustomerServiceTestGenerator.getMockUserAddRequest();
+        var signUpAddRequest = CustomerServiceTestGenerator.getMockUserAddRequest(contact);
 
         var signUpresponse = CustomerServiceTestGenerator.getMockSignUpResponse(password);
 
@@ -117,7 +122,6 @@ public class CustomerServiceImplTest {
 
     @Test
     void getAllCustomer() {
-
         //given
         String password = customerService.password("Sans@12345");
 
@@ -131,7 +135,6 @@ public class CustomerServiceImplTest {
 
         when(customerService.generateOtp()).thenReturn(otp);
 
-
         //when
         var actualData = customerService.getAllCustomer();
 
@@ -142,7 +145,6 @@ public class CustomerServiceImplTest {
 
     @Test
     void testDeleteCustomer() {
-
         //given
         String password = customerService.password("Sans@12345");
 
@@ -153,14 +155,12 @@ public class CustomerServiceImplTest {
         //when
         customerService.deleteCustomer(id);
 
-
         //then
         verify(customerRepository, times(1)).findByIdAndSoftDeleteIsFalse(id);
     }
 
     @Test
     void testOtpVerification() {
-
         //given
         String otp = customerService.generateOtp();
         var customer = CustomerServiceTestGenerator.getMockuserModel(null);
@@ -168,7 +168,6 @@ public class CustomerServiceImplTest {
         when(customerRepository.existsByOtpAndEmailAndSoftDeleteIsFalse(otp, email)).thenReturn(true);
 
         when(customerRepository.findUserByEmailAndSoftDeleteIsFalse(email)).thenReturn(Optional.ofNullable(customer));
-
 
         //when
         customerService.otpVerification(otp, email);
@@ -177,33 +176,10 @@ public class CustomerServiceImplTest {
         verify(customerRepository, times(1)).existsByOtpAndEmailAndSoftDeleteIsFalse(otp, email);
     }
 
-    @Test
-    void testInvalidOtp() {
-        //given
-        String otp = customerService.generateOtp();
-
-        var customer = CustomerServiceTestGenerator.getMockuserModel(null);
-
-        var response = "INVALID OTP";
-
-        when(customerRepository.existsByOtpAndEmailAndSoftDeleteIsFalse(otp, email)).thenReturn(true);
-
-        when(customerRepository.findUserByEmailAndSoftDeleteIsFalse(email)).thenReturn(Optional.ofNullable(customer));
-
-
-        //when
-        customerService.otpVerification("345645", email);
-
-
-        //then
-
-        verify(customerRepository, times(1)).existsByOtpAndEmailAndSoftDeleteIsFalse(otp, email);
-    }
 
     @Test
     void testLogout() {
         //given
-
         var customer = CustomerServiceTestGenerator.getMockuserModel(null);
 
         when(customerRepository.findByIdAndSoftDeleteIsFalse(id)).thenReturn(Optional.ofNullable(customer));
@@ -235,7 +211,6 @@ public class CustomerServiceImplTest {
         customerService.forgetPassword(email);
 
         //then
-
         verify(customerRepository, times(1)).findUserByEmailAndSoftDeleteIsFalse(email);
 
     }
@@ -244,7 +219,6 @@ public class CustomerServiceImplTest {
     @Test
     void testSetPassword() {
         //given
-
         String password = customerService.passwords("Sans@12345");
 
         var csutomer = CustomerServiceTestGenerator.getMockuserModel(password);
@@ -252,7 +226,6 @@ public class CustomerServiceImplTest {
         when(customerRepository.findByIdAndSoftDeleteIsFalse(id)).thenReturn(Optional.ofNullable(csutomer));
 
         when(customerRepository.save(csutomer)).thenReturn(csutomer);
-
 
         //when
         customerService.setPassword(password, password, id);
@@ -261,31 +234,9 @@ public class CustomerServiceImplTest {
         verify(customerRepository, times(1)).findByIdAndSoftDeleteIsFalse(id);
 
     }
-
-
-    @Test
-    void testPasswordNotMatched() {
-        String password = customerService.passwords("Sans@12345");
-
-        var csutomer = CustomerServiceTestGenerator.getMockuserModel(password);
-
-        when(customerRepository.findByIdAndSoftDeleteIsFalse(id)).thenReturn(Optional.ofNullable(csutomer));
-
-        when(customerRepository.save(csutomer)).thenReturn(csutomer);
-
-
-        //when
-        customerService.setPassword("hey@12345", password, id);
-
-        //then
-        verify(customerRepository, times(1)).findByIdAndSoftDeleteIsFalse(id);
-    }
-
-
     @Test
     void testGetAllCustomerByPagination() {
         //given
-
         CustomerFilter customerFilter = new CustomerFilter();
 
         customerFilter.setIds(customerFilter.getIds());
@@ -301,7 +252,6 @@ public class CustomerServiceImplTest {
         pagination.setPage(1);
         pagination.setLimit(5);
 
-
         PageRequest pageRequest = PageRequest.of(pagination.getPage(), pagination.getLimit());
 
         var customer = CustomerServiceTestGenerator.getMockAllCustomer(null, null);
@@ -311,14 +261,78 @@ public class CustomerServiceImplTest {
         when(customerRepository.getAllCustomerByPagination(customerFilter, sort, pageRequest)).thenReturn(page);
 
         //when
-
         var actualData = customerService.getAllCustomerByPagination(customerFilter, sort, pageRequest);
 
         //then
-
         Assertions.assertEquals(page, actualData);
 
     }
+
+    @Test
+    void testPasswordNotMatched() {
+        String password = customerService.passwords("Sans@12345");
+
+        var csutomer = CustomerServiceTestGenerator.getMockuserModel(password);
+
+        when(customerRepository.findByIdAndSoftDeleteIsFalse(id)).thenReturn(Optional.ofNullable(csutomer));
+
+        when(customerRepository.save(csutomer)).thenReturn(csutomer);
+
+
+        //when
+        Throwable exception = assertThrows(NotFoundException.class, () -> customerService.setPassword(password, "sans", id));
+
+        //then
+        Assertions.assertEquals("Password not matched", exception.getMessage());
+    }
+
+
+    @Test
+    void testInvalidPhoneNumber() throws InvocationTargetException, IllegalAccessException {
+        //given
+        var customer = CustomerServiceTestGenerator.getMockuserModel(null);
+
+        var signUpAddRequest = CustomerServiceTestGenerator.getMockUserAddRequest("638658039");
+
+
+        var configuration = CustomerServiceTestGenerator.getMockAdminConfiguration();
+
+        when(customerRepository.findByIdAndSoftDeleteIsFalse(id)).thenReturn(Optional.ofNullable(customer));
+
+        when(adminConfigurationService.getConfiguration()).thenReturn(configuration);
+
+        //when
+
+        Throwable excption = assertThrows(InvalidRequestException.class, () -> customerService.addCustomer(signUpAddRequest, Role.USER));
+
+        //then
+        Assertions.assertEquals("Invalid phone number", excption.getMessage());
+    }
+
+    @Test
+    void testInvalidOtp() {
+        //given
+        String otp = customerService.generateOtp();
+
+        var customer = CustomerServiceTestGenerator.getMockuserModel(null);
+
+        when(customerRepository.existsByOtpAndEmailAndSoftDeleteIsFalse(otp, email)).thenReturn(true);
+
+        when(customerRepository.findUserByEmailAndSoftDeleteIsFalse(email)).thenReturn(Optional.ofNullable(customer));
+
+        //when
+        Throwable exception = assertThrows(InvalidRequestException.class, () -> customerService.otpVerification("343565", email));
+
+        //then
+        Assertions.assertEquals(INVALID_OTP, exception.getMessage());
+
+    }
+
+
+
+
+
+
 
 
 }

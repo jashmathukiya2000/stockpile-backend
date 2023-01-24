@@ -3,6 +3,7 @@ package com.example.auth.service;
 import com.example.auth.commons.JWTUser;
 import com.example.auth.commons.advice.NullAwareBeanUtilsBean;
 import com.example.auth.commons.constant.MessageConstant;
+import com.example.auth.commons.exception.InvalidRequestException;
 import com.example.auth.commons.exception.NotFoundException;
 import com.example.auth.commons.utils.JwtTokenUtil;
 import com.example.auth.decorator.pagination.FilterSortRequest;
@@ -21,6 +22,7 @@ import org.springframework.stereotype.Service;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Date;
 import java.util.List;
 
 @Slf4j
@@ -121,6 +123,34 @@ public class UserServiceImpl implements UserService {
         return userResponse;
     }
 
+    @Override
+    public String getIdFromToken(String token) {
+        String id = jwtTokenUtil.getUserIdFromToken(token);
+        boolean exist = userRepository.existsById(id);
+        if (exist) {
+            return id;
+        } else {
+            throw new InvalidRequestException(MessageConstant.INVALID_TOKEN);
+        }
+
+    }
+
+    @Override
+    public Date getExpirationDateFromToken(String token) {
+        Date date = jwtTokenUtil.getExpirationDateFromToken(token);
+        return date;
+    }
+
+    @Override
+    public boolean isTokenExpired(String token) {
+        boolean expiration = jwtTokenUtil.isTokenExpired(token);
+        if (expiration) {
+            return true;
+        } else {
+            return false;
+        }
+
+    }
 
     public User getUserModel(String id) {
         return userRepository.findByIdAndSoftDeleteIsFalse(id).orElseThrow(() -> new NotFoundException(MessageConstant.USER_ID_NOT_FOUND));
