@@ -1,5 +1,7 @@
 package com.example.auth.repository;
 
+import com.example.auth.decorator.ItemPurchaseAggregationResponse;
+import com.example.auth.decorator.PurchaseAggregationResponse;
 import com.example.auth.decorator.PurchaseLogHistoryResponse;
 import com.example.auth.decorator.pagination.FilterSortRequest;
 import com.example.auth.decorator.pagination.PurchaseLogFilter;
@@ -12,4 +14,6 @@ import java.util.List;
 public interface PurchaseLogHistoryCustomRepository {
     Page<PurchaseLogHistoryResponse> getAllPurchaseLogByPagination(PurchaseLogFilter purchaseLogFilter, FilterSortRequest.SortRequest<PurchaseLogSortBy> sort, PageRequest pageRequest);
     public List<PurchaseLogHistoryResponse> getPurchaseLogByMonth(int month);
-}
+    public List<PurchaseAggregationResponse> findItemPurchaseDetailsByMonthYear();
+    public List<ItemPurchaseAggregationResponse> getPurchaseDetailsByCustomerName();
+    }

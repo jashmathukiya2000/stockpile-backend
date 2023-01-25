@@ -2,16 +2,18 @@ package com.example.auth.service;
 import com.example.auth.commons.advice.NullAwareBeanUtilsBean;
 import com.example.auth.commons.constant.MessageConstant;
 import com.example.auth.commons.exception.NotFoundException;
+import com.example.auth.decorator.ItemPurchaseAggregationResponse;
+import com.example.auth.decorator.PurchaseAggregationResponse;
 import com.example.auth.decorator.PurchaseLogHistoryAddRequest;
 import com.example.auth.decorator.PurchaseLogHistoryResponse;
 import com.example.auth.decorator.pagination.FilterSortRequest;
 import com.example.auth.decorator.pagination.PurchaseLogFilter;
 import com.example.auth.decorator.pagination.PurchaseLogSortBy;
-import com.example.auth.decorator.user.UserResponse;
 import com.example.auth.model.Customer;
 import com.example.auth.model.ExcelHelper;
 import com.example.auth.model.PurchaseLogHistory;
 import com.example.auth.repository.CustomerRepository;
+import com.example.auth.repository.ItemRepository;
 import com.example.auth.repository.PurchaseLogHistoryRepository;
 import com.google.api.client.repackaged.com.google.common.annotations.VisibleForTesting;
 import lombok.extern.slf4j.Slf4j;
@@ -32,14 +34,16 @@ public class PurchaseLogHistoryServiceImpl implements PurchaseLogHistoryService 
     private final ModelMapper modelMapper;
     private final CustomerRepository customerRepository;
     private final NullAwareBeanUtilsBean nullAwareBeanUtilsBean;
+    private final ItemRepository itemRepository;
 
 
-    public PurchaseLogHistoryServiceImpl(PurchaseLogHistoryRepository purchaseLogHistoryRepository, ModelMapper modelMapper, CustomerRepository customerRepository, NullAwareBeanUtilsBean nullAwareBeanUtilsBean) {
+    public PurchaseLogHistoryServiceImpl(PurchaseLogHistoryRepository purchaseLogHistoryRepository, ModelMapper modelMapper, CustomerRepository customerRepository, NullAwareBeanUtilsBean nullAwareBeanUtilsBean, ItemRepository itemRepository) {
         this.purchaseLogHistoryRepository = purchaseLogHistoryRepository;
         this.modelMapper = modelMapper;
         this.customerRepository = customerRepository;
         this.nullAwareBeanUtilsBean = nullAwareBeanUtilsBean;
 
+        this.itemRepository = itemRepository;
     }
 
     @Override
@@ -67,7 +71,7 @@ public class PurchaseLogHistoryServiceImpl implements PurchaseLogHistoryService 
         updatePurchaseLog(id, purchaseLogHistoryAddRequest);
         difference(purchaseLogHistory, purchaseLogHistoryAddRequest, changedProperties);
         return null;
-   }
+    }
 
     @Override
     public PurchaseLogHistoryResponse getPurchaseLogById(String id) {
@@ -126,6 +130,17 @@ public class PurchaseLogHistoryServiceImpl implements PurchaseLogHistoryService 
     @Override
     public List<PurchaseLogHistoryResponse> getPurchaseLogByMonth(int month) {
         return purchaseLogHistoryRepository.getPurchaseLogByMonth(month);
+    }
+
+    @Override
+    public List<PurchaseAggregationResponse> getItemPurchaseDetailsByMonthYear() {
+        return purchaseLogHistoryRepository.findItemPurchaseDetailsByMonthYear();
+
+    }
+
+    @Override
+    public List<ItemPurchaseAggregationResponse> getPurchaseDetailsByCustomerName() {
+        return purchaseLogHistoryRepository.getPurchaseDetailsByCustomerName();
     }
 
 

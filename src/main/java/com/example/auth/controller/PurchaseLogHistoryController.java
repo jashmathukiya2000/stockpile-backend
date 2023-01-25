@@ -149,6 +149,28 @@ public class PurchaseLogHistoryController {
         return listResponse;
     }
 
+    public void date(){
+        DateFormat dateFormat = new SimpleDateFormat("YYYY-MM-DD:HH:MM:SS");
+        String currentDateTime = dateFormat.format(new Date());
+        String headerkey = "Content-Disposition";
+
+    }
+    @RequestMapping(name = "getItemPurchaseDetailsByMonthYear",value = "/month/Year", method = RequestMethod.POST)
+    @Access (levels = Role.ANONYMOUS)
+    public ListResponse<PurchaseAggregationResponse> findItemPurchaseDetailsByMonthYear(){
+        ListResponse<PurchaseAggregationResponse> listResponse= new ListResponse<>();
+        listResponse.setData(purchaseLogHistoryService.getItemPurchaseDetailsByMonthYear());
+        listResponse.setStatus(Response.getOkResponse());
+        return listResponse;
+    }
+    @RequestMapping(name = "getPurchaseDetailsByCustomerName",value = "/customerName",method = RequestMethod.POST)
+    @Access (levels = Role.ANONYMOUS)
+   public ListResponse<ItemPurchaseAggregationResponse> getPurchaseDetailsByCustomerName(){
+        ListResponse<ItemPurchaseAggregationResponse> listResponse= new ListResponse<>();
+        listResponse.setData(purchaseLogHistoryService.getPurchaseDetailsByCustomerName());
+        listResponse.setStatus(Response.getOkResponse());
+        return listResponse;
+    }
 
 
 

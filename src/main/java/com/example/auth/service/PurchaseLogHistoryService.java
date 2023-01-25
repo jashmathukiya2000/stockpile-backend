@@ -1,5 +1,7 @@
 package com.example.auth.service;
 
+import com.example.auth.decorator.ItemPurchaseAggregationResponse;
+import com.example.auth.decorator.PurchaseAggregationResponse;
 import com.example.auth.decorator.PurchaseLogHistoryAddRequest;
 import com.example.auth.decorator.PurchaseLogHistoryResponse;
 import com.example.auth.decorator.pagination.FilterSortRequest;
@@ -35,5 +37,10 @@ public interface PurchaseLogHistoryService {
 
 
     List<PurchaseLogHistoryResponse> getPurchaseLogByMonth(int month);
+
+    List<PurchaseAggregationResponse> getItemPurchaseDetailsByMonthYear();
+
+    List<ItemPurchaseAggregationResponse> getPurchaseDetailsByCustomerName();
+
 
 }

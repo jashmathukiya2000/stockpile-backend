@@ -1,8 +1,8 @@
 package com.example.auth.service;
 
 import com.example.auth.commons.enums.Role;
-import com.example.auth.decorator.customer.CustomerLoginAddRequest;
 import com.example.auth.decorator.customer.CustomerAddRequest;
+import com.example.auth.decorator.customer.CustomerLoginAddRequest;
 import com.example.auth.decorator.customer.CustomerResponse;
 import com.example.auth.decorator.pagination.CustomerFilter;
 import com.example.auth.decorator.pagination.CustomerSortBy;
@@ -16,6 +16,7 @@ import java.security.NoSuchAlgorithmException;
 import java.util.List;
 
 public interface CustomerService {
+
     CustomerResponse addCustomer(CustomerAddRequest signUpAddRequest, Role role) throws InvocationTargetException, IllegalAccessException;
 
     CustomerResponse login(CustomerLoginAddRequest customerLoginAddRequest) throws InvocationTargetException, IllegalAccessException, NoSuchAlgorithmException;
@@ -28,7 +29,7 @@ public interface CustomerService {
 
     void deleteCustomer(String id);
 
-    void otpVerification(String otp,String email);
+    void otpVerification(String otp, String email);
 
 
     void logout(String id);

@@ -205,16 +205,16 @@ public class CustomerServiceImpl implements CustomerService {
 
     @Override
     public String getEncryptPassword(String id) {
-        Customer customer= getById(id);
-        CustomerResponse customerResponse= new CustomerResponse();
+        Customer customer = getById(id);
+        CustomerResponse customerResponse = new CustomerResponse();
         customerResponse.setName(customer.getName());
         customerResponse.setPassword(customer.getPassword());
-        if(customer.getPassword()!=null){
-            String password= PasswordUtils.encryptPassword(customer.getPassword());
+        if (customer.getPassword() != null) {
+            String password = PasswordUtils.encryptPassword(customer.getPassword());
             customer.setPassword(password);
             customerRepository.save(customer);
             return password;
-        }else {
+        } else {
             throw new NotFoundException(MessageConstant.PASSWORD_EMPTY);
         }
     }

@@ -1,6 +1,8 @@
 package com.example.auth.repository;
 
 import com.example.auth.decorator.CustomAggregationOperation;
+import com.example.auth.decorator.ItemPurchaseAggregationResponse;
+import com.example.auth.decorator.PurchaseAggregationResponse;
 import com.example.auth.decorator.PurchaseLogHistoryResponse;
 import com.example.auth.decorator.pagination.CountQueryResult;
 import com.example.auth.decorator.pagination.FilterSortRequest;
@@ -114,7 +116,14 @@ public class PurchaseLogHistoryCustomRepositoryImpl implements PurchaseLogHistor
 
     }
 
+    @Override
+    public List<PurchaseLogHistoryResponse> getPurchaseLogByMonth(int month) {
+        List<AggregationOperation> operations = getPurchaseLogByMonthAndYear(month);
+        Aggregation aggregation = newAggregation(operations);
+        log.info("output:{}" + aggregation);
+        return mongoTemplate.aggregate(aggregation, "purchaseLogHistory", PurchaseLogHistoryResponse.class).getMappedResults();
 
+    }
     public List<AggregationOperation> getPurchaseLogByMonthAndYear(int month) {
         List<AggregationOperation> operations = new ArrayList<>();
         Criteria criteria = new Criteria();
@@ -125,20 +134,66 @@ public class PurchaseLogHistoryCustomRepositoryImpl implements PurchaseLogHistor
                         .append("year", new Document("$year", "$date")))));
         operations.add(new CustomAggregationOperation(new Document("$match", new Document("month", month))));
 
-
         log.info("output:{}" + operations);
         return operations;
     }
 
 
     @Override
-    public List<PurchaseLogHistoryResponse> getPurchaseLogByMonth(int month) {
-        List<AggregationOperation> operations = getPurchaseLogByMonthAndYear(month);
+    public List<PurchaseAggregationResponse> findItemPurchaseDetailsByMonthYear() {
+        List<AggregationOperation> operations = getItemPurchaseByMonthAndYear();
         Aggregation aggregation = newAggregation(operations);
-        log.info("output:{}" + aggregation);
-        return mongoTemplate.aggregate(aggregation, "purchaseLogHistory", PurchaseLogHistoryResponse.class).getMappedResults();
-
+        log.info("output:{}", operations);
+        return mongoTemplate.aggregate(aggregation, "purchaseLogHistory", PurchaseAggregationResponse.class).getMappedResults();
     }
+
+    public List<AggregationOperation> getItemPurchaseByMonthAndYear() {
+        List<AggregationOperation> operations = new ArrayList<>();
+        Criteria criteria = new Criteria();
+        criteria = criteria.and("softDelete").is(false);
+        operations.add(match(criteria));
+        operations.add(new CustomAggregationOperation(new Document("$set",
+                new Document("month", new Document("$month", "$date"))
+                        .append("year", new Document("$year", "$date")))));
+        operations.add(new CustomAggregationOperation(new Document("$group", new Document("_id",
+                new Document("month", "$month").append("year", "$year")
+                        .append("itemName", "$itemName"))
+                .append("itemDetails", new Document("$push", new Document("customerId", "$customerId")
+                        .append("price", "$price")))
+                .append("count", new Document("$sum", 1))
+                .append("totalPrice", new Document("$sum", "$price")))));
+        operations.add(new CustomAggregationOperation(new Document("$group",
+                new Document("_id", new Document("month", "$_id.month").append("year", "$_id.year"))
+                        .append("itemDetails", new Document("$push",
+                                new Document("itemName", "$_id.itemName")
+                                        .append("count", "$count")
+                                        .append("totalPrice", new Document("$sum", "$itemDetails.price"))))
+                        .append("totalItem", new Document("$sum", "$count"))
+        )));
+        return operations;
+    }
+
+    @Override
+    public List<ItemPurchaseAggregationResponse> getPurchaseDetailsByCustomerName() {
+        List<AggregationOperation> operations= geteDetailsByCustomerName();
+        Aggregation aggregation=newAggregation(operations);
+        return mongoTemplate.aggregate(aggregation,"purchaseLogHistory",ItemPurchaseAggregationResponse.class).getMappedResults();
+    }
+
+    public List<AggregationOperation> geteDetailsByCustomerName() {
+     List<AggregationOperation> operations= new ArrayList<>();
+     Criteria criteria= new Criteria();
+     criteria=criteria.and("softDelete").is(false);
+     operations.add(match(criteria));
+//     operations.add(new CustomAggregationOperation(new Document("$lookup",new Document(""))))
+
+
+     return operations;
+    }
+
+
+
+
 
 
 }
