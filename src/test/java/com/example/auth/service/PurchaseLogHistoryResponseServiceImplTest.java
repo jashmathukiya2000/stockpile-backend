@@ -32,7 +32,7 @@ class PurchaseLogHistoryResponseServiceImplTest {
     private final ModelMapper modelMapper = PurchaseLogHistoryServiceImplTestGenerator.getModelMapper();
     private final CustomerRepository customerRepository = mock(CustomerRepository.class);
     private final NullAwareBeanUtilsBean nullAwareBeanUtilsBean = mock(NullAwareBeanUtilsBean.class);
-    private final PurchaseLogHistoryServiceImpl purchaseLogHistoryService = spy(new PurchaseLogHistoryServiceImpl(purchaseLogHistoryRepository, modelMapper, customerRepository, nullAwareBeanUtilsBean, itemRepository));
+    private final PurchaseLogHistoryServiceImpl purchaseLogHistoryService = spy(new PurchaseLogHistoryServiceImpl(purchaseLogHistoryRepository, modelMapper, customerRepository, nullAwareBeanUtilsBean));
 
     @Test
     void testAddPurchaseLogHistory() {
@@ -57,7 +57,7 @@ class PurchaseLogHistoryResponseServiceImplTest {
     }
 
     @Test
-    void testIdNotFound(){
+    void testIdNotFound() {
         //given
         var customer = PurchaseLogHistoryServiceImplTestGenerator.mockCustomer();
 
@@ -65,15 +65,14 @@ class PurchaseLogHistoryResponseServiceImplTest {
 
         when(customerRepository.findByIdAndSoftDeleteIsFalse(customerId)).thenReturn(java.util.Optional.ofNullable(customer));
 
-       //when
-        Throwable exception= Assertions.assertThrows(NotFoundException.class, ()-> purchaseLogHistoryService.addPurchaseLog(purchaseLogAddRequest,null));
+        //when
+        Throwable exception = Assertions.assertThrows(NotFoundException.class, () -> purchaseLogHistoryService.addPurchaseLog(purchaseLogAddRequest, null));
 
         //then
         Assertions.assertEquals("Id not found", exception.getMessage());
 
 
     }
-
 
 
     @Test
@@ -185,14 +184,14 @@ class PurchaseLogHistoryResponseServiceImplTest {
     }
 
     @Test
-    void testItemPurchaseLogByIdNotFound(){
-         //given
-        var purchaseLogHistory= PurchaseLogHistoryServiceImplTestGenerator.mockPurchaseLogHistory(null);
+    void testItemPurchaseLogByIdNotFound() {
+        //given
+        var purchaseLogHistory = PurchaseLogHistoryServiceImplTestGenerator.mockPurchaseLogHistory(null);
 
         when(purchaseLogHistoryRepository.findByIdAndSoftDeleteIsFalse(customerId)).thenReturn(java.util.Optional.ofNullable(purchaseLogHistory));
 
         //when
-        Throwable exception= Assertions.assertThrows(NotFoundException.class ,()-> purchaseLogHistoryService.getItemPurchaseLogById(null));
+        Throwable exception = Assertions.assertThrows(NotFoundException.class, () -> purchaseLogHistoryService.getItemPurchaseLogById(null));
 
         //then
         Assertions.assertEquals("Id not found", exception.getMessage());

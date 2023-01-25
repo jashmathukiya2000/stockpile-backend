@@ -1,4 +1,5 @@
 package com.example.auth.service;
+
 import com.example.auth.commons.advice.NullAwareBeanUtilsBean;
 import com.example.auth.commons.constant.MessageConstant;
 import com.example.auth.commons.exception.NotFoundException;
@@ -22,6 +23,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
+
 import java.io.IOException;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
@@ -34,16 +36,16 @@ public class PurchaseLogHistoryServiceImpl implements PurchaseLogHistoryService 
     private final ModelMapper modelMapper;
     private final CustomerRepository customerRepository;
     private final NullAwareBeanUtilsBean nullAwareBeanUtilsBean;
-    private final ItemRepository itemRepository;
 
 
-    public PurchaseLogHistoryServiceImpl(PurchaseLogHistoryRepository purchaseLogHistoryRepository, ModelMapper modelMapper, CustomerRepository customerRepository, NullAwareBeanUtilsBean nullAwareBeanUtilsBean, ItemRepository itemRepository) {
+
+    public PurchaseLogHistoryServiceImpl(PurchaseLogHistoryRepository purchaseLogHistoryRepository, ModelMapper modelMapper, CustomerRepository customerRepository, NullAwareBeanUtilsBean nullAwareBeanUtilsBean) {
         this.purchaseLogHistoryRepository = purchaseLogHistoryRepository;
         this.modelMapper = modelMapper;
         this.customerRepository = customerRepository;
         this.nullAwareBeanUtilsBean = nullAwareBeanUtilsBean;
 
-        this.itemRepository = itemRepository;
+
     }
 
     @Override
@@ -162,7 +164,6 @@ public class PurchaseLogHistoryServiceImpl implements PurchaseLogHistoryService 
                 purchaseLogHistory.setPrice(purchaseLogHistoryAddRequest.getPrice());
                 findDiscountInRupee(purchaseLogHistory);
             }
-
             if (purchaseLogHistoryAddRequest.getQuantity() > 0) {
                 purchaseLogHistory.setQuantity(purchaseLogHistoryAddRequest.getQuantity());
                 findDiscountInRupee(purchaseLogHistory);
