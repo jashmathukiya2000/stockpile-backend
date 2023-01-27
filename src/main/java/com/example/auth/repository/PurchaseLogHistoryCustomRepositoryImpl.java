@@ -188,9 +188,11 @@ public class PurchaseLogHistoryCustomRepositoryImpl implements PurchaseLogHistor
         Map<String, Object> let = new HashMap<>();
         let.put("customerId", "$customerId");
         List<Document> pipeline = new ArrayList<>();
-        pipeline.add(new Document("$match", new Document("$expr", new Document("$and", Collections.singletonList(new Document("$eq", Arrays.asList("$toString", "$_id")).append("customerId","$$customerId"))))));
+        pipeline.add(new Document("$match", new Document("$expr", new Document("$and", Collections.singletonList(new Document("$eq", Arrays.asList( "$_id","$$customerId")))))));
         operations.add(AggregationUtils.lookup("customer",let,pipeline,"customerDetail"));
+
         return operations;
+
     }
 
 }

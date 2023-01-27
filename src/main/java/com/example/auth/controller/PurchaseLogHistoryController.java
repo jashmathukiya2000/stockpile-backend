@@ -149,12 +149,9 @@ public class PurchaseLogHistoryController {
         return listResponse;
     }
 
-    public void date(){
-        DateFormat dateFormat = new SimpleDateFormat("YYYY-MM-DD:HH:MM:SS");
-        String currentDateTime = dateFormat.format(new Date());
-        String headerkey = "Content-Disposition";
 
-    }
+
+
     @RequestMapping(name = "getItemPurchaseDetailsByMonthYear",value = "/month/Year", method = RequestMethod.POST)
     @Access (levels = Role.ANONYMOUS)
     public ListResponse<PurchaseAggregationResponse> findItemPurchaseDetailsByMonthYear(){

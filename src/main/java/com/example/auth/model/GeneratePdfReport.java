@@ -50,7 +50,7 @@ public class GeneratePdfReport {
         Font fontTiltle4 = FontFactory.getFont(FontFactory.TIMES_ROMAN);
         fontTiltle.setSize(15);
         Paragraph paragraph = new Paragraph("Date: ", fontTiltle);
-        paragraph.setAlignment(Paragraph.ALIGN_LEFT);
+        paragraph.setAlignment(Paragraph.ALIGN_RIGHT);
         Date date = new Date();
         DateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy hh:mm:ss a");
         String format = dateFormat.format(date);
