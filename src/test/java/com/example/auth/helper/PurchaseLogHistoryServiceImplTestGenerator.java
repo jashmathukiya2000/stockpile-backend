@@ -20,7 +20,7 @@ public class PurchaseLogHistoryServiceImplTestGenerator {
         return modelMapper;
     }
 
-    public static PurchaseLogHistory mockPurchaseLogHistory(Date date ) {
+    public static PurchaseLogHistory mockPurchaseLogHistory(Date date) {
         return PurchaseLogHistory
                 .builder()
 //                .id(customerId)
@@ -111,6 +111,16 @@ public class PurchaseLogHistoryServiceImplTestGenerator {
                 .softDelete(false)
                 .build();
 
+    }
+    public static Item getItem(){
+        return Item.builder().itemName("mouse")
+                .categoryId(customerId)
+                .discountInRupee(3000)
+                .discountInPercent(5)
+                .price(12000)
+                .quantity(5)
+                .totalPrice(57000)
+                .build();
     }
 
 

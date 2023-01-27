@@ -1,5 +1,6 @@
 package com.example.auth.repository;
 
+import com.example.auth.commons.model.AggregationUtils;
 import com.example.auth.decorator.CustomAggregationOperation;
 import com.example.auth.decorator.ItemPurchaseAggregationResponse;
 import com.example.auth.decorator.PurchaseAggregationResponse;
@@ -185,9 +186,10 @@ public class PurchaseLogHistoryCustomRepositoryImpl implements PurchaseLogHistor
         criteria = criteria.and("softDelete").is(false);
         operations.add(match(criteria));
         Map<String, Object> let = new HashMap<>();
-        let.put("id", "$customerId");
+        let.put("customerId", "$customerId");
         List<Document> pipeline = new ArrayList<>();
-        pipeline.add(new Document("$match", new Document("$expr", new Document("$and", Collections.singletonList(new Document("$eq", Arrays.asList("$_id", "$$customerId")))))));
+        pipeline.add(new Document("$match", new Document("$expr", new Document("$and", Collections.singletonList(new Document("$eq", Arrays.asList("$toString", "$_id")).append("customerId","$$customerId"))))));
+        operations.add(AggregationUtils.lookup("customer",let,pipeline,"customerDetail"));
         return operations;
     }
 

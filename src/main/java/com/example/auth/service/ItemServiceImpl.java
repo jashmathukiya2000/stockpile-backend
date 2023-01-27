@@ -33,19 +33,17 @@ public class ItemServiceImpl implements ItemService {
     private final ItemRepository itemRepository;
     private final ModelMapper modelMapper;
     private final NullAwareBeanUtilsBean nullAwareBeanUtilsBean;
-    private final PurchaseLogHistory purchaseLogHistory;
-    private final PurchaseLogHistoryRepository purchaseLogHistoryRepository;
 
 
-    public ItemServiceImpl(CategoryRepository categoryRepository, ItemRepository itemRepository, ModelMapper modelMapper, NullAwareBeanUtilsBean nullAwareBeanUtilsBean, PurchaseLogHistory purchaseLogHistory, PurchaseLogHistory purchaseLogHistory1, PurchaseLogHistoryRepository purchaseLogHistoryRepository) {
+    public ItemServiceImpl(CategoryRepository categoryRepository, ItemRepository itemRepository, ModelMapper modelMapper, NullAwareBeanUtilsBean nullAwareBeanUtilsBean  ) {
         this.categoryRepository = categoryRepository;
         this.itemRepository = itemRepository;
         this.modelMapper = modelMapper;
         this.nullAwareBeanUtilsBean = nullAwareBeanUtilsBean;
 
-        this.purchaseLogHistory = purchaseLogHistory1;
-        this.purchaseLogHistoryRepository = purchaseLogHistoryRepository;
+
     }
+
 
     @Override
     public ItemResponse addItem(String categoryId, ItemAddRequest itemAddRequest) throws InvocationTargetException, IllegalAccessException {

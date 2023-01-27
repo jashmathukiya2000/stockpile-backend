@@ -113,7 +113,7 @@ public class PurchaseLogHistoryController {
 
 
     @RequestMapping(name = "generateExcelFile", value = "/export-to-excel", method = RequestMethod.POST)
-    @Access (levels = Role.ADMIN)
+    @Access (levels = Role.ANONYMOUS)
     public void exportIntoExcelFile(HttpServletResponse response, @RequestParam String customerId) throws IOException {
         response.setContentType("application/octet-stream");
         DateFormat dateFormatter = new SimpleDateFormat("yyyy-MM-dd_HH:mm:ss");

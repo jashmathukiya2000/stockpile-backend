@@ -104,11 +104,11 @@ class PurchaseLogHistoryResponseServiceImplTest {
     void testGetPurchaseLogHistory() {
         //given
         Date date = purchaseLogHistoryService.currentDate();
-
+        var item=PurchaseLogHistoryServiceImplTestGenerator.getItem();
         var purchaseLogHistory = PurchaseLogHistoryServiceImplTestGenerator.mockPurchaseLogHistory(date);
         var purchaseLogResponse = PurchaseLogHistoryServiceImplTestGenerator.mockPurchaseLogHistoryResponse(date, id);
         doReturn(date).when(purchaseLogHistoryService).currentDate();
-
+        when(itemRepository.findByItemNameAndSoftDeleteIsFalse("mouse")).thenReturn(item);
         when(purchaseLogHistoryRepository.findByIdAndSoftDeleteIsFalse(id)).thenReturn(java.util.Optional.ofNullable(purchaseLogHistory));
 
         //when
