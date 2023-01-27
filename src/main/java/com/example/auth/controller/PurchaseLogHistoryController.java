@@ -41,14 +41,14 @@ public class PurchaseLogHistoryController {
 
     @RequestMapping(name = "addPurchaseLog", value = "/add", method = RequestMethod.POST)
     @Access (levels = Role.ADMIN)
-    public DataResponse<PurchaseLogHistoryResponse> addPurchaseLog(@RequestBody PurchaseLogHistoryAddRequest purchaseLogHistoryAddRequest, @RequestParam String customerId) {
+    public DataResponse<PurchaseLogHistoryResponse> addPurchaseLog(@RequestBody PurchaseLogHistoryAddRequest purchaseLogHistoryAddRequest, @RequestParam String customerId,@RequestParam String itemName) {
         DataResponse<PurchaseLogHistoryResponse> dataResponse = new DataResponse<>();
-        dataResponse.setData(purchaseLogHistoryService.addPurchaseLog(purchaseLogHistoryAddRequest, customerId));
+        dataResponse.setData(purchaseLogHistoryService.addPurchaseLog(purchaseLogHistoryAddRequest, customerId,itemName));
         dataResponse.setStatus(Response.getOkResponse(ResponseConstant.SAVED_SUCCESSFULLY));
         return dataResponse;
     }
 
-    @RequestMapping(name = "updatePurchaseLog", value = "/update/{id}", method = RequestMethod.POST)
+    @RequestMapping(name = "updatePurchaseLogHistory", value = "/update/{id}", method = RequestMethod.POST)
     @Access (levels = Role.ADMIN)
     public DataResponse<Object> updatePurchaseLog(@RequestBody PurchaseLogHistoryAddRequest purchaseLogHistoryAddRequest, @RequestParam String id) throws InvocationTargetException, IllegalAccessException {
         DataResponse<Object> dataResponse = new DataResponse<>();

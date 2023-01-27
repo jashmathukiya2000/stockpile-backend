@@ -3,6 +3,7 @@ package com.example.auth.helper;
 import com.example.auth.decorator.PurchaseLogHistoryAddRequest;
 import com.example.auth.decorator.PurchaseLogHistoryResponse;
 import com.example.auth.model.Customer;
+import com.example.auth.model.Item;
 import com.example.auth.model.PurchaseLogHistory;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.convention.MatchingStrategies;
@@ -54,10 +55,7 @@ public class PurchaseLogHistoryServiceImplTestGenerator {
     public static PurchaseLogHistoryAddRequest mockPurchaseLogHistoryAddRequest() {
         return PurchaseLogHistoryAddRequest
                 .builder()
-                .itemName("mouse")
                 .quantity(5)
-                .discountInPercent(5)
-                .price(12000)
                 .build();
 
     }
@@ -114,6 +112,7 @@ public class PurchaseLogHistoryServiceImplTestGenerator {
                 .build();
 
     }
+
 
 
 }

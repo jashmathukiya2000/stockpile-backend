@@ -27,6 +27,12 @@ public class Item {
     int quantity;
 
     double price;
+
+    double discountInPercent;
+
+    double discountInRupee;
+
+
     double totalPrice;
 
     Date date;

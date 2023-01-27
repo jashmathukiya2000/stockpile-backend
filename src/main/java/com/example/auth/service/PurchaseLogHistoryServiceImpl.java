@@ -2,6 +2,7 @@ package com.example.auth.service;
 
 import com.example.auth.commons.advice.NullAwareBeanUtilsBean;
 import com.example.auth.commons.constant.MessageConstant;
+import com.example.auth.commons.exception.InvalidRequestException;
 import com.example.auth.commons.exception.NotFoundException;
 import com.example.auth.decorator.ItemPurchaseAggregationResponse;
 import com.example.auth.decorator.PurchaseAggregationResponse;
@@ -12,6 +13,7 @@ import com.example.auth.decorator.pagination.PurchaseLogFilter;
 import com.example.auth.decorator.pagination.PurchaseLogSortBy;
 import com.example.auth.model.Customer;
 import com.example.auth.model.ExcelHelper;
+import com.example.auth.model.Item;
 import com.example.auth.model.PurchaseLogHistory;
 import com.example.auth.repository.CustomerRepository;
 import com.example.auth.repository.ItemRepository;
@@ -36,29 +38,43 @@ public class PurchaseLogHistoryServiceImpl implements PurchaseLogHistoryService 
     private final ModelMapper modelMapper;
     private final CustomerRepository customerRepository;
     private final NullAwareBeanUtilsBean nullAwareBeanUtilsBean;
+    private final ItemRepository itemRepository;
+    private final ItemService itemService;
 
 
-
-    public PurchaseLogHistoryServiceImpl(PurchaseLogHistoryRepository purchaseLogHistoryRepository, ModelMapper modelMapper, CustomerRepository customerRepository, NullAwareBeanUtilsBean nullAwareBeanUtilsBean) {
+    public PurchaseLogHistoryServiceImpl(PurchaseLogHistoryRepository purchaseLogHistoryRepository, ModelMapper modelMapper, CustomerRepository customerRepository, NullAwareBeanUtilsBean nullAwareBeanUtilsBean, ItemRepository itemRepository, ItemService itemService) {
         this.purchaseLogHistoryRepository = purchaseLogHistoryRepository;
         this.modelMapper = modelMapper;
         this.customerRepository = customerRepository;
         this.nullAwareBeanUtilsBean = nullAwareBeanUtilsBean;
-
-
+        this.itemRepository = itemRepository;
+        this.itemService = itemService;
     }
 
+
     @Override
-    public PurchaseLogHistoryResponse addPurchaseLog(PurchaseLogHistoryAddRequest purchaseLogHistoryAddRequest, String customerId) {
+    public PurchaseLogHistoryResponse addPurchaseLog(PurchaseLogHistoryAddRequest purchaseLogHistoryAddRequest, String customerId, String itemName) {
         PurchaseLogHistory purchaseLogHistory = modelMapper.map(purchaseLogHistoryAddRequest, PurchaseLogHistory.class);
         Customer customer = getcustomerById(customerId);
-        purchaseLogHistory.setCustomerId(customer.getId());
-        purchaseLogHistory.setCustomerName(customer.getName());
-        findDiscountInRupee(purchaseLogHistory);
-        purchaseLogHistory.setDate(currentDate());
-        PurchaseLogHistoryResponse purchaseLogHistoryResponse = modelMapper.map(purchaseLogHistory, PurchaseLogHistoryResponse.class);
-        purchaseLogHistoryRepository.save(purchaseLogHistory);
-        return purchaseLogHistoryResponse;
+        Item item = itemRepository.findByItemNameAndSoftDeleteIsFalse(itemName);
+        if (purchaseLogHistory.getQuantity() <= item.getQuantity()) {
+            purchaseLogHistory.setCustomerId(customer.getId());
+            purchaseLogHistory.setItemName(item.getItemName());
+            purchaseLogHistory.setPrice(item.getPrice());
+            purchaseLogHistory.setCustomerName(customer.getName());
+            purchaseLogHistory.setDiscountInPercent(item.getDiscountInPercent());
+            findDiscountInRupee(purchaseLogHistory, itemName);
+            purchaseLogHistory.setDate(currentDate());
+            PurchaseLogHistoryResponse purchaseLogHistoryResponse = modelMapper.map(purchaseLogHistory, PurchaseLogHistoryResponse.class);
+            purchaseLogHistoryRepository.save(purchaseLogHistory);
+            item.setQuantity(item.getQuantity() - purchaseLogHistory.getQuantity());
+            itemRepository.save(item);
+            return purchaseLogHistoryResponse;
+
+        } else {
+            throw new InvalidRequestException(MessageConstant.ITEM_QUANITY_OUT_OF_STOCK);
+        }
+
     }
 
     @VisibleForTesting
@@ -70,7 +86,7 @@ public class PurchaseLogHistoryServiceImpl implements PurchaseLogHistoryService 
     public Object updatePurchaseLog(PurchaseLogHistoryAddRequest purchaseLogHistoryAddRequest, String id) throws InvocationTargetException, IllegalAccessException {
         PurchaseLogHistory purchaseLogHistory = getItemPurchaseLogById(id);
         HashMap<String, String> changedProperties = new HashMap<>();
-        updatePurchaseLog(id, purchaseLogHistoryAddRequest);
+        updatePurchaseLogHistory(id, purchaseLogHistoryAddRequest);
         difference(purchaseLogHistory, purchaseLogHistoryAddRequest, changedProperties);
         return null;
     }
@@ -112,7 +128,6 @@ public class PurchaseLogHistoryServiceImpl implements PurchaseLogHistoryService 
         List<PurchaseLogHistory> purchaseLogHistoryList = new ArrayList<>();
         for (PurchaseLogHistory logHistory : purchaseLogHistory) {
             logHistory.setTotal(findTotal(customerId));
-
         }
         return purchaseLogHistory;
     }
@@ -154,24 +169,12 @@ public class PurchaseLogHistoryServiceImpl implements PurchaseLogHistoryService 
         return purchaseLogHistoryRepository.findByIdAndSoftDeleteIsFalse(id).orElseThrow(() -> new NotFoundException(MessageConstant.ID_NOT_FOUND));
     }
 
-    public void updatePurchaseLog(String id, PurchaseLogHistoryAddRequest purchaseLogHistoryAddRequest) {
+    public void updatePurchaseLogHistory(String id, PurchaseLogHistoryAddRequest purchaseLogHistoryAddRequest) {
         PurchaseLogHistory purchaseLogHistory = getItemPurchaseLogById(id);
         if (purchaseLogHistory != null) {
-            if (purchaseLogHistoryAddRequest.getItemName() != null) {
-                purchaseLogHistory.setItemName(purchaseLogHistoryAddRequest.getItemName());
-            }
-            if (purchaseLogHistoryAddRequest.getPrice() > 0) {
-                purchaseLogHistory.setPrice(purchaseLogHistoryAddRequest.getPrice());
-                findDiscountInRupee(purchaseLogHistory);
-            }
             if (purchaseLogHistoryAddRequest.getQuantity() > 0) {
                 purchaseLogHistory.setQuantity(purchaseLogHistoryAddRequest.getQuantity());
-                findDiscountInRupee(purchaseLogHistory);
-            }
-            if (purchaseLogHistoryAddRequest.getDiscountInPercent() > 0) {
-                purchaseLogHistory.setDiscountInPercent(purchaseLogHistoryAddRequest.getDiscountInPercent());
-                findDiscountInRupee(purchaseLogHistory);
-
+//               findDiscountInRupee(purchaseLogHistory);
             }
             purchaseLogHistoryRepository.save(purchaseLogHistory);
         }
@@ -195,10 +198,10 @@ public class PurchaseLogHistoryServiceImpl implements PurchaseLogHistoryService 
     }
 
 
-    public void findDiscountInRupee(PurchaseLogHistory purchaseLogHistory) {
+    public void findDiscountInRupee(PurchaseLogHistory purchaseLogHistory, String itemName) {
+        Item item = itemRepository.findByItemNameAndSoftDeleteIsFalse(itemName);
         purchaseLogHistory.setDiscountInRupee((purchaseLogHistory.getPrice() * purchaseLogHistory.getQuantity() * purchaseLogHistory.getDiscountInPercent()) / 100);
-        purchaseLogHistory.setTotalPrice(purchaseLogHistory.getPrice() * purchaseLogHistory.getQuantity() - purchaseLogHistory.getDiscountInRupee());
-
+        purchaseLogHistory.setTotalPrice(item.getPrice() * purchaseLogHistory.getQuantity() - purchaseLogHistory.getDiscountInRupee());
     }
 
 
@@ -210,7 +213,14 @@ public class PurchaseLogHistoryServiceImpl implements PurchaseLogHistoryService 
         }
         return total;
     }
+
+
 }
+
+
+
+
+
 
 
 

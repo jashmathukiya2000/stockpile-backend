@@ -4,6 +4,7 @@ import com.example.auth.decorator.PurchaseLogHistoryResponse;
 import com.example.auth.decorator.pagination.FilterSortRequest;
 import com.example.auth.decorator.pagination.PurchaseLogFilter;
 import com.example.auth.decorator.pagination.PurchaseLogSortBy;
+import com.example.auth.model.Item;
 import com.example.auth.model.PurchaseLogHistory;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -20,6 +21,7 @@ public interface PurchaseLogHistoryRepository extends MongoRepository<PurchaseLo
 
       List<PurchaseLogHistory> findByCustomerIdAndSoftDeleteFalse(String customerId);
 
+       Item  findByItemNameAndSoftDeleteIsFalse(String itemName);
 
 
 

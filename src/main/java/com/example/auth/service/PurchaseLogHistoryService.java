@@ -16,7 +16,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.List;
 
 public interface PurchaseLogHistoryService {
-    PurchaseLogHistoryResponse addPurchaseLog(PurchaseLogHistoryAddRequest purchaseLogHistoryAddRequest, String customerId);
+    PurchaseLogHistoryResponse addPurchaseLog(PurchaseLogHistoryAddRequest purchaseLogHistoryAddRequest, String customerId,String itemName);
 
     Object updatePurchaseLog(PurchaseLogHistoryAddRequest purchaseLogHistoryAddRequest, String id) throws InvocationTargetException, IllegalAccessException;
 

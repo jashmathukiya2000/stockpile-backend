@@ -10,11 +10,11 @@ import lombok.NoArgsConstructor;
 @Data
 @Builder
 public class PurchaseLogHistoryAddRequest {
-    String itemName;
+//    String itemName;
 
-      double price;
+//      double price;
 
       int quantity;
 
-    double discountInPercent;
+//    double discountInPercent;
 }

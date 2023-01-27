@@ -24,9 +24,7 @@ import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.support.PageableExecutionUtils;
 import org.springframework.util.CollectionUtils;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
 
 import static org.springframework.data.mongodb.core.aggregation.Aggregation.*;
 
@@ -124,6 +122,7 @@ public class PurchaseLogHistoryCustomRepositoryImpl implements PurchaseLogHistor
         return mongoTemplate.aggregate(aggregation, "purchaseLogHistory", PurchaseLogHistoryResponse.class).getMappedResults();
 
     }
+
     public List<AggregationOperation> getPurchaseLogByMonthAndYear(int month) {
         List<AggregationOperation> operations = new ArrayList<>();
         Criteria criteria = new Criteria();
@@ -175,25 +174,21 @@ public class PurchaseLogHistoryCustomRepositoryImpl implements PurchaseLogHistor
 
     @Override
     public List<ItemPurchaseAggregationResponse> getPurchaseDetailsByCustomerName() {
-        List<AggregationOperation> operations= geteDetailsByCustomerName();
-        Aggregation aggregation=newAggregation(operations);
-        return mongoTemplate.aggregate(aggregation,"purchaseLogHistory",ItemPurchaseAggregationResponse.class).getMappedResults();
+        List<AggregationOperation> operations = geteDetailsByCustomerName();
+        Aggregation aggregation = newAggregation(operations);
+        return mongoTemplate.aggregate(aggregation, "purchaseLogHistory", ItemPurchaseAggregationResponse.class).getMappedResults();
     }
 
     public List<AggregationOperation> geteDetailsByCustomerName() {
-     List<AggregationOperation> operations= new ArrayList<>();
-     Criteria criteria= new Criteria();
-     criteria=criteria.and("softDelete").is(false);
-     operations.add(match(criteria));
-//     operations.add(new CustomAggregationOperation(new Document("$lookup",new Document(""))))
-
-
-     return operations;
+        List<AggregationOperation> operations = new ArrayList<>();
+        Criteria criteria = new Criteria();
+        criteria = criteria.and("softDelete").is(false);
+        operations.add(match(criteria));
+        Map<String, Object> let = new HashMap<>();
+        let.put("id", "$customerId");
+        List<Document> pipeline = new ArrayList<>();
+        pipeline.add(new Document("$match", new Document("$expr", new Document("$and", Collections.singletonList(new Document("$eq", Arrays.asList("$_id", "$$customerId")))))));
+        return operations;
     }
-
-
-
-
-
 
 }

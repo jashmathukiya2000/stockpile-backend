@@ -41,4 +41,5 @@ public class MessageConstant {
     public static final String PASSWORD_NOT_MATCHED = "Password not matched";
     public static final String INVALID_TOKEN ="Invalid token" ;
     public static final String PASSWORD_EMPTY ="Password empty" ;
+    public static final String ITEM_QUANITY_OUT_OF_STOCK = "Item quantity out of stock";
 }

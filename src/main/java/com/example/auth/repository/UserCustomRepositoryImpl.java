@@ -193,7 +193,6 @@ public class UserCustomRepositoryImpl implements UserCustomRepository {
         return operations;
     }
 
-
     @Override
     public List<MaxSpiResponse> getUserByMaxSpi(String id) {
         List<AggregationOperation> operations = getByMaxSpi(id);
@@ -213,8 +212,6 @@ public class UserCustomRepositoryImpl implements UserCustomRepository {
                                         .append("minSpi", new Document("$min", "$result")))))));
         return operations;
     }
-
-
 }
 
 

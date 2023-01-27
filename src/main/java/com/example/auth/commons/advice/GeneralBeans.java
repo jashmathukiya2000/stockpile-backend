@@ -4,6 +4,7 @@ import com.example.auth.commons.decorator.GeneralHelper;
 import com.example.auth.commons.decorator.RequestSession;
 import com.example.auth.decorator.Response;
 import com.example.auth.decorator.pagination.Pagination;
+import com.example.auth.model.PurchaseLogHistory;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.convention.MatchingStrategies;
 import org.springframework.amqp.rabbit.config.SimpleRabbitListenerContainerFactory;
@@ -83,7 +84,10 @@ import org.springframework.web.util.UriTemplateHandler;
         public JavaMailSender javaMailSender() {
             return new JavaMailSenderImpl();
         }
-
+       @Bean
+        public PurchaseLogHistory purchaseLogHistory(){
+            return new PurchaseLogHistory();
+       }
     }
 
 

@@ -10,8 +10,10 @@ import com.example.auth.decorator.pagination.ItemFilter;
 import com.example.auth.decorator.pagination.ItemSortBy;
 import com.example.auth.model.Category;
 import com.example.auth.model.Item;
+import com.example.auth.model.PurchaseLogHistory;
 import com.example.auth.repository.CategoryRepository;
 import com.example.auth.repository.ItemRepository;
+import com.example.auth.repository.PurchaseLogHistoryRepository;
 import com.google.api.client.repackaged.com.google.common.annotations.VisibleForTesting;
 import org.apache.commons.collections.CollectionUtils;
 import org.modelmapper.ModelMapper;
@@ -31,12 +33,18 @@ public class ItemServiceImpl implements ItemService {
     private final ItemRepository itemRepository;
     private final ModelMapper modelMapper;
     private final NullAwareBeanUtilsBean nullAwareBeanUtilsBean;
+    private final PurchaseLogHistory purchaseLogHistory;
+    private final PurchaseLogHistoryRepository purchaseLogHistoryRepository;
 
-    public ItemServiceImpl(CategoryRepository categoryRepository, ItemRepository itemRepository, ModelMapper modelMapper, NullAwareBeanUtilsBean nullAwareBeanUtilsBean) {
+
+    public ItemServiceImpl(CategoryRepository categoryRepository, ItemRepository itemRepository, ModelMapper modelMapper, NullAwareBeanUtilsBean nullAwareBeanUtilsBean, PurchaseLogHistory purchaseLogHistory, PurchaseLogHistory purchaseLogHistory1, PurchaseLogHistoryRepository purchaseLogHistoryRepository) {
         this.categoryRepository = categoryRepository;
         this.itemRepository = itemRepository;
         this.modelMapper = modelMapper;
         this.nullAwareBeanUtilsBean = nullAwareBeanUtilsBean;
+
+        this.purchaseLogHistory = purchaseLogHistory1;
+        this.purchaseLogHistoryRepository = purchaseLogHistoryRepository;
     }
 
     @Override
@@ -123,7 +131,8 @@ public class ItemServiceImpl implements ItemService {
 
     public void findPrice(ItemAddRequest itemAddRequest, Item item) {
         item.setPrice(Double.parseDouble(new DecimalFormat("##.##").format(itemAddRequest.getPrice())));
-        item.setTotalPrice(item.getPrice() * item.getQuantity());
+        item.setDiscountInRupee((item.getPrice() * item.getQuantity() * item.getDiscountInPercent()) / 100);
+        item.setTotalPrice(item.getPrice() * item.getQuantity() - item.getDiscountInRupee());
     }
 
     @Override
@@ -150,7 +159,6 @@ public class ItemServiceImpl implements ItemService {
             });
             itemRepository.saveAll(items);
         }
-
     }
 
 

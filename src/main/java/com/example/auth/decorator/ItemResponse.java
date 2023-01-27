@@ -16,11 +16,21 @@ import java.util.Date;
 @Builder
 public class ItemResponse {
     String categoryId;
+
     String id;
+
     String itemName;
+
     double price;
+
+    int quantity;
+
+    double discountInPercent;
+
+    double discountInRupee;
+
     double totalPrice;
     Date date;
-    int quantity;
+
 
 }

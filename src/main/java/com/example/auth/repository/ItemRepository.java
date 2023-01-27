@@ -9,7 +9,9 @@ import java.util.Optional;
 public interface ItemRepository extends MongoRepository<Item, String>, ItemCustomRepository {
     Optional<Item> findByIdAndSoftDeleteIsFalse(String id);
 
-    List<Item> findBySoftDeleteFalse();
+     Item findByItemNameAndSoftDeleteIsFalse(String ItemName);
+
+     List<Item> findBySoftDeleteFalse();
 
     boolean existsByItemNameAndSoftDeleteIsFalse(String itemName);
 
