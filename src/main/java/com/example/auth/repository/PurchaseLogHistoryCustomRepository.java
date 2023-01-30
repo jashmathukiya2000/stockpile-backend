@@ -13,7 +13,12 @@ import java.util.List;
 
 public interface PurchaseLogHistoryCustomRepository {
     Page<PurchaseLogHistoryResponse> getAllPurchaseLogByPagination(PurchaseLogFilter purchaseLogFilter, FilterSortRequest.SortRequest<PurchaseLogSortBy> sort, PageRequest pageRequest);
+
     public List<PurchaseLogHistoryResponse> getPurchaseLogByMonth(int month);
+
     public List<PurchaseAggregationResponse> findItemPurchaseDetailsByMonthYear();
+
     public List<ItemPurchaseAggregationResponse> getPurchaseDetailsByCustomerName();
-    }
+
+
+}

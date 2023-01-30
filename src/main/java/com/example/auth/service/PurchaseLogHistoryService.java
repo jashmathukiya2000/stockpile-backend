@@ -43,4 +43,6 @@ public interface PurchaseLogHistoryService {
     List<ItemPurchaseAggregationResponse> getPurchaseDetailsByCustomerName();
 
 
+
 }
+

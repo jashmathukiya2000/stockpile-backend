@@ -1,11 +1,13 @@
 package com.example.auth.service;
 
+import com.amazonaws.services.dynamodbv2.xspec.L;
 import com.example.auth.commons.JWTUser;
 import com.example.auth.commons.advice.NullAwareBeanUtilsBean;
 import com.example.auth.commons.constant.MessageConstant;
 import com.example.auth.commons.exception.InvalidRequestException;
 import com.example.auth.commons.exception.NotFoundException;
 import com.example.auth.commons.utils.JwtTokenUtil;
+import com.example.auth.decorator.*;
 import com.example.auth.decorator.pagination.FilterSortRequest;
 import com.example.auth.decorator.pagination.UserFilterData;
 import com.example.auth.decorator.pagination.UserSortBy;
@@ -14,16 +16,15 @@ import com.example.auth.model.User;
 import com.example.auth.repository.UserRepository;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.collections.CollectionUtils;
+import org.apache.poi.ss.usermodel.Workbook;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
 import java.lang.reflect.InvocationTargetException;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 @Slf4j
 @Service
@@ -151,6 +152,43 @@ public class UserServiceImpl implements UserService {
         }
 
     }
+
+    @Override
+    public Workbook getAllUserInExcel() throws InvocationTargetException, IllegalAccessException {
+        List<UserResponse> userResponses = getAllUser();
+        List<UserExcelResponse> list= new ArrayList<>();
+        //list add excel class object
+        for (UserResponse response : userResponses) {
+            UserExcelResponse userExcelResponse=new UserExcelResponse();
+            //excel class obj
+            nullAwareBeanUtilsBean.copyProperties(userExcelResponse,response);
+            //add excel class list
+            list.add(userExcelResponse);
+        }
+
+       return ExcelUtils.createWorkbookFromData(list , "UserDetails" );
+    }
+
+
+
+    @Override
+    public Workbook getAllUserByPaginationInExcel(UserFilterData filter, FilterSortRequest.SortRequest<UserSortBy> sort, PageRequest pageRequest) throws InvocationTargetException, IllegalAccessException {
+        HashMap<String, List<UserDataExcel>> hashMap = new LinkedHashMap<>();
+        Page<UserResponse> page = userRepository.getAllUserByPagination(filter, sort, pageRequest);
+        List<UserResponse> list = page.getContent();
+        List<UserDataExcel> list1 = new ArrayList<>();
+        if (!CollectionUtils.isEmpty(list)) {
+            for (UserResponse response : list) {
+                UserDataExcel userDataExcel = new UserDataExcel();
+                nullAwareBeanUtilsBean.copyProperties(userDataExcel,response);
+                list1.add(userDataExcel);
+            }}
+            return ExcelUtils.createWorkbookFromData(list, "UserByPagination");
+
+
+    }
+
+
 
     public User getUserModel(String id) {
         return userRepository.findByIdAndSoftDeleteIsFalse(id).orElseThrow(() -> new NotFoundException(MessageConstant.USER_ID_NOT_FOUND));

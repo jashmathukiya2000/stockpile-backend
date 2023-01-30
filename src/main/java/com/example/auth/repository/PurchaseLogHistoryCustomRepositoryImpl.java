@@ -160,14 +160,14 @@ public class PurchaseLogHistoryCustomRepositoryImpl implements PurchaseLogHistor
                         .append("itemName", "$itemName"))
                 .append("itemDetails", new Document("$push", new Document("customerId", "$customerId")
                         .append("price", "$price")))
-                .append("count", new Document("$sum", 1))
+                .append("count", new Document("$sum", 1.0))
                 .append("totalPrice", new Document("$sum", "$price")))));
         operations.add(new CustomAggregationOperation(new Document("$group",
                 new Document("_id", new Document("month", "$_id.month").append("year", "$_id.year"))
-                        .append("itemDetails", new Document("$push",
+                        .append("itemDetail", new Document("$push",
                                 new Document("itemName", "$_id.itemName")
                                         .append("count", "$count")
-                                        .append("totalPrice", new Document("$sum", "$itemDetails.price"))))
+                                        .append("totalPrice", new Document("$sum", "" + "$itemDetails.price"))))
                         .append("totalItem", new Document("$sum", "$count"))
         )));
         return operations;
@@ -175,12 +175,15 @@ public class PurchaseLogHistoryCustomRepositoryImpl implements PurchaseLogHistor
 
     @Override
     public List<ItemPurchaseAggregationResponse> getPurchaseDetailsByCustomerName() {
-        List<AggregationOperation> operations = geteDetailsByCustomerName();
+        List<AggregationOperation> operations = getDetailsByCustomerName();
         Aggregation aggregation = newAggregation(operations);
         return mongoTemplate.aggregate(aggregation, "purchaseLogHistory", ItemPurchaseAggregationResponse.class).getMappedResults();
     }
 
-    public List<AggregationOperation> geteDetailsByCustomerName() {
+
+
+
+    public List<AggregationOperation> getDetailsByCustomerName() {
         List<AggregationOperation> operations = new ArrayList<>();
         Criteria criteria = new Criteria();
         criteria = criteria.and("softDelete").is(false);
@@ -188,11 +191,34 @@ public class PurchaseLogHistoryCustomRepositoryImpl implements PurchaseLogHistor
         Map<String, Object> let = new HashMap<>();
         let.put("customerId", "$customerId");
         List<Document> pipeline = new ArrayList<>();
-        pipeline.add(new Document("$match", new Document("$expr", new Document("$and", Collections.singletonList(new Document("$eq", Arrays.asList( "$_id","$$customerId")))))));
-        operations.add(AggregationUtils.lookup("customer",let,pipeline,"customerDetail"));
-
+        pipeline.add(new Document("$match",
+                new Document("$expr",
+                        new Document("$and",
+                                Collections.singletonList(new Document("$eq", Arrays.asList(new Document("$toString", "$_id"), "$$customerId")))))));
+        operations.add(AggregationUtils.lookup("customer", let, pipeline, "customerDetail"));
+        operations.add(new CustomAggregationOperation(new Document("$unwind", new Document("path", "$customerDetail"))));
+        operations.add(new CustomAggregationOperation(new Document("$set", new Document("name", "$customerDetail.name")
+                .append("contact", "$customerDetail.contact"))));
+        operations.add(new CustomAggregationOperation(new Document("$unset", "customerDetail")));
+        operations.add(new CustomAggregationOperation(new Document("$group",
+                new Document("_id", new Document("customerName", "$customerName")
+                        .append("itemName", "$itemName"))
+                        .append("itemDetails",
+                                new Document("$push", new Document("date",
+                                        new Document(" $dateToString", new Document("format", "%m-%d-%Y")
+                                                .append("date", "$date")
+                                                .append("timezone", "America/Chicago")))
+                                        .append("price", "$price")))
+                        .append("count", new Document("$sum", 1))
+                        .append("price", new Document("$sum", "$price")))));
+        operations.add(new CustomAggregationOperation(new Document("$group",
+                new Document("_id", "$_id.customerName")
+                        .append("itemDetail",
+                                new Document("$push", new Document("date", new Document("$last", "$itemDetails.date"))
+                                        .append("itemName", "$_id.itemName")
+                                        .append("count", new Document("$sum", "$count"))
+                                        .append("totalPrice",
+                                                new Document("$sum", "$itemDetails.price")))))));
         return operations;
-
     }
-
 }

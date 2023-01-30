@@ -1,6 +1,5 @@
 package com.example.auth.decorator;
 
-import com.example.auth.model.Customer;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -10,7 +9,7 @@ import java.util.List;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class ItemPurchaseAggregationResponse {
+public class ItemAggregationResponse {
     String _id;
-    List<ItemDetail> itemDetail;
+    List<CategoryInfo> categoryInfo;
 }

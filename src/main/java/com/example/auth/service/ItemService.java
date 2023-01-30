@@ -1,6 +1,7 @@
 package com.example.auth.service;
 
 import com.example.auth.decorator.ItemAddRequest;
+import com.example.auth.decorator.ItemAggregationResponse;
 import com.example.auth.decorator.ItemResponse;
 import com.example.auth.decorator.pagination.FilterSortRequest;
 import com.example.auth.decorator.pagination.ItemFilter;
@@ -24,5 +25,7 @@ public interface ItemService {
 
     void removeItems(String id);
 
-    ItemResponse updateItem(String id, ItemAddRequest itemAddRequest);
+    ItemResponse updateItem(String id, ItemAddRequest itemAddRequest) throws InvocationTargetException, IllegalAccessException;
+
+    List<ItemAggregationResponse> getItemByAggregation();
 }

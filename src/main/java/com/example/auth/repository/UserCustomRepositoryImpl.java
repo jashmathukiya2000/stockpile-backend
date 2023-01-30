@@ -1,6 +1,7 @@
 package com.example.auth.repository;
 
 import com.example.auth.decorator.CustomAggregationOperation;
+import com.example.auth.decorator.UserDetailsExcelResponse;
 import com.example.auth.decorator.pagination.CountQueryResult;
 import com.example.auth.decorator.pagination.FilterSortRequest;
 import com.example.auth.decorator.pagination.UserFilterData;
@@ -8,6 +9,7 @@ import com.example.auth.decorator.pagination.UserSortBy;
 import com.example.auth.decorator.user.*;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.poi.ss.usermodel.Workbook;
 import org.bson.Document;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -23,6 +25,7 @@ import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.data.support.PageableExecutionUtils;
 import org.springframework.stereotype.Repository;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -148,6 +151,12 @@ public class UserCustomRepositoryImpl implements UserCustomRepository {
                 pagination,
                 () -> count);
 
+    }
+
+    @Override
+    public Page<UserDetailsExcelResponse> getAllUserByPaginationInExcel(UserFilterData filter, FilterSortRequest.SortRequest<UserSortBy> sort, PageRequest pageRequest) throws InvocationTargetException, IllegalAccessException {
+
+return null;
     }
 
 

@@ -5,6 +5,7 @@ import com.example.auth.commons.constant.ResponseConstant;
 import com.example.auth.commons.decorator.GeneralHelper;
 import com.example.auth.commons.enums.Role;
 import com.example.auth.decorator.DataResponse;
+import com.example.auth.decorator.ItemPurchaseAggregationResponse;
 import com.example.auth.decorator.ListResponse;
 import com.example.auth.decorator.Response;
 import com.example.auth.decorator.customer.CustomerAddRequest;
@@ -98,8 +99,9 @@ public class CustomerController {
         dataResponse.setStatus(Response.getOkResponse(ResponseConstant.OTP_VERIFIED));
         return dataResponse;
 
-
     }
+
+
 
     @RequestMapping(name = "logout", value = "logout/{id}", method = RequestMethod.POST)
     @Access(levels = Role.ANONYMOUS)
@@ -138,5 +140,13 @@ public class CustomerController {
         dataResponse.setStatus(Response.getOkResponse());
         return dataResponse;
     }
+//    @RequestMapping(name = "getCustomerAggregationById",value = "/customerName",method = RequestMethod.POST)
+//    @Access (levels = Role.ANONYMOUS)
+//    public ListResponse<ItemPurchaseAggregationResponse> getPurchaseDetailsByCustomerName(){
+//        ListResponse<ItemPurchaseAggregationResponse> listResponse= new ListResponse<>();
+//        listResponse.setData(customerService.getCustomerAggregationById());
+//        listResponse.setStatus(Response.getOkResponse());
+//        return listResponse;
+//    }
 
 }

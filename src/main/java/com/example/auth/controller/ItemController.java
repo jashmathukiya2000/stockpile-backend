@@ -27,7 +27,7 @@ public class ItemController {
     }
 
     @RequestMapping(name = "addItem", value = "/add", method = RequestMethod.POST)
-    @Access(levels = Role.ADMIN)
+    @Access(levels = Role.ANONYMOUS)
     public DataResponse<ItemResponse> addItem(@RequestParam(required = false) String categoryId, @RequestBody ItemAddRequest itemAddRequest) throws InvocationTargetException, IllegalAccessException {
         DataResponse<ItemResponse> dataResponse = new DataResponse<>();
         dataResponse.setData(itemService.addItem(categoryId, itemAddRequest));
@@ -36,7 +36,7 @@ public class ItemController {
     }
 
     @RequestMapping(name = "updateItem", value = "/update", method = RequestMethod.POST)
-    @Access(levels = Role.ADMIN)
+    @Access(levels = Role.ANONYMOUS)
     public DataResponse<ItemResponse> updateItem(@RequestParam String id, @RequestBody ItemAddRequest itemAddRequest) throws InvocationTargetException, IllegalAccessException {
         DataResponse<ItemResponse> dataResponse = new DataResponse<>();
         dataResponse.setData(itemService.updateItem(id, itemAddRequest));
@@ -46,7 +46,7 @@ public class ItemController {
 
 
     @RequestMapping(name = "getItemById", value = "/get/{id}", method = RequestMethod.GET)
-    @Access(levels = Role.ADMIN)
+    @Access(levels = Role.ANONYMOUS)
     public DataResponse<ItemResponse> getItemById(@RequestParam String id) {
         DataResponse<ItemResponse> dataResponse = new DataResponse<>();
         dataResponse.setData(itemService.getItemById(id));
@@ -56,7 +56,7 @@ public class ItemController {
 
 
     @RequestMapping(name = "getAllItems", value = "/getAll", method = RequestMethod.GET)
-    @Access(levels = Role.ADMIN)
+    @Access(levels = Role.ANONYMOUS)
     public ListResponse<ItemResponse> geAllItems() {
         ListResponse<ItemResponse> listResponse = new ListResponse<>();
         listResponse.setData(itemService.getAllItems());
@@ -65,7 +65,7 @@ public class ItemController {
     }
 
     @RequestMapping(name = "deleteItemById", value = "/delete/{d}", method = RequestMethod.DELETE)
-    @Access(levels = Role.ADMIN)
+    @Access(levels = Role.ANONYMOUS)
     public DataResponse<Object> deleteItemById(@RequestParam String id) {
         DataResponse<Object> dataResponse = new DataResponse<>();
         itemService.deleteItemById(id);
@@ -74,13 +74,22 @@ public class ItemController {
     }
 
     @RequestMapping(name = "getAllItemsByPagination", value = "get/all/pagination", method = RequestMethod.POST)
-    @Access(levels = Role.ADMIN)
+    @Access(levels = Role.ANONYMOUS)
     public PageResponse<ItemResponse> getAllItemsByPagination(@RequestBody FilterSortRequest<ItemFilter, ItemSortBy> filterSortRequest) {
         PageResponse<ItemResponse> pageResponse = new PageResponse<>();
         Page<ItemResponse> itemResponses = itemService.getAllItemsByPagination(filterSortRequest.getFilter(), filterSortRequest.getSort(), generalHelper.getPagination(filterSortRequest.getPagination().getPage(), filterSortRequest.getPagination().getLimit()));
         pageResponse.setData(itemResponses);
         pageResponse.setStatus(Response.getOkResponse());
         return pageResponse;
+    }
+
+    @RequestMapping(name = "getItemByAggregation", value = "/lookup", method = RequestMethod.POST)
+    @Access(levels = Role.ANONYMOUS)
+    public ListResponse<ItemAggregationResponse> getItemByAggergation() {
+        ListResponse<ItemAggregationResponse> listResponse = new ListResponse<>();
+        listResponse.setData(itemService.getItemByAggregation());
+        listResponse.setStatus(Response.getOkResponse());
+        return listResponse;
     }
 
 

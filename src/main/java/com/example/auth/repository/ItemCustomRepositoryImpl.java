@@ -1,6 +1,7 @@
 package com.example.auth.repository;
 
 import com.example.auth.decorator.CustomAggregationOperation;
+import com.example.auth.decorator.ItemAggregationResponse;
 import com.example.auth.decorator.ItemResponse;
 import com.example.auth.decorator.pagination.CountQueryResult;
 import com.example.auth.decorator.pagination.FilterSortRequest;
@@ -50,6 +51,31 @@ public class ItemCustomRepositoryImpl implements ItemCustomRepository {
                 category,
                 pageRequest,
                 () -> count);
+    }
+
+    @Override
+    public List<ItemAggregationResponse> getItemByAggregation() {
+        List<AggregationOperation> operations= itemByAggregation();
+        Aggregation aggregation=newAggregation(operations);
+        return mongoTemplate.aggregate(aggregation,"items",ItemAggregationResponse.class).getMappedResults();
+    }
+
+    public List<AggregationOperation> itemByAggregation() {
+        List<AggregationOperation> operations= new ArrayList<>();
+        Criteria criteria= new Criteria();
+        criteria=criteria.and("softDelete").is(false);
+        operations.add(match(criteria));
+        operations.add(new CustomAggregationOperation(new Document("$addFields",
+                new Document("convertedField",new Document("$toObjectId","$categoryId")))));
+        operations.add(new CustomAggregationOperation(new Document("$lookup",
+                new Document("from","categories")
+                        .append("localField","convertedField")
+                        .append("foreignField","_id")
+                        .append("as","categoryInfo"))));
+        operations.add(new CustomAggregationOperation(new Document("$project"
+                ,new Document("categoryInfo.categoryName",1.0))));
+        return operations;
+
     }
 
     private List<AggregationOperation> itemAggregationFilter(ItemFilter filter, FilterSortRequest.SortRequest<ItemSortBy> sort, PageRequest pageRequest, boolean addPage) {

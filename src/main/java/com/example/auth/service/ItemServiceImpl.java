@@ -3,17 +3,17 @@ package com.example.auth.service;
 import com.example.auth.commons.advice.NullAwareBeanUtilsBean;
 import com.example.auth.commons.constant.MessageConstant;
 import com.example.auth.commons.exception.NotFoundException;
+import com.example.auth.commons.service.AdminConfigurationService;
 import com.example.auth.decorator.ItemAddRequest;
+import com.example.auth.decorator.ItemAggregationResponse;
 import com.example.auth.decorator.ItemResponse;
 import com.example.auth.decorator.pagination.FilterSortRequest;
 import com.example.auth.decorator.pagination.ItemFilter;
 import com.example.auth.decorator.pagination.ItemSortBy;
 import com.example.auth.model.Category;
 import com.example.auth.model.Item;
-import com.example.auth.model.PurchaseLogHistory;
 import com.example.auth.repository.CategoryRepository;
 import com.example.auth.repository.ItemRepository;
-import com.example.auth.repository.PurchaseLogHistoryRepository;
 import com.google.api.client.repackaged.com.google.common.annotations.VisibleForTesting;
 import org.apache.commons.collections.CollectionUtils;
 import org.modelmapper.ModelMapper;
@@ -21,11 +21,10 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
+import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.text.DecimalFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 @Service
 public class ItemServiceImpl implements ItemService {
@@ -33,15 +32,17 @@ public class ItemServiceImpl implements ItemService {
     private final ItemRepository itemRepository;
     private final ModelMapper modelMapper;
     private final NullAwareBeanUtilsBean nullAwareBeanUtilsBean;
+    private final AdminConfigurationService adminConfigurationService;
 
 
-    public ItemServiceImpl(CategoryRepository categoryRepository, ItemRepository itemRepository, ModelMapper modelMapper, NullAwareBeanUtilsBean nullAwareBeanUtilsBean  ) {
+    public ItemServiceImpl(CategoryRepository categoryRepository, ItemRepository itemRepository, ModelMapper modelMapper, NullAwareBeanUtilsBean nullAwareBeanUtilsBean, AdminConfigurationService adminConfigurationService) {
         this.categoryRepository = categoryRepository;
         this.itemRepository = itemRepository;
         this.modelMapper = modelMapper;
         this.nullAwareBeanUtilsBean = nullAwareBeanUtilsBean;
 
 
+        this.adminConfigurationService = adminConfigurationService;
     }
 
 
@@ -64,16 +65,18 @@ public class ItemServiceImpl implements ItemService {
     }
 
     @Override
-    public ItemResponse updateItem(String id, ItemAddRequest itemAddRequest) {
+    public ItemResponse updateItem(String id, ItemAddRequest itemAddRequest) throws InvocationTargetException, IllegalAccessException {
         Item item = getById(id);
-        item.setItemName(itemAddRequest.getItemName());
-        item.setPrice(Double.parseDouble(new DecimalFormat("##.##").format(itemAddRequest.getPrice())));
-        item.setQuantity(itemAddRequest.getQuantity());
-        item.setTotalPrice(item.getPrice() * item.getQuantity());
         ItemResponse itemResponse = modelMapper.map(item, ItemResponse.class);
-        checkValidation(itemAddRequest);
-        itemRepository.save(item);
+        HashMap<String, String> changedProperties = new HashMap<>();
+        updateItemData(id, itemAddRequest);
+        difference(item, itemAddRequest, changedProperties);
         return itemResponse;
+    }
+
+    @Override
+    public List<ItemAggregationResponse> getItemByAggregation() {
+        return itemRepository.getItemByAggregation();
     }
 
     @Override
@@ -156,6 +159,47 @@ public class ItemServiceImpl implements ItemService {
                 item.setSoftDelete(true);
             });
             itemRepository.saveAll(items);
+        }
+    }
+
+    public void updateItemData(String id, ItemAddRequest itemAddRequest) throws InvocationTargetException, IllegalAccessException {
+        Item item = getById(id);
+        if (item != null) {
+            if (itemAddRequest.getQuantity() > 0) {
+                item.setQuantity(itemAddRequest.getQuantity());
+                item.setDiscountInRupee((item.getPrice() * item.getQuantity() * item.getDiscountInPercent()) / 100);
+                item.setTotalPrice(item.getPrice() * item.getQuantity() - item.getDiscountInRupee());
+            }
+            if (itemAddRequest.getItemName() != null) {
+                item.setItemName(itemAddRequest.getItemName());
+            }
+            if (itemAddRequest.getPrice() > 0) {
+                item.setPrice(Double.parseDouble(new DecimalFormat("##.##").format(itemAddRequest.getPrice())));
+                findPrice(itemAddRequest, item);
+            }
+            if (itemAddRequest.getDiscountInPercent() > 0) {
+                item.setDiscountInPercent(itemAddRequest.getDiscountInPercent());
+                item.setDiscountInRupee((item.getPrice() * item.getQuantity() * item.getDiscountInPercent()) / 100);
+                item.setTotalPrice(item.getPrice() * item.getQuantity() - item.getDiscountInRupee());
+            }
+
+            itemRepository.save(item);
+        }
+    }
+
+    public void difference(Item item, ItemAddRequest itemAddRequest, HashMap<String, String> changedProperties) throws InvocationTargetException, IllegalAccessException {
+        Item item1 = new Item();
+        nullAwareBeanUtilsBean.copyProperties(item1, itemAddRequest);
+        item1.setId(item.getId());
+        for (Field field : item.getClass().getDeclaredFields()) {
+            field.setAccessible(true);
+            Object value = field.get(item);
+            Object value1 = field.get(item1);
+            if (value != null && value1 != null) {
+                if (!Objects.equals(value, value1)) {
+                    changedProperties.put(field.getName(), value1.toString());
+                }
+            }
         }
     }
 

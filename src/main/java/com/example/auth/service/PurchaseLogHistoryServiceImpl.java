@@ -41,7 +41,6 @@ public class PurchaseLogHistoryServiceImpl implements PurchaseLogHistoryService 
     private final ItemRepository itemRepository;
     private final ItemService itemService;
 
-
     public PurchaseLogHistoryServiceImpl(PurchaseLogHistoryRepository purchaseLogHistoryRepository, ModelMapper modelMapper, CustomerRepository customerRepository, NullAwareBeanUtilsBean nullAwareBeanUtilsBean, ItemRepository itemRepository, ItemService itemService) {
         this.purchaseLogHistoryRepository = purchaseLogHistoryRepository;
         this.modelMapper = modelMapper;
@@ -50,7 +49,6 @@ public class PurchaseLogHistoryServiceImpl implements PurchaseLogHistoryService 
         this.itemRepository = itemRepository;
         this.itemService = itemService;
     }
-
 
     @Override
     public PurchaseLogHistoryResponse addPurchaseLog(PurchaseLogHistoryAddRequest purchaseLogHistoryAddRequest, String customerId, String itemName) {
@@ -67,14 +65,21 @@ public class PurchaseLogHistoryServiceImpl implements PurchaseLogHistoryService 
             purchaseLogHistory.setDate(currentDate());
             PurchaseLogHistoryResponse purchaseLogHistoryResponse = modelMapper.map(purchaseLogHistory, PurchaseLogHistoryResponse.class);
             purchaseLogHistoryRepository.save(purchaseLogHistory);
-            item.setQuantity(item.getQuantity() - purchaseLogHistory.getQuantity());
-            itemRepository.save(item);
+            setItemTotalPrice(itemName, purchaseLogHistory);
             return purchaseLogHistoryResponse;
 
         } else {
             throw new InvalidRequestException(MessageConstant.ITEM_QUANITY_OUT_OF_STOCK);
         }
 
+    }
+
+    public void setItemTotalPrice(String itemName, PurchaseLogHistory purchaseLogHistory) {
+        Item item = itemRepository.findByItemNameAndSoftDeleteIsFalse(itemName);
+        item.setQuantity(item.getQuantity() - purchaseLogHistory.getQuantity());
+        item.setDiscountInRupee((item.getPrice() * item.getQuantity() * item.getDiscountInPercent()) / 100);
+        item.setTotalPrice(item.getPrice() * item.getQuantity() - item.getDiscountInRupee());
+        itemRepository.save(item);
     }
 
     @VisibleForTesting
@@ -161,6 +166,8 @@ public class PurchaseLogHistoryServiceImpl implements PurchaseLogHistoryService 
     }
 
 
+
+
     Customer getcustomerById(String id) {
         return customerRepository.findByIdAndSoftDeleteIsFalse(id).orElseThrow(() -> new NotFoundException(MessageConstant.ID_NOT_FOUND));
     }
@@ -197,7 +204,6 @@ public class PurchaseLogHistoryServiceImpl implements PurchaseLogHistoryService 
         }
     }
 
-
     public void findDiscountInRupee(PurchaseLogHistory purchaseLogHistory, String itemName) {
         Item item = itemRepository.findByItemNameAndSoftDeleteIsFalse(itemName);
         purchaseLogHistory.setDiscountInRupee((purchaseLogHistory.getPrice() * purchaseLogHistory.getQuantity() * purchaseLogHistory.getDiscountInPercent()) / 100);
@@ -213,8 +219,6 @@ public class PurchaseLogHistoryServiceImpl implements PurchaseLogHistoryService 
         }
         return total;
     }
-
-
 }
 
 

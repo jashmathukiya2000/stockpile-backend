@@ -4,6 +4,7 @@ import com.example.auth.decorator.pagination.FilterSortRequest;
 import com.example.auth.decorator.pagination.UserFilterData;
 import com.example.auth.decorator.pagination.UserSortBy;
 import com.example.auth.decorator.user.*;
+import org.apache.poi.ss.usermodel.Workbook;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 
@@ -35,6 +36,12 @@ public interface UserService {
     Date getExpirationDateFromToken(String token);
 
     boolean isTokenExpired(String token);
+
+    Workbook getAllUserInExcel() throws InvocationTargetException, IllegalAccessException;
+
+
+    Workbook getAllUserByPaginationInExcel(UserFilterData filter, FilterSortRequest.SortRequest<UserSortBy> sort, PageRequest pageRequest) throws InvocationTargetException, IllegalAccessException;
+
 }
 
 

@@ -5,20 +5,22 @@ import com.example.auth.commons.Access;
 import com.example.auth.commons.constant.ResponseConstant;
 import com.example.auth.commons.decorator.GeneralHelper;
 import com.example.auth.commons.enums.Role;
-import com.example.auth.decorator.DataResponse;
-import com.example.auth.decorator.ListResponse;
-import com.example.auth.decorator.Response;
-import com.example.auth.decorator.TokenResponse;
-import com.example.auth.decorator.pagination.FilterSortRequest;
-import com.example.auth.decorator.pagination.PageResponse;
-import com.example.auth.decorator.pagination.UserFilterData;
-import com.example.auth.decorator.pagination.UserSortBy;
+import com.example.auth.decorator.*;
+import com.example.auth.decorator.pagination.*;
 import com.example.auth.decorator.user.*;
 import com.example.auth.service.ResultService;
 import com.example.auth.service.UserService;
+import org.apache.poi.ss.usermodel.Workbook;
+import org.springframework.core.io.ByteArrayResource;
+import org.springframework.core.io.Resource;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.util.Date;
 
@@ -169,8 +171,40 @@ public class UserController {
         return tokenResponse;
     }
 
+    @RequestMapping(name = "getAllUserInExcel", value = "/getAll/excel", method = RequestMethod.POST)
+    @Access(levels = Role.ANONYMOUS)
+    public ResponseEntity<Resource> getAllUserInExcel() throws IOException, InvocationTargetException, IllegalAccessException {
+        Workbook workbook = userService.getAllUserInExcel();
+        assert workbook != null;
+        ByteArrayResource resource = ExcelUtils.getBiteResourceFromWorkbook(workbook);
+        return ResponseEntity.ok()
+                .contentLength(resource.contentLength())
+                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + "user_purchased_bookDetail_xlsx" + "\"")
+                .contentType(MediaType.parseMediaType("application/vnd.ms-excel"))
+                .body(resource);
+    }
+      @RequestMapping(name = "getAllUserByPaginationInExcel", value = "/getAll/pagination/excel", method = RequestMethod.POST)
+    @Access(levels = Role.ANONYMOUS)
+    public ResponseEntity<Resource> getAllUserByPaginationInExcel(@RequestBody FilterSortRequest<UserFilterData, UserSortBy> filterSortRequest) throws IOException, InvocationTargetException, IllegalAccessException {
+          UserFilterData filter = filterSortRequest.getFilter();
+          FilterSortRequest.SortRequest<UserSortBy> sort = filterSortRequest.getSort();
+          Pagination pagination=filterSortRequest.getPagination();
+          PageRequest pageRequest = PageRequest.of(pagination.getPage(), pagination.getLimit());
+          Workbook workbook =userService.getAllUserByPaginationInExcel(filter,sort,pageRequest);
+          assert workbook != null;
+          ByteArrayResource resource = ExcelUtils.getBiteResourceFromWorkbook(workbook);
+          return ResponseEntity.ok()
+                  .contentLength(resource.contentLength())
+                  .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + "user_purchased_bookDetail_xlsx" + "\"")
+                  .contentType(MediaType.parseMediaType("application/vnd.ms-excel"))
+                  .body(resource);
+      }
+
+
+
+    }
 
 
 
 
-}
+

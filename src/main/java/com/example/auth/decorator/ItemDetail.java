@@ -10,8 +10,7 @@ import java.util.Date;
 @NoArgsConstructor
 @Data
 public class ItemDetail {
-    Date date;
-    double price;
+    String date;
     String itemName;
     double count;
     double totalPrice;

@@ -11,7 +11,7 @@ import java.util.List;
 @Data
 public class PurchaseAggregationResponse {
     String _id;
-    List<ItemDetails> itemDetails;
+    List<ItemDetails> itemDetail;
     double totalItem;
 
 }
