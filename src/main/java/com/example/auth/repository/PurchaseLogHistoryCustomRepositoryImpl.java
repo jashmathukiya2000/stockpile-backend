@@ -1,5 +1,6 @@
 package com.example.auth.repository;
 
+import com.example.auth.commons.decorator.FileReader;
 import com.example.auth.commons.model.AggregationUtils;
 import com.example.auth.decorator.CustomAggregationOperation;
 import com.example.auth.decorator.ItemPurchaseAggregationResponse;
@@ -10,9 +11,12 @@ import com.example.auth.decorator.pagination.FilterSortRequest;
 import com.example.auth.decorator.pagination.PurchaseLogFilter;
 import com.example.auth.decorator.pagination.PurchaseLogSortBy;
 import com.example.auth.model.PurchaseLogHistory;
+import com.google.api.client.json.Json;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.bson.Document;
+import org.json.JSONException;
+import org.json.JSONObject;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
@@ -115,14 +119,14 @@ public class PurchaseLogHistoryCustomRepositoryImpl implements PurchaseLogHistor
 
     }
 
-    @Override
-    public List<PurchaseLogHistoryResponse> getPurchaseLogByMonth(int month) {
-        List<AggregationOperation> operations = getPurchaseLogByMonthAndYear(month);
-        Aggregation aggregation = newAggregation(operations);
-        log.info("output:{}" + aggregation);
-        return mongoTemplate.aggregate(aggregation, "purchaseLogHistory", PurchaseLogHistoryResponse.class).getMappedResults();
-
-    }
+//    @Override
+//    public List<PurchaseLogHistoryResponse> getPurchaseLogByMonth(int month) {
+//        List<AggregationOperation> operations = getPurchaseLogByMonthAndYear(month);
+//        Aggregation aggregation = newAggregation(operations);
+//        log.info("output:{}" + aggregation);
+//        return mongoTemplate.aggregate(aggregation, "purchaseLogHistory", PurchaseLogHistoryResponse.class).getMappedResults();
+//
+//    }
 
     public List<AggregationOperation> getPurchaseLogByMonthAndYear(int month) {
         List<AggregationOperation> operations = new ArrayList<>();
@@ -180,8 +184,87 @@ public class PurchaseLogHistoryCustomRepositoryImpl implements PurchaseLogHistor
         return mongoTemplate.aggregate(aggregation, "purchaseLogHistory", ItemPurchaseAggregationResponse.class).getMappedResults();
     }
 
+    @Override
+    public Page<PurchaseLogHistoryResponse> getPurchaseLogByMonth(PurchaseLogFilter filter, FilterSortRequest.SortRequest<PurchaseLogSortBy> sort, PageRequest pagination) throws JSONException {
+        List<AggregationOperation> operations = getPurchaseDetailsByMonth(filter, sort, pagination, true);
+        Aggregation aggregation = newAggregation(operations);
+        List<PurchaseLogHistoryResponse> purchaseLogHistoryResponses = mongoTemplate.aggregate(aggregation, "purchaseLogHistory", PurchaseLogHistoryResponse.class).getMappedResults();
+        List<AggregationOperation> operationList = getPurchaseDetailsByMonth(filter, sort, pagination, true);
+        operationList.add(group().count().as("count"));
+        operationList.add(project("count"));
+        Aggregation aggregationCount = newAggregation(PurchaseLogHistoryResponse.class, operationList);
+        AggregationResults<CountQueryResult> countQueryResults = mongoTemplate.aggregate(aggregationCount, "purchaseLogHistory", CountQueryResult.class);
+        long count = countQueryResults.getMappedResults().size() == 0 ? 0 : countQueryResults.getMappedResults().get(0).getCount();
+        return PageableExecutionUtils.getPage(
+                purchaseLogHistoryResponses,
+                pagination,
+                () -> count);
 
+    }
 
+    @Override
+    public Page<ItemPurchaseAggregationResponse> getPurchaseDetailsByCustomer(PurchaseLogFilter filter, FilterSortRequest.SortRequest<PurchaseLogSortBy> sort, PageRequest pageRequest) throws JSONException {
+        List<AggregationOperation> operations = purchaseDetailsByCustomer(filter, sort, pageRequest, true);
+        Aggregation aggregation = newAggregation(operations);
+        List<ItemPurchaseAggregationResponse> itemPurchaseAggregation = mongoTemplate.aggregate(aggregation, "purchaseLogHistory", ItemPurchaseAggregationResponse.class).getMappedResults();
+        List<AggregationOperation> operationList = purchaseDetailsByCustomer(filter, sort, pageRequest, true);
+        operationList.add(group().count().as("count"));
+        operations.add(project("count"));
+        Aggregation aggregation1 = newAggregation(PurchaseLogHistory.class, operationList);
+        AggregationResults<CountQueryResult> countQueryResults = mongoTemplate.aggregate(aggregation1, "purchaseLogHistory", CountQueryResult.class);
+        long count = countQueryResults.getMappedResults().size() == 0 ? 0 : countQueryResults.getMappedResults().get(0).getCount();
+        return PageableExecutionUtils.getPage(
+                itemPurchaseAggregation,
+                pageRequest,
+                () -> count);
+
+    }
+
+    private List<AggregationOperation> purchaseDetailsByCustomer(PurchaseLogFilter filter, FilterSortRequest.SortRequest<PurchaseLogSortBy> sort, PageRequest pageRequest, boolean addPage) throws JSONException {
+        List<AggregationOperation> operations = new ArrayList<>();
+        String fileName = FileReader.loadFile("aggregation/PurchaseLogByMonthYear.json");
+        JSONObject jsonObject = new JSONObject(fileName);
+        operations.add(new CustomAggregationOperation(Document.parse(CustomAggregationOperation.getJson(jsonObject, "match", Object.class))));
+        operations.add(new CustomAggregationOperation(Document.parse(CustomAggregationOperation.getJson(jsonObject, "mergeCustomerData", Object.class))));
+        operations.add(new CustomAggregationOperation(Document.parse(CustomAggregationOperation.getJson(jsonObject, "unwindCustomer", Object.class))));
+        operations.add(new CustomAggregationOperation(Document.parse(CustomAggregationOperation.getJson(jsonObject, "setCustomer", Object.class))));
+        operations.add(new CustomAggregationOperation(Document.parse(CustomAggregationOperation.getJson(jsonObject, "unsetCustomer", Object.class))));
+        operations.add(new CustomAggregationOperation(Document.parse(CustomAggregationOperation.getJson(jsonObject, "groupByItemName", Object.class))));
+        operations.add(new CustomAggregationOperation(Document.parse(CustomAggregationOperation.getJson(jsonObject, "groupByCustomerName", Object.class))));
+        if (addPage) {
+            if (sort != null && sort.getSortBy() != null && sort.getOrderBy() != null) {
+                operations.add(new SortOperation(Sort.by(sort.getOrderBy(), sort.getSortBy().getValue())));
+            }
+            if (pageRequest != null) {
+
+                operations.add(skip(pageRequest.getOffset()));
+                operations.add(limit(pageRequest.getPageSize()));
+            }
+        }
+        return operations;
+    }
+
+    public List<AggregationOperation> getPurchaseDetailsByMonth(PurchaseLogFilter filter, FilterSortRequest.SortRequest<PurchaseLogSortBy> sort, PageRequest pagination, boolean addPage) throws JSONException {
+        List<AggregationOperation> operations = new ArrayList<>();
+        String loadFile = FileReader.loadFile("aggregation/PurchaseLogByMonthInExcel.json");
+        JSONObject jsonObject = new JSONObject(loadFile);
+        operations.add(new CustomAggregationOperation(Document.parse(CustomAggregationOperation.getJson(jsonObject, "addDate", Object.class))));
+        operations.add(new CustomAggregationOperation(Document.parse(CustomAggregationOperation.getJson(jsonObject, "matchMonth", Object.class))));
+        operations.add(new CustomAggregationOperation(Document.parse(CustomAggregationOperation.getJson(jsonObject, "groupByMonth", Object.class))));
+        operations.add(new CustomAggregationOperation(Document.parse(CustomAggregationOperation.getJson(jsonObject, "groupByCustomerId", Object.class))));
+        if (addPage) {
+            if (sort != null && sort.getSortBy() != null && sort.getOrderBy() != null) {
+                operations.add(new SortOperation(Sort.by(sort.getOrderBy(), sort.getSortBy().getValue())));
+            }
+            if (pagination != null) {
+
+                operations.add(skip(pagination.getOffset()));
+                operations.add(limit(pagination.getPageSize()));
+            }
+        }
+        return operations;
+
+    }
 
     public List<AggregationOperation> getDetailsByCustomerName() {
         List<AggregationOperation> operations = new ArrayList<>();

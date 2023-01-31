@@ -39,38 +39,5 @@ public class User {
     List<Result> result;
     double cgpa;
 
-    public void setFullName() {
-        this.firstName = StringUtils.normalizeSpace(this.firstName);
-        this.middleName = StringUtils.normalizeSpace(this.middleName);
-        this.lastName = StringUtils.normalizeSpace(this.lastName);
 
-        List<String> fullNameList = new ArrayList<>();
-        fullNameList.add(firstName);
-        fullNameList.add(middleName);
-        fullNameList.add(lastName);
-        String string = fullNameList.stream().filter(Objects::nonNull).map(String::trim).collect(Collectors.joining(" "));
-        this.fullName = string;
-        String[] names = string.split(" ");
-        if (names.length == 1) {
-            this.firstName = names[0];
-        } else if (names.length == 2) {
-            this.firstName = names[0];
-            this.lastName = names[0];
-
-        } else if (names.length == 3) {
-            this.firstName = names[0];
-            this.middleName = names[1];
-            this.lastName = names[2];
-        } else if (names.length > 3) {
-            this.firstName = names[0];
-            this.middleName = names[1];
-            StringBuilder stringBuilder = new StringBuilder();
-            for (String value : names) {
-                if (!value.equals(firstName) && !value.equals(lastName)) {
-                    stringBuilder.append(" ").append(value);
-                }
-            }
-            this.lastName = names.toString().trim();
-        }
-    }
 }

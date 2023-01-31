@@ -12,11 +12,12 @@ import java.util.Set;
 @NoArgsConstructor
 public class PurchaseLogFilter {
     String search;
-
     Set<String> ids;
+
 
     @JsonIgnore
     boolean softDelete;
+    int month;
 
     public String getSearch() {
         if (search != null) {

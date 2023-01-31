@@ -1,13 +1,15 @@
 package com.example.auth.service;
 
-import com.amazonaws.services.dynamodbv2.xspec.L;
 import com.example.auth.commons.JWTUser;
 import com.example.auth.commons.advice.NullAwareBeanUtilsBean;
 import com.example.auth.commons.constant.MessageConstant;
 import com.example.auth.commons.exception.InvalidRequestException;
 import com.example.auth.commons.exception.NotFoundException;
+import com.example.auth.commons.helper.UserHelper;
 import com.example.auth.commons.utils.JwtTokenUtil;
-import com.example.auth.decorator.*;
+import com.example.auth.decorator.ExcelUtils;
+import com.example.auth.decorator.UserDataExcel;
+import com.example.auth.decorator.UserExcelResponse;
 import com.example.auth.decorator.pagination.FilterSortRequest;
 import com.example.auth.decorator.pagination.UserFilterData;
 import com.example.auth.decorator.pagination.UserSortBy;
@@ -34,6 +36,7 @@ public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
     private final NullAwareBeanUtilsBean nullAwareBeanUtilsBean;
     private final JwtTokenUtil jwtTokenUtil;
+    private final UserHelper userHelper;
 
 
     @Override
@@ -43,7 +46,7 @@ public class UserServiceImpl implements UserService {
             user1.setFirstName(userAddRequest.getFirstName());
             user1.setMiddleName(userAddRequest.getMiddleName());
             user1.setLastName(userAddRequest.getLastName());
-            user1.setFullName();
+            user1.setFullName(userHelper.getFullName(user1));
             user1.setAge(userAddRequest.getAge());
             user1.setEmail(userAddRequest.getEmail());
             user1.setOccupation(userAddRequest.getOccupation());
@@ -52,14 +55,9 @@ public class UserServiceImpl implements UserService {
             nullAwareBeanUtilsBean.copyProperties(user1, userAddRequest);
             userRepository.save(user1);
             return modelMapper.map(user1, UserResponse.class);
-
-//            UserResponse userResponse1 = modelMapper.map(userAddRequest, UserResponse.class);
-//            nullAwareBeanUtilsBean.copyProperties(userResponse1, user1);
-//            userRepository.save(user1);
-//            return userResponse1;
         } else {
             User user = modelMapper.map(userAddRequest, User.class);
-            user.setFullName();
+            user.setFullName(userHelper.getFullName(user));
             UserResponse userResponse1 = modelMapper.map(user, UserResponse.class);
             userRepository.save(user);
             return userResponse1;
@@ -89,26 +87,6 @@ public class UserServiceImpl implements UserService {
         User user = getUserModel(id);
         user.setSoftDelete(true);
         userRepository.save(user);
-    }
-
-    @Override
-    public List<UserResponse> getUserByAge(UserFilter userFilter) {
-        return userRepository.getByFilterAndSoftDeleteFalse(userFilter);
-    }
-
-    @Override
-    public List<UserAggregationResponse> getUserBySalary(UserFilter userFilter) {
-        return userRepository.getUserByAggregation(userFilter);
-    }
-
-    @Override
-    public Page<UserResponse> getAllUserByPagination(UserFilterData filter, FilterSortRequest.SortRequest<UserSortBy> sort, PageRequest pageRequest) {
-        return userRepository.getAllUserByPagination(filter, sort, pageRequest);
-    }
-
-    @Override
-    public List<MaxSpiResponse> getUserByMaxSpi(String id) {
-        return userRepository.getUserByMaxSpi(id);
     }
 
     @Override
@@ -156,19 +134,18 @@ public class UserServiceImpl implements UserService {
     @Override
     public Workbook getAllUserInExcel() throws InvocationTargetException, IllegalAccessException {
         List<UserResponse> userResponses = getAllUser();
-        List<UserExcelResponse> list= new ArrayList<>();
+        List<UserExcelResponse> list = new ArrayList<>();
         //list add excel class object
         for (UserResponse response : userResponses) {
-            UserExcelResponse userExcelResponse=new UserExcelResponse();
+            UserExcelResponse userExcelResponse = new UserExcelResponse();
             //excel class obj
-            nullAwareBeanUtilsBean.copyProperties(userExcelResponse,response);
+            nullAwareBeanUtilsBean.copyProperties(userExcelResponse, response);
             //add excel class list
             list.add(userExcelResponse);
         }
 
-       return ExcelUtils.createWorkbookFromData(list , "UserDetails" );
+        return ExcelUtils.createWorkbookFromData(list, "UserDetails");
     }
-
 
 
     @Override
@@ -180,12 +157,32 @@ public class UserServiceImpl implements UserService {
         if (!CollectionUtils.isEmpty(list)) {
             for (UserResponse response : list) {
                 UserDataExcel userDataExcel = new UserDataExcel();
-                nullAwareBeanUtilsBean.copyProperties(userDataExcel,response);
+                nullAwareBeanUtilsBean.copyProperties(userDataExcel, response);
                 list1.add(userDataExcel);
-            }}
-            return ExcelUtils.createWorkbookFromData(list, "UserByPagination");
+            }
+        }
+        return ExcelUtils.createWorkbookFromData(list, "UserByPagination");
 
 
+    }
+    @Override
+    public List<UserResponse> getUserByAge(UserFilter userFilter) {
+        return userRepository.getByFilterAndSoftDeleteFalse(userFilter);
+    }
+
+    @Override
+    public List<UserAggregationResponse> getUserBySalary(UserFilter userFilter) {
+        return userRepository.getUserByAggregation(userFilter);
+    }
+
+    @Override
+    public Page<UserResponse> getAllUserByPagination(UserFilterData filter, FilterSortRequest.SortRequest<UserSortBy> sort, PageRequest pageRequest) {
+        return userRepository.getAllUserByPagination(filter, sort, pageRequest);
+    }
+
+    @Override
+    public List<MaxSpiResponse> getUserByMaxSpi(String id) {
+        return userRepository.getUserByMaxSpi(id);
     }
 
 

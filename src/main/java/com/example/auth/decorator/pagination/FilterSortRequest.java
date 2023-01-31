@@ -19,5 +19,7 @@ public class FilterSortRequest<FILTER, SORT> {
     public static class SortRequest<SORT> {
         SORT SortBy;
         Sort.Direction orderBy;
+
+
     }
 }

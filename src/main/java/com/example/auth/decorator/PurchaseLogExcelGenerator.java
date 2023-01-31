@@ -8,31 +8,30 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class PurchaseLogExcelGenerator {
-
+    String date;
     String itemName;
-
     double count;
-
     double totalPrice;
 
-    double totalItem;
+    @ExcelField(excelHeader = "Date", position=2)
+    public String getDate(){
+        return date;
+    }
 
-    @ExcelField(excelHeader = "ItemName", position=1)
+
+    @ExcelField(excelHeader = "ItemName", position=3)
     public String getItemName(){
         return itemName;
     }
-      @ExcelField(excelHeader = "Count", position=2)
+      @ExcelField(excelHeader = "Count", position=4)
     public double getCount(){
         return count;
     }
-      @ExcelField(excelHeader = "TotalPrice", position=3)
-    public double getTotalPrice(){
-        return totalPrice;
-    }
 
-    @ExcelField(excelHeader = "TotalItem", position=4)
-    public double getTotalItem(){
-        return totalItem;
+      @ExcelField(excelHeader = "TotalPrice", position=5)
+
+    public double getTotalPrice() {
+        return totalPrice;
     }
 
 

@@ -2,6 +2,7 @@ package com.example.auth.commons.advice;
 
 import com.example.auth.commons.decorator.GeneralHelper;
 import com.example.auth.commons.decorator.RequestSession;
+import com.example.auth.commons.helper.UserHelper;
 import com.example.auth.decorator.Response;
 import com.example.auth.decorator.pagination.Pagination;
 import com.example.auth.model.PurchaseLogHistory;
@@ -69,6 +70,11 @@ import org.springframework.web.util.UriTemplateHandler;
         @Bean
         public NullAwareBeanUtilsBean beanUtilsBean(){
             return new NullAwareBeanUtilsBean();
+        }
+
+        @Bean
+        public UserHelper getUserHelper(){
+            return new UserHelper();
         }
 
 //        @Bean

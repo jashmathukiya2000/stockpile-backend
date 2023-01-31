@@ -4,10 +4,7 @@ import com.example.auth.commons.advice.NullAwareBeanUtilsBean;
 import com.example.auth.commons.constant.MessageConstant;
 import com.example.auth.commons.exception.InvalidRequestException;
 import com.example.auth.commons.exception.NotFoundException;
-import com.example.auth.decorator.ItemPurchaseAggregationResponse;
-import com.example.auth.decorator.PurchaseAggregationResponse;
-import com.example.auth.decorator.PurchaseLogHistoryAddRequest;
-import com.example.auth.decorator.PurchaseLogHistoryResponse;
+import com.example.auth.decorator.*;
 import com.example.auth.decorator.pagination.FilterSortRequest;
 import com.example.auth.decorator.pagination.PurchaseLogFilter;
 import com.example.auth.decorator.pagination.PurchaseLogSortBy;
@@ -20,6 +17,8 @@ import com.example.auth.repository.ItemRepository;
 import com.example.auth.repository.PurchaseLogHistoryRepository;
 import com.google.api.client.repackaged.com.google.common.annotations.VisibleForTesting;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.poi.ss.usermodel.Workbook;
+import org.json.JSONException;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -149,10 +148,6 @@ public class PurchaseLogHistoryServiceImpl implements PurchaseLogHistoryService 
         }
     }
 
-    @Override
-    public List<PurchaseLogHistoryResponse> getPurchaseLogByMonth(int month) {
-        return purchaseLogHistoryRepository.getPurchaseLogByMonth(month);
-    }
 
     @Override
     public List<PurchaseAggregationResponse> getItemPurchaseDetailsByMonthYear() {
@@ -165,8 +160,40 @@ public class PurchaseLogHistoryServiceImpl implements PurchaseLogHistoryService 
         return purchaseLogHistoryRepository.getPurchaseDetailsByCustomerName();
     }
 
+    @Override
+    public Workbook getPurchaseLogByMonth(PurchaseLogFilter filter, FilterSortRequest.SortRequest<PurchaseLogSortBy> sort, PageRequest pagination) throws InvocationTargetException, IllegalAccessException, JSONException {
+        Page<PurchaseLogHistoryResponse> purchaseLogHistoryResponse = purchaseLogHistoryRepository.getPurchaseLogByMonth(filter, sort, pagination);
+        List<PurchaseLogHistoryByMonthInExcel> purchaseLogHistoryByMonthInExcel = new ArrayList<>();
+        List<PurchaseLogHistoryResponse> purchaseLogHistoryByMonthInExcels = purchaseLogHistoryResponse.getContent();
+        for (PurchaseLogHistoryResponse logHistoryResponse : purchaseLogHistoryResponse) {
+            PurchaseLogHistoryByMonthInExcel purchaseLogHistoryByMonthInExcel1 = new PurchaseLogHistoryByMonthInExcel();
+            nullAwareBeanUtilsBean.copyProperties(purchaseLogHistoryByMonthInExcel1, logHistoryResponse);
+            purchaseLogHistoryByMonthInExcel.add(purchaseLogHistoryByMonthInExcel1);
+        }
+        return ExcelUtils.createWorkbookFromData(purchaseLogHistoryByMonthInExcel, "Purchse details by month" + filter.getMonth());
+    }
 
+    @Override
+    public Workbook getPurchaseDetailsByCustomer(PurchaseLogFilter filter, FilterSortRequest.SortRequest<PurchaseLogSortBy> sort, PageRequest pageRequest) throws InvocationTargetException, IllegalAccessException, JSONException {
+        HashMap<String, List<PurchaseLogExcelGenerator>> hashMap = new LinkedHashMap<>();
+        Page<ItemPurchaseAggregationResponse> itemPurchaseAggregationResponse = purchaseLogHistoryRepository.getPurchaseDetailsByCustomer(filter, sort, pageRequest);
+        List<ItemPurchaseAggregationResponse> list = itemPurchaseAggregationResponse.getContent();
+        log.info("book Detail Excel Response:{}", list);
 
+        for (ItemPurchaseAggregationResponse purchaseAggregationResponse : list) {
+            List<PurchaseLogExcelGenerator> purchaseLogExcelGenerators = new ArrayList<>();
+            for (ItemDetail itemDetail : purchaseAggregationResponse.getItemDetail()) {
+                PurchaseLogExcelGenerator purchaseLogExcelGenerator = new PurchaseLogExcelGenerator();
+                nullAwareBeanUtilsBean.copyProperties(purchaseLogExcelGenerator, itemDetail);
+                purchaseLogExcelGenerators.add(purchaseLogExcelGenerator);
+            }
+            hashMap.put(purchaseAggregationResponse.get_id(), purchaseLogExcelGenerators);
+        }
+        log.info("hashMap:{}", hashMap);
+        Workbook workbook = ExcelUtils.createWorkbookOnBookDetailsData(hashMap, "PurchaseDetails");
+        return workbook;
+
+    }
 
     Customer getcustomerById(String id) {
         return customerRepository.findByIdAndSoftDeleteIsFalse(id).orElseThrow(() -> new NotFoundException(MessageConstant.ID_NOT_FOUND));
@@ -181,7 +208,6 @@ public class PurchaseLogHistoryServiceImpl implements PurchaseLogHistoryService 
         if (purchaseLogHistory != null) {
             if (purchaseLogHistoryAddRequest.getQuantity() > 0) {
                 purchaseLogHistory.setQuantity(purchaseLogHistoryAddRequest.getQuantity());
-//               findDiscountInRupee(purchaseLogHistory);
             }
             purchaseLogHistoryRepository.save(purchaseLogHistory);
         }

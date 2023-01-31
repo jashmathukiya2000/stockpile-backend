@@ -5,17 +5,22 @@ import com.example.auth.commons.constant.ResponseConstant;
 import com.example.auth.commons.decorator.GeneralHelper;
 import com.example.auth.commons.enums.Role;
 import com.example.auth.decorator.*;
-import com.example.auth.decorator.pagination.FilterSortRequest;
-import com.example.auth.decorator.pagination.PageResponse;
-import com.example.auth.decorator.pagination.PurchaseLogFilter;
-import com.example.auth.decorator.pagination.PurchaseLogSortBy;
+import com.example.auth.decorator.pagination.*;
 import com.example.auth.model.ExcelGenerator;
 import com.example.auth.model.ExcelHelper;
 import com.example.auth.model.GeneratePdfReport;
 import com.example.auth.model.PurchaseLogHistory;
 import com.example.auth.service.PurchaseLogHistoryService;
 import com.itextpdf.text.DocumentException;
+import org.apache.poi.ss.usermodel.Workbook;
+import org.json.JSONException;
+import org.springframework.core.io.ByteArrayResource;
+import org.springframework.core.io.Resource;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -140,15 +145,24 @@ public class PurchaseLogHistoryController {
         return dataResponse;
     }
 
-    @RequestMapping(name = "getPurchaseLogByMonth", value = "/month/year", method = RequestMethod.POST)
-    @Access (levels = Role.ADMIN)
-    public ListResponse<PurchaseLogHistoryResponse> getPurchaseLogByMonth(@RequestParam int month) {
-        ListResponse<PurchaseLogHistoryResponse> listResponse = new ListResponse<>();
-        listResponse.setData(purchaseLogHistoryService.getPurchaseLogByMonth(month));
-        listResponse.setStatus(Response.getOkResponse(ResponseConstant.OK));
-        return listResponse;
-    }
+    @RequestMapping(name = "getPurchaseLogByMonth", value = "/month", method = RequestMethod.POST)
+    @Access (levels = Role.ANONYMOUS)
+    public ResponseEntity<Resource> getPurchaseLogByMonth(@RequestBody  FilterSortRequest<PurchaseLogFilter, PurchaseLogSortBy> filterSortRequest) throws IOException, InvocationTargetException, IllegalAccessException, JSONException {
+        PurchaseLogFilter  filter = filterSortRequest.getFilter();
+        FilterSortRequest.SortRequest<PurchaseLogSortBy> sort = filterSortRequest.getSort();
+        Pagination pagination = filterSortRequest.getPagination();
+        PageRequest pageRequest = PageRequest.of(pagination.getPage(), pagination.getLimit());
+        Workbook workbook =purchaseLogHistoryService.getPurchaseLogByMonth(filter,sort,pageRequest);
+        assert workbook != null;
+        ByteArrayResource resource = ExcelUtils.getBiteResourceFromWorkbook(workbook);
+        return ResponseEntity.ok()
+                .contentLength(resource.contentLength())
+                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + "purchased_Log_History_xlsx" + "\"")
+                .contentType(MediaType.parseMediaType("application/vnd.ms-excel"))
+                .body(resource);
 
+
+    }
 
 
 
@@ -167,11 +181,26 @@ public class PurchaseLogHistoryController {
         listResponse.setData(purchaseLogHistoryService.getPurchaseDetailsByCustomerName());
         listResponse.setStatus(Response.getOkResponse());
         return listResponse;
+
     }
+  @RequestMapping(name = "getPurchaseDetailsByCustomer",value = "/getByCustomerName",method = RequestMethod.POST)
+    @Access (levels = Role.ANONYMOUS)
+   public ResponseEntity<Resource> getPurchaseDetailsByCustomerName(@RequestBody  FilterSortRequest<PurchaseLogFilter, PurchaseLogSortBy> filterSortRequest) throws IOException, IllegalAccessException, JSONException, InvocationTargetException {
+      PurchaseLogFilter  filter = filterSortRequest.getFilter();
+      FilterSortRequest.SortRequest<PurchaseLogSortBy> sort = filterSortRequest.getSort();
+      Pagination pagination = filterSortRequest.getPagination();
+      PageRequest pageRequest = PageRequest.of(pagination.getPage(), pagination.getLimit());
+      Workbook workbook =purchaseLogHistoryService.getPurchaseDetailsByCustomer(filter,sort,pageRequest);
+      assert workbook != null;
+      ByteArrayResource resource = ExcelUtils.getBiteResourceFromWorkbook(workbook);
+      return ResponseEntity.ok()
+              .contentLength(resource.contentLength())
+              .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + "purchased_Log_History_xlsx" + "\"")
+              .contentType(MediaType.parseMediaType("application/vnd.ms-excel"))
+              .body(resource);
 
 
-
-
+    }
 
 
 }
