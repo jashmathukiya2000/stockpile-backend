@@ -6,7 +6,11 @@ import com.example.auth.commons.constant.MessageConstant;
 import com.example.auth.commons.exception.InvalidRequestException;
 import com.example.auth.commons.exception.NotFoundException;
 import com.example.auth.commons.helper.UserHelper;
+import com.example.auth.commons.model.AdminConfiguration;
+import com.example.auth.commons.model.EmailModel;
+import com.example.auth.commons.service.AdminConfigurationService;
 import com.example.auth.commons.utils.JwtTokenUtil;
+import com.example.auth.commons.utils.Utils;
 import com.example.auth.decorator.*;
 import com.example.auth.decorator.pagination.FilterSortRequest;
 import com.example.auth.decorator.pagination.UserFilterData;
@@ -14,28 +18,41 @@ import com.example.auth.decorator.pagination.UserSortBy;
 import com.example.auth.decorator.user.*;
 import com.example.auth.model.User;
 import com.example.auth.repository.UserRepository;
-import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.io.FileUtils;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.json.JSONException;
 import org.modelmapper.ModelMapper;
+import org.springframework.core.io.ByteArrayResource;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
+import java.io.File;
 import java.lang.reflect.InvocationTargetException;
 import java.util.*;
 
 @Slf4j
 @Service
-@AllArgsConstructor
+
 public class UserServiceImpl implements UserService {
     private final ModelMapper modelMapper;
     private final UserRepository userRepository;
     private final NullAwareBeanUtilsBean nullAwareBeanUtilsBean;
     private final JwtTokenUtil jwtTokenUtil;
     private final UserHelper userHelper;
+    private final AdminConfigurationService adminConfigurationService;
+    private final Utils utils;
+
+    public UserServiceImpl(ModelMapper modelMapper, UserRepository userRepository, NullAwareBeanUtilsBean nullAwareBeanUtilsBean, JwtTokenUtil jwtTokenUtil, UserHelper userHelper, AdminConfigurationService adminConfigurationService, Utils utils) {
+        this.modelMapper = modelMapper;
+        this.userRepository = userRepository;
+        this.nullAwareBeanUtilsBean = nullAwareBeanUtilsBean;
+        this.jwtTokenUtil = jwtTokenUtil;
+        this.userHelper = userHelper;
+        this.adminConfigurationService = adminConfigurationService;
+        this.utils = utils;
+    }
 
 
     @Override
@@ -158,17 +175,49 @@ public class UserServiceImpl implements UserService {
                 UserSpiDataInExcel userSpiDataInExcel = new UserSpiDataInExcel();
                 nullAwareBeanUtilsBean.copyProperties(userSpiDataInExcel, userSpiData);
                 userSpiDataInExcels.add(userSpiDataInExcel);
-
             }
             hashMap.put(userSpiResponse.get_id(), userSpiDataInExcels);
         }
         Workbook workbook = ExcelUtils.createWorkbookOnResultSpi(hashMap, "UserDetailsBySpi");
+        createFileAndSendEmail(workbook);
+
         return workbook;
+    }
+
+
+    private void createFileAndSendEmail(Workbook workBook) {
+        try {
+            File file = new File("UserData.xlsx");
+            ByteArrayResource resource = ExcelUtils.getBiteResourceFromWorkbook(workBook);
+            FileUtils.writeByteArrayToFile(file, resource.getByteArray());
+            File path = new File("C:\\Users\\TRPC05\\Downloads" + file.getName());
+            path.createNewFile();
+            sendmail(path);
+        } catch (Exception e) {
+            log.error("Error happened in excel generation or send email of excel: {}", e.getMessage());
+        }
+    }
+
+    private void sendmail(File file) throws InvocationTargetException, IllegalAccessException {
+
+        AdminConfiguration adminConfiguration = adminConfigurationService.getConfiguration();
+        try {
+            EmailModel emailModel = new EmailModel();
+            emailModel.setTo("sanskriti.s@techroversolutions.com");
+            System.out.println(emailModel.getTo());
+            emailModel.setCc(adminConfiguration.getTechAdmins());
+            System.out.println(emailModel.getCc());
+            emailModel.setSubject("UserData");
+            emailModel.setFile(file);
+            utils.sendEmailNow(emailModel);
+        } catch (Exception e) {
+            log.error("Error happened while sending result to user :{}", e.getMessage());
+        }
     }
 
     @Override
     public Page<UserEligibilityAggregation> getUserEligibilityByAge(UserFilterData filter, FilterSortRequest.SortRequest<UserSortBy> sort, PageRequest pagination) throws JSONException {
-        return userRepository.getUserEligibilityByAge(filter,sort,pagination);
+        return userRepository.getUserEligibilityByAge(filter, sort, pagination);
     }
 
 

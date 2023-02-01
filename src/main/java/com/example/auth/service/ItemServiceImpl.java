@@ -32,17 +32,17 @@ public class ItemServiceImpl implements ItemService {
     private final ItemRepository itemRepository;
     private final ModelMapper modelMapper;
     private final NullAwareBeanUtilsBean nullAwareBeanUtilsBean;
-    private final AdminConfigurationService adminConfigurationService;
 
 
-    public ItemServiceImpl(CategoryRepository categoryRepository, ItemRepository itemRepository, ModelMapper modelMapper, NullAwareBeanUtilsBean nullAwareBeanUtilsBean, AdminConfigurationService adminConfigurationService) {
+
+    public ItemServiceImpl(CategoryRepository categoryRepository, ItemRepository itemRepository, ModelMapper modelMapper, NullAwareBeanUtilsBean nullAwareBeanUtilsBean ) {
         this.categoryRepository = categoryRepository;
         this.itemRepository = itemRepository;
         this.modelMapper = modelMapper;
         this.nullAwareBeanUtilsBean = nullAwareBeanUtilsBean;
 
 
-        this.adminConfigurationService = adminConfigurationService;
+
     }
 
 

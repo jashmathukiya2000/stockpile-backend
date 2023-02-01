@@ -41,7 +41,6 @@ public class UserCustomRepositoryImpl implements UserCustomRepository {
 
     @Override
     public List<UserResponse> getByFilterAndSoftDeleteFalse(UserFilter userFilter) {
-
         Query query = new Query();
         Criteria criteria = new Criteria();
         criteria = criteria.and("softDelete").is(false);
@@ -103,38 +102,11 @@ public class UserCustomRepositoryImpl implements UserCustomRepository {
 
     }
 
-//    public List<AggregationOperation> getUserByOccupation(String occupation) {
-//        List<AggregationOperation> operations = new ArrayList<>();
-//        operations.add(new CustomAggregationOperation(new Document("$unwind", new Document("path", "$result"))));
-//        operations.add(new CustomAggregationOperation(new Document("$match", new Document("occupation", occupation).append("softDelete", false))));
-//        operations.add(new CustomAggregationOperation(new Document("$group", new Document("ids", "$salary")
-//                .append("auth", new Document("$push", new Document("categoryName", "$categoryName")
-//                        .append("occupation", "$occupation")
-//                        .append("age", "$age").append("email", "$email")
-//                        .append("ids", "$ids")
-//                        .append("semester", "$result.semester").append("spi", "$result.spi")))
-//                .append("count", new Document("$sum", 1))
-//                .append("categoryName", new Document("$first", "$categoryName"))
-//                .append("occuption", new Document("$last", "$occupation").append("maxSpi",
-//                        new Document("$max","$result").append("minSpi",
-//                                new Document("$min","$result")))))));
-//        operations.add(new CustomAggregationOperation(new Document("$sort", new Document("ids", 1))));
-//        operations.add(new CustomAggregationOperation(new Document("$limit", 1)));
-//        return operations;
-//    }
-
-
-//    @Override
-//    public List<OccupationResponse> getByOccupation(String occupation) {
-//        List<AggregationOperation> operations = getUserByOccupation(occupation);
-//        Aggregation aggregation = newAggregation(operations);
-//        return mongoTemplate.aggregate(aggregation, "auth", OccupationResponse.class).getMappedResults();
-//
-//    }
 
     @Override
     public Page<UserResponse> getAllUserByPagination(UserFilterData filter, FilterSortRequest.SortRequest<UserSortBy> sort, PageRequest pagination) {
         List<AggregationOperation> operations = userFilterAggregation(filter, sort, pagination, true);
+
         //Created Aggregation operation
         Aggregation aggregation = newAggregation(operations);
 
@@ -143,6 +115,7 @@ public class UserCustomRepositoryImpl implements UserCustomRepository {
 
         // Find Count
         List<AggregationOperation> operationForCount = userFilterAggregation(filter, sort, pagination, false);
+
         operationForCount.add(group().count().as("count"));
         operationForCount.add(project("count"));
         Aggregation aggregationCount = newAggregation(UserResponse.class, operationForCount);
@@ -205,6 +178,19 @@ public class UserCustomRepositoryImpl implements UserCustomRepository {
         return mongoTemplate.aggregate(aggregation, "auth", MaxSpiResponse.class).getMappedResults();
     }
 
+    public List<AggregationOperation> getByMaxSpi(String id) {
+        List<AggregationOperation> operations = new ArrayList<>();
+        operations.add(new CustomAggregationOperation(new Document("$match", new Document("_id", id).append("softDelete", false))));
+        operations.add(new CustomAggregationOperation(new Document("$group",
+                new Document("_id", "$_id")
+                        .append("auth", new Document("$push",
+                                new Document("name", "$name")
+                                        .append("maxSpi",
+                                                new Document("$max", "$result"))
+                                        .append("minSpi", new Document("$min", "$result")))))));
+        return operations;
+    }
+
     @Override
     public Page<UserSpiResponse> getUserDetailsByResultSpi(UserFilterData filter, FilterSortRequest.SortRequest<UserSortBy> sort, PageRequest pageRequest) throws JSONException {
         List<AggregationOperation> operations = userDetailsByResultSpi(filter, sort, pageRequest, true);
@@ -220,8 +206,27 @@ public class UserCustomRepositoryImpl implements UserCustomRepository {
                 userSpiResponses,
                 pageRequest,
                 () -> count);
+    }
 
+    public List<AggregationOperation> userDetailsByResultSpi(UserFilterData filter, FilterSortRequest.SortRequest<UserSortBy> sort, PageRequest pageRequest, boolean addPage) throws JSONException {
+        List<AggregationOperation> operations = new ArrayList<>();
+        String fileName = FileReader.loadFile("aggregation/ResultDetailsBySpi.json");
+        JSONObject jsonObject = new JSONObject(fileName);
+        operations.add(new CustomAggregationOperation(Document.parse(CustomAggregationOperation.getJson(jsonObject, "unwindResult", Object.class))));
+        operations.add(new CustomAggregationOperation(Document.parse(CustomAggregationOperation.getJson(jsonObject, "matchSpi", Object.class))));
+        operations.add(new CustomAggregationOperation(Document.parse(CustomAggregationOperation.getJson(jsonObject, "groupByResultSpi", Object.class))));
+        if (addPage) {
+            //sorting
+            if (sort != null && sort.getSortBy() != null && sort.getOrderBy() != null) {
+                operations.add(new SortOperation(Sort.by(sort.getOrderBy(), sort.getSortBy().getValue())));
+            }
+            if (pageRequest != null) {
+                operations.add(skip(pageRequest.getOffset()));
+                operations.add(limit(pageRequest.getPageSize()));
 
+            }
+        }
+        return operations;
     }
 
     @Override
@@ -262,40 +267,6 @@ public class UserCustomRepositoryImpl implements UserCustomRepository {
         return operations;
     }
 
-
-    public List<AggregationOperation> userDetailsByResultSpi(UserFilterData filter, FilterSortRequest.SortRequest<UserSortBy> sort, PageRequest pageRequest, boolean addPage) throws JSONException {
-        List<AggregationOperation> operations = new ArrayList<>();
-        String fileName = FileReader.loadFile("aggregation/ResultDetailsBySpi.json");
-        JSONObject jsonObject = new JSONObject(fileName);
-        operations.add(new CustomAggregationOperation(Document.parse(CustomAggregationOperation.getJson(jsonObject, "unwindResult", Object.class))));
-        operations.add(new CustomAggregationOperation(Document.parse(CustomAggregationOperation.getJson(jsonObject, "matchSpi", Object.class))));
-        operations.add(new CustomAggregationOperation(Document.parse(CustomAggregationOperation.getJson(jsonObject, "groupByResultSpi", Object.class))));
-        if (addPage) {
-            //sorting
-            if (sort != null && sort.getSortBy() != null && sort.getOrderBy() != null) {
-                operations.add(new SortOperation(Sort.by(sort.getOrderBy(), sort.getSortBy().getValue())));
-            }
-            if (pageRequest != null) {
-                operations.add(skip(pageRequest.getOffset()));
-                operations.add(limit(pageRequest.getPageSize()));
-
-            }
-        }
-        return operations;
-    }
-
-    public List<AggregationOperation> getByMaxSpi(String id) {
-        List<AggregationOperation> operations = new ArrayList<>();
-        operations.add(new CustomAggregationOperation(new Document("$match", new Document("_id", id).append("softDelete", false))));
-        operations.add(new CustomAggregationOperation(new Document("$group",
-                new Document("_id", "$_id")
-                        .append("auth", new Document("$push",
-                                new Document("name", "$name")
-                                        .append("maxSpi",
-                                                new Document("$max", "$result"))
-                                        .append("minSpi", new Document("$min", "$result")))))));
-        return operations;
-    }
 }
 
 

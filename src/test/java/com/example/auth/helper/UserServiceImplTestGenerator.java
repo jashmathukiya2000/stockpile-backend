@@ -20,7 +20,7 @@ public class UserServiceImplTestGenerator {
         return modelMapper;
     }
 
-    public static UserAddRequest getMockUserAddRequest() {
+    public static UserAddRequest getMockUserAddRequest( ) {
         return UserAddRequest.builder()
                 .firstName("sans")
                 .middleName("km")
