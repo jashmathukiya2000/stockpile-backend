@@ -11,10 +11,12 @@ import com.example.auth.decorator.user.*;
 import com.example.auth.service.ResultService;
 import com.example.auth.service.UserService;
 import org.apache.poi.ss.usermodel.Workbook;
+import org.json.JSONException;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.Resource;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -142,8 +144,8 @@ public class UserController {
 
     @RequestMapping(name = "getIdFromToken", value = "/{id}", method = RequestMethod.POST)
     @Access(levels = Role.ANONYMOUS)
-    public  TokenResponse<String> getIdFromToken(@RequestParam String token){
-        TokenResponse<String> tokenResponse= new TokenResponse<>();
+    public TokenResponse<String> getIdFromToken(@RequestParam String token) {
+        TokenResponse<String> tokenResponse = new TokenResponse<>();
         tokenResponse.setData(userService.getIdFromToken(token));
         tokenResponse.setStatus(Response.getOkResponse(ResponseConstant.OK));
         tokenResponse.setToken(token);
@@ -152,18 +154,18 @@ public class UserController {
 
     @RequestMapping(name = "getExpirationDateFromToken", value = "/expirationDate/token", method = RequestMethod.POST)
     @Access(levels = Role.ANONYMOUS)
-   public TokenResponse<Date> getExpirationDateFromToken(@RequestParam String token){
-        TokenResponse<Date> tokenResponse= new TokenResponse<>();
+    public TokenResponse<Date> getExpirationDateFromToken(@RequestParam String token) {
+        TokenResponse<Date> tokenResponse = new TokenResponse<>();
         tokenResponse.setData(userService.getExpirationDateFromToken(token));
         tokenResponse.setStatus(Response.getOkResponse());
         tokenResponse.setToken(token);
         return tokenResponse;
     }
 
-    @RequestMapping(name = "isTokenExpired",value = "/tokenExpired", method = RequestMethod.POST)
+    @RequestMapping(name = "isTokenExpired", value = "/tokenExpired", method = RequestMethod.POST)
     @Access(levels = Role.ANONYMOUS)
-    public TokenResponse<Boolean> isTokenExpired(@RequestParam String token){
-        TokenResponse<Boolean> tokenResponse= new TokenResponse<>();
+    public TokenResponse<Boolean> isTokenExpired(@RequestParam String token) {
+        TokenResponse<Boolean> tokenResponse = new TokenResponse<>();
         tokenResponse.setData(userService.isTokenExpired(token));
         tokenResponse.setStatus(Response.getOkResponse());
         tokenResponse.setToken(token);
@@ -183,26 +185,40 @@ public class UserController {
                 .contentType(MediaType.parseMediaType("application/vnd.ms-excel"))
                 .body(resource);
     }
-      @RequestMapping(name = "getAllUserByPaginationInExcel", value = "/getAll/pagination/excel", method = RequestMethod.POST)
+
+
+    @RequestMapping(name = "getUserDetailsByResultSpi", value = "/result/spi", method = RequestMethod.POST)
     @Access(levels = Role.ANONYMOUS)
-    public ResponseEntity<Resource> getAllUserByPaginationInExcel(@RequestBody FilterSortRequest<UserFilterData, UserSortBy> filterSortRequest) throws IOException, InvocationTargetException, IllegalAccessException {
-          UserFilterData filter = filterSortRequest.getFilter();
-          FilterSortRequest.SortRequest<UserSortBy> sort = filterSortRequest.getSort();
-          Pagination pagination=filterSortRequest.getPagination();
-          PageRequest pageRequest = PageRequest.of(pagination.getPage(), pagination.getLimit());
-          Workbook workbook =userService.getAllUserByPaginationInExcel(filter,sort,pageRequest);
-          assert workbook != null;
-          ByteArrayResource resource = ExcelUtils.getBiteResourceFromWorkbook(workbook);
-          return ResponseEntity.ok()
-                  .contentLength(resource.contentLength())
-                  .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + "user_purchased_bookDetail_xlsx" + "\"")
-                  .contentType(MediaType.parseMediaType("application/vnd.ms-excel"))
-                  .body(resource);
-      }
-
-
-
+    public ResponseEntity<Resource> getUserDetailsByResultSpi(@RequestBody FilterSortRequest<UserFilterData, UserSortBy> filterSortRequest) throws IOException, IllegalAccessException, JSONException, InvocationTargetException {
+        UserFilterData filter = filterSortRequest.getFilter();
+        FilterSortRequest.SortRequest<UserSortBy> sort = filterSortRequest.getSort();
+        Pagination pagination = filterSortRequest.getPagination();
+        PageRequest pageRequest = PageRequest.of(pagination.getPage(), pagination.getLimit());
+        Workbook workbook = userService.getUserDetailsByResultSpi(filter, sort, pageRequest);
+        assert workbook != null;
+        ByteArrayResource resource = ExcelUtils.getBiteResourceFromWorkbook(workbook);
+        return ResponseEntity.ok()
+                .contentLength(resource.contentLength())
+                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + "userDetail_xlsx" + "\"")
+                .contentType(MediaType.parseMediaType("application/vnd.ms-excel"))
+                .body(resource);
     }
+
+    @RequestMapping(name = "getUserEligibilityByAge", value = "/user/Age", method = RequestMethod.POST)
+    @Access(levels = Role.ANONYMOUS)
+    public PageResponse<UserEligibilityAggregation> getUserEligibilityByAge(@RequestBody FilterSortRequest<UserFilterData,UserSortBy> filterSortRequest) throws IOException, IllegalAccessException, JSONException, InvocationTargetException {
+        PageResponse<UserEligibilityAggregation> pageResponse= new PageResponse<>();
+        pageResponse.setData(userService.getUserEligibilityByAge(filterSortRequest.getFilter(),filterSortRequest.getSort(),
+                generalHelper.getPagination(filterSortRequest.getPagination().getPage(),filterSortRequest.getPagination().getLimit())));
+        pageResponse.setStatus(Response.getOkResponse());
+        return pageResponse;
+    }
+
+
+
+
+
+}
 
 
 

@@ -1,4 +1,6 @@
 package com.example.auth.decorator;
+
+import com.example.auth.decorator.user.UserSpiDataInExcel;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.poi.hssf.usermodel.HSSFCellStyle;
@@ -26,16 +28,14 @@ import static org.apache.poi.xssf.usermodel.XSSFWorkbookFactory.createWorkbook;
 public class ExcelUtils {
 
 
-
-
     private static HSSFWorkbook workbook;
 
     public static <T> Workbook createWorkbookFromData(List<T> data, String title) {
         //create new workbook
-      Workbook  workbook = new XSSFWorkbook();
-         workbook = createWorkbook();
+        Workbook workbook = new XSSFWorkbook();
+        workbook = createWorkbook();
         //create a sheet
-       Sheet  sheet = workbook.createSheet("SHEET NAME");
+        Sheet sheet = workbook.createSheet("SHEET NAME");
 
 
         //if no data then return no work
@@ -62,7 +62,7 @@ public class ExcelUtils {
         for (T record : data) {
             Row row = sheet.createRow(i++);
             setData(row, methods, record, i - 2, sheet);
-            
+
 
         }
 
@@ -123,6 +123,48 @@ public class ExcelUtils {
     }
 
 
+    public static <T> Workbook createWorkbookOnResultSpi(HashMap<String, List<UserSpiDataInExcel>> hashMap, String title) {
+        Workbook workbook = createWorkbook();
+
+        // Create A Sheet
+        Sheet sheet = workbook.createSheet("Sheet1");
+
+        // If no data then return no work needed
+        if (hashMap.size() == 0) {
+            return workbook;
+        }
+        //set title in excel sheet
+        Row topRow = sheet.createRow(0);
+        topRow.setHeight((short) -1);
+        topRow.createCell(0).setCellValue(title);
+
+        //add space 2 after than  print studentName
+        int i = topRow.getRowNum();
+
+        for (HashMap.Entry<String, List<UserSpiDataInExcel>> entry : hashMap.entrySet()) {
+            i = i + 1;
+            Row CustomerName = sheet.createRow(i);
+            //add student Name
+            CustomerName.createCell(0).setCellValue(entry.getKey());
+            CustomerName.setHeight((short) 3);
+
+            i = i + 1;
+            Row header = sheet.createRow(i);
+            List<Method> methods = setHeaders(header, UserSpiDataInExcel.class, sheet);
+            int k = 1;
+            //set data
+            for (UserSpiDataInExcel userSpiDataInExcel : entry.getValue()) {
+                i = i + 1;
+                Row row = sheet.createRow(i);
+//                sheet.autoSizeColumn(i++);
+
+                setData(row, methods, userSpiDataInExcel, k++, sheet);
+            }
+            i = i + 1;
+        }
+        return workbook;
+    }
+
     public static <T> Workbook createWorkbookOnBookDetailsData(HashMap<String, List<PurchaseLogExcelGenerator>> hashMap, String title) {
         Workbook workbook = createWorkbook();
 
@@ -135,31 +177,30 @@ public class ExcelUtils {
         }
         //set title in excel sheet
         Row topRow = sheet.createRow(0);
-        topRow.setHeight((short)-1);
         topRow.createCell(0).setCellValue(title);
 
-        //add space 2 after than  print studentName
-        int i=topRow.getRowNum();
+        //add space 2 after than  print CustomerName
+        int i = topRow.getRowNum();
 
-        for (HashMap.Entry<String,List<PurchaseLogExcelGenerator>> entry : hashMap.entrySet()){
-            i=i+1;
+        for (HashMap.Entry<String, List<PurchaseLogExcelGenerator>> entry : hashMap.entrySet()) {
+            i = i + 1;
             Row CustomerName = sheet.createRow(i);
-            //add student Name
+            //add Customer Name
             CustomerName.createCell(0).setCellValue(entry.getKey());
 
-            i=i+1;
+            i = i + 1;
             Row header = sheet.createRow(i);
             List<Method> methods = setHeaders(header, PurchaseLogExcelGenerator.class, sheet);
-            int k=1;
+            int k = 1;
             //set data
             for (PurchaseLogExcelGenerator purchaseLogExcelGenerator : entry.getValue()) {
-                i= i+1;
+                i = i + 1;
                 Row row = sheet.createRow(i);
                 setData(row, methods, purchaseLogExcelGenerator, k++, sheet);
             }
-            i=i+1;
+            i = i + 1;
         }
-        return  workbook;
+        return workbook;
     }
 
 }

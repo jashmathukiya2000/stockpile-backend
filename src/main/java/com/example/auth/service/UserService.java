@@ -1,10 +1,12 @@
 package com.example.auth.service;
 
+import com.example.auth.decorator.UserEligibilityAggregation;
 import com.example.auth.decorator.pagination.FilterSortRequest;
 import com.example.auth.decorator.pagination.UserFilterData;
 import com.example.auth.decorator.pagination.UserSortBy;
 import com.example.auth.decorator.user.*;
 import org.apache.poi.ss.usermodel.Workbook;
+import org.json.JSONException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 
@@ -39,8 +41,10 @@ public interface UserService {
 
     Workbook getAllUserInExcel() throws InvocationTargetException, IllegalAccessException;
 
+    Workbook getUserDetailsByResultSpi(UserFilterData filter, FilterSortRequest.SortRequest<UserSortBy> sort, PageRequest pageRequest) throws InvocationTargetException, IllegalAccessException, JSONException;
 
-    Workbook getAllUserByPaginationInExcel(UserFilterData filter, FilterSortRequest.SortRequest<UserSortBy> sort, PageRequest pageRequest) throws InvocationTargetException, IllegalAccessException;
+
+    Page<UserEligibilityAggregation> getUserEligibilityByAge(UserFilterData filter, FilterSortRequest.SortRequest<UserSortBy> sort, PageRequest pagination) throws JSONException;
 
 }
 

@@ -1,16 +1,19 @@
 package com.example.auth.repository;
 
+import com.example.auth.commons.decorator.FileReader;
 import com.example.auth.decorator.CustomAggregationOperation;
-import com.example.auth.decorator.UserDetailsExcelResponse;
+import com.example.auth.decorator.UserEligibilityAggregation;
 import com.example.auth.decorator.pagination.CountQueryResult;
 import com.example.auth.decorator.pagination.FilterSortRequest;
 import com.example.auth.decorator.pagination.UserFilterData;
 import com.example.auth.decorator.pagination.UserSortBy;
 import com.example.auth.decorator.user.*;
+import com.example.auth.model.User;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.poi.ss.usermodel.Workbook;
 import org.bson.Document;
+import org.json.JSONException;
+import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -25,7 +28,6 @@ import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.data.support.PageableExecutionUtils;
 import org.springframework.stereotype.Repository;
 
-import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -153,12 +155,6 @@ public class UserCustomRepositoryImpl implements UserCustomRepository {
 
     }
 
-    @Override
-    public Page<UserDetailsExcelResponse> getAllUserByPaginationInExcel(UserFilterData filter, FilterSortRequest.SortRequest<UserSortBy> sort, PageRequest pageRequest) throws InvocationTargetException, IllegalAccessException {
-
-return null;
-    }
-
 
     Criteria getCriteria(UserFilterData userFilter, List<AggregationOperation> operations) {
         Criteria criteria = new Criteria();
@@ -209,6 +205,85 @@ return null;
         return mongoTemplate.aggregate(aggregation, "auth", MaxSpiResponse.class).getMappedResults();
     }
 
+    @Override
+    public Page<UserSpiResponse> getUserDetailsByResultSpi(UserFilterData filter, FilterSortRequest.SortRequest<UserSortBy> sort, PageRequest pageRequest) throws JSONException {
+        List<AggregationOperation> operations = userDetailsByResultSpi(filter, sort, pageRequest, true);
+        Aggregation aggregation = newAggregation(operations);
+        List<UserSpiResponse> userSpiResponses = mongoTemplate.aggregate(aggregation, "auth", UserSpiResponse.class).getMappedResults();
+        List<AggregationOperation> operationList = userDetailsByResultSpi(filter, sort, pageRequest, true);
+        operationList.add(group().count().as("count"));
+        operationList.add(project("count"));
+        Aggregation aggregation1 = newAggregation(User.class, operationList);
+        AggregationResults<CountQueryResult> countQueryResults = mongoTemplate.aggregate(aggregation1, "auth", CountQueryResult.class);
+        long count = countQueryResults.getMappedResults().size() == 0 ? 0 : countQueryResults.getMappedResults().get(0).getCount();
+        return PageableExecutionUtils.getPage(
+                userSpiResponses,
+                pageRequest,
+                () -> count);
+
+
+    }
+
+    @Override
+    public Page<UserEligibilityAggregation> getUserEligibilityByAge(UserFilterData filter, FilterSortRequest.SortRequest<UserSortBy> sort, PageRequest pagination) throws JSONException {
+        List<AggregationOperation> operations = getEligibilityByAge(filter, sort, pagination, true);
+        Aggregation aggregation = newAggregation(operations);
+        List<UserEligibilityAggregation> userEligibilityAggregations = mongoTemplate.aggregate(aggregation, "auth", UserEligibilityAggregation.class).getMappedResults();
+        List<AggregationOperation> operationList = getEligibilityByAge(filter, sort, pagination, true);
+        operationList.add(group().count().as("count"));
+        operationList.add(project("count"));
+        Aggregation aggregation1 = newAggregation(UserEligibilityAggregation.class, operationList);
+        AggregationResults<CountQueryResult> countQueryResults = mongoTemplate.aggregate(aggregation1, "auth", CountQueryResult.class);
+        long count = countQueryResults.getMappedResults().size() == 0 ? 0 : countQueryResults.getMappedResults().get(0).getCount();
+        return PageableExecutionUtils.getPage(
+                userEligibilityAggregations,
+                pagination,
+                () -> count);
+
+    }
+
+    public List<AggregationOperation> getEligibilityByAge(UserFilterData filter, FilterSortRequest.SortRequest<UserSortBy> sort, PageRequest pagination, boolean addPage) throws JSONException {
+        List<AggregationOperation> operations = new ArrayList<>();
+        String fileName = FileReader.loadFile("aggregation/getUserEligibilityByAge.json");
+        JSONObject jsonObject = new JSONObject(fileName);
+        operations.add(new CustomAggregationOperation(Document.parse(CustomAggregationOperation.getJson(jsonObject, "findEligibility", Object.class))));
+        if (addPage) {
+            //sorting
+
+            if (sort != null && sort.getSortBy() != null && sort.getOrderBy() != null) {
+                operations.add(new SortOperation(Sort.by(sort.getOrderBy(), sort.getSortBy().getValue())));
+            }
+            if (pagination != null) {
+                operations.add(skip(pagination.getOffset()));
+                operations.add(limit(pagination.getPageSize()));
+
+            }
+        }
+        return operations;
+    }
+
+
+    public List<AggregationOperation> userDetailsByResultSpi(UserFilterData filter, FilterSortRequest.SortRequest<UserSortBy> sort, PageRequest pageRequest, boolean addPage) throws JSONException {
+        List<AggregationOperation> operations = new ArrayList<>();
+        String fileName = FileReader.loadFile("aggregation/ResultDetailsBySpi.json");
+        JSONObject jsonObject = new JSONObject(fileName);
+        operations.add(new CustomAggregationOperation(Document.parse(CustomAggregationOperation.getJson(jsonObject, "unwindResult", Object.class))));
+        operations.add(new CustomAggregationOperation(Document.parse(CustomAggregationOperation.getJson(jsonObject, "matchSpi", Object.class))));
+        operations.add(new CustomAggregationOperation(Document.parse(CustomAggregationOperation.getJson(jsonObject, "groupByResultSpi", Object.class))));
+        if (addPage) {
+            //sorting
+            if (sort != null && sort.getSortBy() != null && sort.getOrderBy() != null) {
+                operations.add(new SortOperation(Sort.by(sort.getOrderBy(), sort.getSortBy().getValue())));
+            }
+            if (pageRequest != null) {
+                operations.add(skip(pageRequest.getOffset()));
+                operations.add(limit(pageRequest.getPageSize()));
+
+            }
+        }
+        return operations;
+    }
+
     public List<AggregationOperation> getByMaxSpi(String id) {
         List<AggregationOperation> operations = new ArrayList<>();
         operations.add(new CustomAggregationOperation(new Document("$match", new Document("_id", id).append("softDelete", false))));
@@ -222,6 +297,7 @@ return null;
         return operations;
     }
 }
+
 
 
 

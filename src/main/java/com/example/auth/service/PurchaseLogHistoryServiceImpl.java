@@ -178,8 +178,6 @@ public class PurchaseLogHistoryServiceImpl implements PurchaseLogHistoryService 
         HashMap<String, List<PurchaseLogExcelGenerator>> hashMap = new LinkedHashMap<>();
         Page<ItemPurchaseAggregationResponse> itemPurchaseAggregationResponse = purchaseLogHistoryRepository.getPurchaseDetailsByCustomer(filter, sort, pageRequest);
         List<ItemPurchaseAggregationResponse> list = itemPurchaseAggregationResponse.getContent();
-        log.info("book Detail Excel Response:{}", list);
-
         for (ItemPurchaseAggregationResponse purchaseAggregationResponse : list) {
             List<PurchaseLogExcelGenerator> purchaseLogExcelGenerators = new ArrayList<>();
             for (ItemDetail itemDetail : purchaseAggregationResponse.getItemDetail()) {

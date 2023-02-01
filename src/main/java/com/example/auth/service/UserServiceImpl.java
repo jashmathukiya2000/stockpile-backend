@@ -7,9 +7,7 @@ import com.example.auth.commons.exception.InvalidRequestException;
 import com.example.auth.commons.exception.NotFoundException;
 import com.example.auth.commons.helper.UserHelper;
 import com.example.auth.commons.utils.JwtTokenUtil;
-import com.example.auth.decorator.ExcelUtils;
-import com.example.auth.decorator.UserDataExcel;
-import com.example.auth.decorator.UserExcelResponse;
+import com.example.auth.decorator.*;
 import com.example.auth.decorator.pagination.FilterSortRequest;
 import com.example.auth.decorator.pagination.UserFilterData;
 import com.example.auth.decorator.pagination.UserSortBy;
@@ -20,6 +18,7 @@ import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.poi.ss.usermodel.Workbook;
+import org.json.JSONException;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -149,22 +148,30 @@ public class UserServiceImpl implements UserService {
 
 
     @Override
-    public Workbook getAllUserByPaginationInExcel(UserFilterData filter, FilterSortRequest.SortRequest<UserSortBy> sort, PageRequest pageRequest) throws InvocationTargetException, IllegalAccessException {
-        HashMap<String, List<UserDataExcel>> hashMap = new LinkedHashMap<>();
-        Page<UserResponse> page = userRepository.getAllUserByPagination(filter, sort, pageRequest);
-        List<UserResponse> list = page.getContent();
-        List<UserDataExcel> list1 = new ArrayList<>();
-        if (!CollectionUtils.isEmpty(list)) {
-            for (UserResponse response : list) {
-                UserDataExcel userDataExcel = new UserDataExcel();
-                nullAwareBeanUtilsBean.copyProperties(userDataExcel, response);
-                list1.add(userDataExcel);
+    public Workbook getUserDetailsByResultSpi(UserFilterData filter, FilterSortRequest.SortRequest<UserSortBy> sort, PageRequest pageRequest) throws InvocationTargetException, IllegalAccessException, JSONException {
+        HashMap<String, List<UserSpiDataInExcel>> hashMap = new LinkedHashMap<>();
+        Page<UserSpiResponse> page = userRepository.getUserDetailsByResultSpi(filter, sort, pageRequest);
+        List<UserSpiResponse> list = page.getContent();
+        for (UserSpiResponse userSpiResponse : list) {
+            List<UserSpiDataInExcel> userSpiDataInExcels = new ArrayList<>();
+            for (UserSpiData userSpiData : userSpiResponse.getAuth()) {
+                UserSpiDataInExcel userSpiDataInExcel = new UserSpiDataInExcel();
+                nullAwareBeanUtilsBean.copyProperties(userSpiDataInExcel, userSpiData);
+                userSpiDataInExcels.add(userSpiDataInExcel);
+
             }
+            hashMap.put(userSpiResponse.get_id(), userSpiDataInExcels);
         }
-        return ExcelUtils.createWorkbookFromData(list, "UserByPagination");
-
-
+        Workbook workbook = ExcelUtils.createWorkbookOnResultSpi(hashMap, "UserDetailsBySpi");
+        return workbook;
     }
+
+    @Override
+    public Page<UserEligibilityAggregation> getUserEligibilityByAge(UserFilterData filter, FilterSortRequest.SortRequest<UserSortBy> sort, PageRequest pagination) throws JSONException {
+        return userRepository.getUserEligibilityByAge(filter,sort,pagination);
+    }
+
+
     @Override
     public List<UserResponse> getUserByAge(UserFilter userFilter) {
         return userRepository.getByFilterAndSoftDeleteFalse(userFilter);
@@ -184,7 +191,6 @@ public class UserServiceImpl implements UserService {
     public List<MaxSpiResponse> getUserByMaxSpi(String id) {
         return userRepository.getUserByMaxSpi(id);
     }
-
 
 
     public User getUserModel(String id) {

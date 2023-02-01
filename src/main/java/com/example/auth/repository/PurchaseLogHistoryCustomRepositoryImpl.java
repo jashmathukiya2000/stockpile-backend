@@ -265,7 +265,6 @@ public class PurchaseLogHistoryCustomRepositoryImpl implements PurchaseLogHistor
         return operations;
 
     }
-
     public List<AggregationOperation> getDetailsByCustomerName() {
         List<AggregationOperation> operations = new ArrayList<>();
         Criteria criteria = new Criteria();
