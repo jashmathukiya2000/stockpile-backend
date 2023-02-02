@@ -29,6 +29,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
 import java.io.File;
+import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.util.*;
 
@@ -54,30 +55,22 @@ public class UserServiceImpl implements UserService {
         this.utils = utils;
     }
 
+    @Override
+    public UserResponse addUser(UserAddRequest userAddRequest) {
+        User user = modelMapper.map(userAddRequest, User.class);
+        user.setFullName(userHelper.getFullName(user));
+        UserResponse userResponse1 = modelMapper.map(user, UserResponse.class);
+        userRepository.save(user);
+        return userResponse1;
+    }
 
     @Override
-    public UserResponse addOrUpdateUser(String id, UserAddRequest userAddRequest) throws InvocationTargetException, IllegalAccessException {
-        if (id != null) {
-            User user1 = getUserModel(id);
-            user1.setFirstName(userAddRequest.getFirstName());
-            user1.setMiddleName(userAddRequest.getMiddleName());
-            user1.setLastName(userAddRequest.getLastName());
-            user1.setFullName(userHelper.getFullName(user1));
-            user1.setAge(userAddRequest.getAge());
-            user1.setEmail(userAddRequest.getEmail());
-            user1.setOccupation(userAddRequest.getOccupation());
-            user1.setSalary(userAddRequest.getSalary());
-            user1.setAddress(userAddRequest.getAddress());
-            nullAwareBeanUtilsBean.copyProperties(user1, userAddRequest);
-            userRepository.save(user1);
-            return modelMapper.map(user1, UserResponse.class);
-        } else {
-            User user = modelMapper.map(userAddRequest, User.class);
-            user.setFullName(userHelper.getFullName(user));
-            UserResponse userResponse1 = modelMapper.map(user, UserResponse.class);
-            userRepository.save(user);
-            return userResponse1;
-        }
+    public void updateUser(String id, UserAddRequest userAddRequest) throws InvocationTargetException, IllegalAccessException {
+        User user1 = getUserModel(id);
+        HashMap<String, String> changedProperties = new HashMap<>();
+        update(id, userAddRequest);
+        difference(userAddRequest, user1, changedProperties);
+
     }
 
     @Override
@@ -246,17 +239,53 @@ public class UserServiceImpl implements UserService {
         return userRepository.findByIdAndSoftDeleteIsFalse(id).orElseThrow(() -> new NotFoundException(MessageConstant.USER_ID_NOT_FOUND));
     }
 
-    public void update(String id, UserAddRequest userAddRequest){
-        User user= getUserModel(id);
-        if (userAddRequest.getFirstName()!=null){
+    public void update(String id, UserAddRequest userAddRequest) {
+        User user = getUserModel(id);
+        if (userAddRequest.getFirstName() != null) {
             user.setFirstName(userAddRequest.getFirstName());
         }
-        if (userAddRequest.getEmail()!=null){
+        if (userAddRequest.getEmail() != null) {
             user.setEmail(userAddRequest.getEmail());
         }
-        if (userAddRequest.getOccupation()!=null){
+        if (userAddRequest.getOccupation() != null) {
             user.setOccupation(userAddRequest.getOccupation());
+        }
+        if (userAddRequest.getAddress() != null) {
+            user.setAddress(userAddRequest.getAddress());
+        }
+        if (userAddRequest.getSalary() > 0) {
+            user.setSalary(userAddRequest.getSalary());
+
+        }
+        if (userAddRequest.getMiddleName() != null) {
+            user.setMiddleName(userAddRequest.getMiddleName());
+        }
+        if (userAddRequest.getAge() > 0) {
+            user.setAge(userAddRequest.getAge());
+        }
+        if (userAddRequest.getLastName() != null) {
+            user.setLastName(userAddRequest.getLastName());
+        }
+        userRepository.save(user);
+
+    }
+
+    public void difference(UserAddRequest userAddRequest, User user, HashMap<String, String> changedProperties) throws InvocationTargetException, IllegalAccessException {
+        User user1 = new User();
+        nullAwareBeanUtilsBean.copyProperties(user1, userAddRequest);
+        user1.setId(user.getId());
+        for (Field field : user.getClass().getDeclaredFields()) {
+            field.setAccessible(true);
+            Object value = field.get(user);
+            Object value1 = field.get(user1);
+            if (value != null && value1 != null) {
+                if (!Objects.equals(value, value1)) {
+                    changedProperties.put(field.getName(), value1.toString());
+                }
+            }
         }
     }
 
 }
+
+

@@ -40,12 +40,21 @@ public class UserController {
         this.generalHelper = generalHelper;
     }
 
-    @RequestMapping(name = "addOrUpdateUser", value = "/add", method = RequestMethod.POST)
+    @RequestMapping(name = "addUser", value = "/add", method = RequestMethod.POST)
     @Access(levels = Role.ADMIN)
-    public DataResponse<UserResponse> addOrUpdateUser(@RequestParam(required = false) String id, @RequestBody UserAddRequest userAddRequest) throws InvocationTargetException, IllegalAccessException {
+    public DataResponse<UserResponse> addUser( @RequestBody UserAddRequest userAddRequest) throws InvocationTargetException, IllegalAccessException {
         DataResponse<UserResponse> dataResponse = new DataResponse<>();
-        dataResponse.setData(userService.addOrUpdateUser(id, userAddRequest));
+        dataResponse.setData(userService.addUser(userAddRequest));
         dataResponse.setStatus(Response.getOkResponse(ResponseConstant.SAVED_SUCCESSFULLY));
+        return dataResponse;
+
+    }
+    @RequestMapping(name = "updateUser", value = "/update", method = RequestMethod.POST)
+    @Access(levels = Role.ADMIN)
+    public DataResponse<UserResponse> updateUser(@RequestParam String id, @RequestBody UserAddRequest userAddRequest) throws InvocationTargetException, IllegalAccessException {
+        DataResponse<UserResponse> dataResponse = new DataResponse<>();
+        userService.updateUser(id, userAddRequest);
+        dataResponse.setStatus(Response.getOkResponse(ResponseConstant.UPDATED_SUCCESSFULLY));
         return dataResponse;
     }
 

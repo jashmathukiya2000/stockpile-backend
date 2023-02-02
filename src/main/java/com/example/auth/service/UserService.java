@@ -15,7 +15,7 @@ import java.util.Date;
 import java.util.List;
 
 public interface UserService {
-    UserResponse addOrUpdateUser(String id, UserAddRequest userAddRequest) throws InvocationTargetException, IllegalAccessException;
+    UserResponse addUser(UserAddRequest userAddRequest) throws InvocationTargetException, IllegalAccessException;
 
     List<UserResponse> getAllUser();
 
@@ -45,6 +45,9 @@ public interface UserService {
 
 
     Page<UserEligibilityAggregation> getUserEligibilityByAge(UserFilterData filter, FilterSortRequest.SortRequest<UserSortBy> sort, PageRequest pagination) throws JSONException;
+
+    void updateUser(String id, UserAddRequest userAddRequest) throws InvocationTargetException, IllegalAccessException;
+
 
 }
 
