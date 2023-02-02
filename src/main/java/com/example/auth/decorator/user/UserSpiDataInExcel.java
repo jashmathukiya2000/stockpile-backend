@@ -13,6 +13,9 @@ public class UserSpiDataInExcel {
     String name;
     String email;
     String semester;
+    int sum;
+    int count;
+    int average;
 
 
     @ExcelField(excelHeader = "Id",position = 2)

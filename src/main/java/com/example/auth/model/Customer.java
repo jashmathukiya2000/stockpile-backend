@@ -32,14 +32,15 @@ Customer {
 
     String password;
 
-    Date date;
+     Date date;
 
-    String otp;
+     String otp;
 
-    Date  otpSendtime;
-    Date loginTime;
+     Date  otpSendtime;
 
-    Date logoutTime;
+     Date loginTime;
+
+     Date logoutTime;
 
    @JsonIgnore
     boolean login;

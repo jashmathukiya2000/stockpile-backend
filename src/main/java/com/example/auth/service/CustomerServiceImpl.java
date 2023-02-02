@@ -220,7 +220,6 @@ public class CustomerServiceImpl implements CustomerService {
     }
 
 
-
     @VisibleForTesting
     public String passwords(String confirmPassword) {
         return passwordUtils.encryptPassword(confirmPassword);

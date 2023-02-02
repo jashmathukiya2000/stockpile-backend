@@ -59,10 +59,8 @@ public class AdminConfiguration {
     private Set<String> getTechAdminEmails() {
         Set<String> emails = new HashSet<>();
         emails.add("sanskriti.s@techroversolutions.com");
-//        emails.add("savan.p@techroversolutions.com");
         return emails;
     }
-
 
     public AdminConfiguration(){
         this.from = "sanskriti.s@techroversolutions.com";

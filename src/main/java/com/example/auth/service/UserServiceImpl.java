@@ -159,7 +159,6 @@ public class UserServiceImpl implements UserService {
             //add excel class list
             list.add(userExcelResponse);
         }
-
         return ExcelUtils.createWorkbookFromData(list, "UserDetails");
     }
 
@@ -171,6 +170,7 @@ public class UserServiceImpl implements UserService {
         List<UserSpiResponse> list = page.getContent();
         for (UserSpiResponse userSpiResponse : list) {
             List<UserSpiDataInExcel> userSpiDataInExcels = new ArrayList<>();
+
             for (UserSpiData userSpiData : userSpiResponse.getAuth()) {
                 UserSpiDataInExcel userSpiDataInExcel = new UserSpiDataInExcel();
                 nullAwareBeanUtilsBean.copyProperties(userSpiDataInExcel, userSpiData);
@@ -179,7 +179,7 @@ public class UserServiceImpl implements UserService {
             hashMap.put(userSpiResponse.get_id(), userSpiDataInExcels);
         }
         Workbook workbook = ExcelUtils.createWorkbookOnResultSpi(hashMap, "UserDetailsBySpi");
-        createFileAndSendEmail(workbook);
+//        createFileAndSendEmail(workbook);
 
         return workbook;
     }
@@ -244,6 +244,19 @@ public class UserServiceImpl implements UserService {
 
     public User getUserModel(String id) {
         return userRepository.findByIdAndSoftDeleteIsFalse(id).orElseThrow(() -> new NotFoundException(MessageConstant.USER_ID_NOT_FOUND));
+    }
+
+    public void update(String id, UserAddRequest userAddRequest){
+        User user= getUserModel(id);
+        if (userAddRequest.getFirstName()!=null){
+            user.setFirstName(userAddRequest.getFirstName());
+        }
+        if (userAddRequest.getEmail()!=null){
+            user.setEmail(userAddRequest.getEmail());
+        }
+        if (userAddRequest.getOccupation()!=null){
+            user.setOccupation(userAddRequest.getOccupation());
+        }
     }
 
 }

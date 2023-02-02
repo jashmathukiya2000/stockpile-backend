@@ -11,7 +11,6 @@ import org.apache.poi.ss.util.CellUtil;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.stereotype.Component;
-
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.lang.reflect.Method;
@@ -45,8 +44,7 @@ public class ExcelUtils {
 
         Row topRow = sheet.createRow(0);
         Row headerRow = sheet.createRow(1);
-//        headerRow.setHeight((short)1);
-//        topRow.setHeight((short)1);
+
 
         //set title in excel file
         topRow.createCell(0).setCellValue(title);
@@ -61,7 +59,7 @@ public class ExcelUtils {
         int i = 2;
         for (T record : data) {
             Row row = sheet.createRow(i++);
-            setData(row, methods, record, i - 2, sheet);
+            setData(row, methods, record, i , sheet);
 
 
         }
@@ -82,6 +80,7 @@ public class ExcelUtils {
                     cellValue = "";
                 }
                 cell.setCellValue(cellValue.toString().replaceAll("null", ""));
+                row.getSheet().autoSizeColumn(index-1);
                 CellUtil.setAlignment(cell, HorizontalAlignment.CENTER);
             } catch (Exception ignored) {
             }
@@ -107,10 +106,8 @@ public class ExcelUtils {
             cell = headerRow.createCell(i++);
             cell.setCellValue(excelField.excelHeader());
             headerRow.createCell(excelField.position());
-            sheet.autoSizeColumn(excelField.position());
-//           for ( i=0; i<headerRow.getHeight(); i++){
-//                sheet.autoSizeColumn(i);
-//              }
+               headerRow.getSheet().autoSizeColumn(i);
+
             CellUtil.setAlignment(cell, HorizontalAlignment.CENTER);
         }
         return methods;
@@ -135,7 +132,6 @@ public class ExcelUtils {
         }
         //set title in excel sheet
         Row topRow = sheet.createRow(0);
-        topRow.setHeight((short) -1);
         topRow.createCell(0).setCellValue(title);
 
         //add space 2 after than  print studentName
@@ -146,7 +142,7 @@ public class ExcelUtils {
             Row CustomerName = sheet.createRow(i);
             //add student Name
             CustomerName.createCell(0).setCellValue(entry.getKey());
-            CustomerName.setHeight((short) 3);
+
 
             i = i + 1;
             Row header = sheet.createRow(i);
@@ -156,7 +152,7 @@ public class ExcelUtils {
             for (UserSpiDataInExcel userSpiDataInExcel : entry.getValue()) {
                 i = i + 1;
                 Row row = sheet.createRow(i);
-//                sheet.autoSizeColumn(i++);
+
 
                 setData(row, methods, userSpiDataInExcel, k++, sheet);
             }
