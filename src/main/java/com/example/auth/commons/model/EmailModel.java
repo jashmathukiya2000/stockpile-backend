@@ -23,6 +23,7 @@ public class EmailModel {
     String templateName;
     Set<String> bcc;
     Set<String> cc;
+    String body;
     File file;
 
 }

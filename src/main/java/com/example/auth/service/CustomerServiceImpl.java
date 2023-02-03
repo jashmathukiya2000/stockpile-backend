@@ -253,14 +253,15 @@ public class CustomerServiceImpl implements CustomerService {
         }
     }
 
-    public Customer getUserByEmail(String email) {
+     public Customer getUserByEmail(String email) {
         return customerRepository.findUserByEmailAndSoftDeleteIsFalse(email).orElseThrow(() -> new NotFoundException(MessageConstant.USER_NOT_FOUND));
+     }
+
+     public Customer getById(String id) {
+         return customerRepository.findByIdAndSoftDeleteIsFalse(id).orElseThrow(() -> new NotFoundException(MessageConstant.USER_NOT_FOUND));
+
     }
 
-    public Customer getById(String id) {
-        return customerRepository.findByIdAndSoftDeleteIsFalse(id).orElseThrow(() -> new NotFoundException(MessageConstant.USER_NOT_FOUND));
-
-    }
 
 
 }

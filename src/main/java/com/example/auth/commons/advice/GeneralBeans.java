@@ -5,6 +5,7 @@ import com.example.auth.commons.decorator.RequestSession;
 import com.example.auth.commons.helper.UserHelper;
 import com.example.auth.decorator.Response;
 import com.example.auth.decorator.pagination.Pagination;
+import com.example.auth.model.CanvasjsChartData;
 import com.example.auth.model.PurchaseLogHistory;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.convention.MatchingStrategies;
@@ -77,6 +78,11 @@ import org.springframework.web.util.UriTemplateHandler;
             return new UserHelper();
         }
 
+        @Bean
+        public CanvasjsChartData getCanvasjsChartData()
+        {
+            return new CanvasjsChartData();
+        }
 //        @Bean
 //        public RabbitListenerContainerFactory<SimpleMessageListenerContainer> prefetchTenRabbitListenerContainerFactory(ConnectionFactory rabbitConnectionFactory) {
 //            SimpleRabbitListenerContainerFactory factory = new SimpleRabbitListenerContainerFactory();

@@ -52,10 +52,10 @@ public class PurchaseLogHistoryServiceImplTestGenerator {
     }
 
 
-    public static PurchaseLogHistoryAddRequest mockPurchaseLogHistoryAddRequest() {
+    public static PurchaseLogHistoryAddRequest mockPurchaseLogHistoryAddRequest(Item item) {
         return PurchaseLogHistoryAddRequest
                 .builder()
-                .quantity(5)
+                .quantity(item.getQuantity())
                 .build();
 
     }
@@ -120,6 +120,12 @@ public class PurchaseLogHistoryServiceImplTestGenerator {
                 .price(12000)
                 .quantity(5)
                 .totalPrice(57000)
+                .build();
+    }
+
+    public static Item item(){
+        return Item.builder()
+                .quantity(5)
                 .build();
     }
 

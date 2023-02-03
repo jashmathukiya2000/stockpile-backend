@@ -2,12 +2,14 @@ package com.example.auth.service;
 
 import com.example.auth.commons.advice.NullAwareBeanUtilsBean;
 import com.example.auth.commons.exception.NotFoundException;
+import com.example.auth.commons.helper.UserHelper;
 import com.example.auth.decorator.PurchaseLogHistoryResponse;
 import com.example.auth.decorator.pagination.FilterSortRequest;
 import com.example.auth.decorator.pagination.Pagination;
 import com.example.auth.decorator.pagination.PurchaseLogFilter;
 import com.example.auth.decorator.pagination.PurchaseLogSortBy;
 import com.example.auth.helper.PurchaseLogHistoryServiceImplTestGenerator;
+import com.example.auth.model.Item;
 import com.example.auth.repository.CustomerRepository;
 import com.example.auth.repository.ItemRepository;
 import com.example.auth.repository.PurchaseLogHistoryRepository;
@@ -20,7 +22,6 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 
-import java.lang.reflect.InvocationTargetException;
 import java.util.Date;
 
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -36,16 +37,18 @@ class PurchaseLogHistoryResponseServiceImplTest {
     private final NullAwareBeanUtilsBean nullAwareBeanUtilsBean = mock(NullAwareBeanUtilsBean.class);
     private final ItemService itemService=mock(ItemService.class);
     private final ItemRepository itemRepository=mock(ItemRepository.class);
+    private final UserHelper userHelper=mock(UserHelper.class);
 
-    private final PurchaseLogHistoryServiceImpl purchaseLogHistoryService = spy(new PurchaseLogHistoryServiceImpl(purchaseLogHistoryRepository, modelMapper, customerRepository, nullAwareBeanUtilsBean,itemRepository,itemService));
+    private final PurchaseLogHistoryServiceImpl purchaseLogHistoryService = spy(new PurchaseLogHistoryServiceImpl(purchaseLogHistoryRepository, modelMapper, customerRepository, nullAwareBeanUtilsBean,itemRepository,itemService,userHelper));
 
     @Test
     void testAddPurchaseLogHistory() {
         //given
+        var item=PurchaseLogHistoryServiceImplTestGenerator.item();
         Date date = purchaseLogHistoryService.currentDate();
         var customer = PurchaseLogHistoryServiceImplTestGenerator.mockCustomer();
         var purchaseLogHistory = PurchaseLogHistoryServiceImplTestGenerator.mockPurchaseLogHistory(date);
-        var purchaseLogAddRequest = PurchaseLogHistoryServiceImplTestGenerator.mockPurchaseLogHistoryAddRequest();
+        var purchaseLogAddRequest = PurchaseLogHistoryServiceImplTestGenerator.mockPurchaseLogHistoryAddRequest(item);
         var purchaseLogResponse = PurchaseLogHistoryServiceImplTestGenerator.mockPurchaseLogHistoryResponse(date, customerId);
 
         doReturn(date).when(purchaseLogHistoryService).currentDate();
@@ -66,7 +69,7 @@ class PurchaseLogHistoryResponseServiceImplTest {
         //given
         var customer = PurchaseLogHistoryServiceImplTestGenerator.mockCustomer();
 
-        var purchaseLogAddRequest = PurchaseLogHistoryServiceImplTestGenerator.mockPurchaseLogHistoryAddRequest();
+        var purchaseLogAddRequest = PurchaseLogHistoryServiceImplTestGenerator.mockPurchaseLogHistoryAddRequest(null);
 
         when(customerRepository.findByIdAndSoftDeleteIsFalse(customerId)).thenReturn(java.util.Optional.ofNullable(customer));
 

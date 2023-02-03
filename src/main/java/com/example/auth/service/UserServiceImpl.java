@@ -1,5 +1,6 @@
 package com.example.auth.service;
 
+import com.example.auth.commons.FileLoader;
 import com.example.auth.commons.JWTUser;
 import com.example.auth.commons.advice.NullAwareBeanUtilsBean;
 import com.example.auth.commons.constant.MessageConstant;
@@ -35,7 +36,6 @@ import java.util.*;
 
 @Slf4j
 @Service
-
 public class UserServiceImpl implements UserService {
     private final ModelMapper modelMapper;
     private final UserRepository userRepository;
@@ -65,13 +65,15 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public void updateUser(String id, UserAddRequest userAddRequest) throws InvocationTargetException, IllegalAccessException {
+    public void updateUser(String id, UserAddRequest userAddRequest) throws InvocationTargetException, IllegalAccessException, NoSuchFieldException {
         User user1 = getUserModel(id);
-        HashMap<String, String> changedProperties = new HashMap<>();
         update(id, userAddRequest);
-        difference(userAddRequest, user1, changedProperties);
+        userHelper.difference(userAddRequest, user1);
+//       difference(userAddRequest, user1);
+
 
     }
+
 
     @Override
     public List<UserResponse> getAllUser() {
@@ -161,19 +163,20 @@ public class UserServiceImpl implements UserService {
         HashMap<String, List<UserSpiDataInExcel>> hashMap = new LinkedHashMap<>();
         Page<UserSpiResponse> page = userRepository.getUserDetailsByResultSpi(filter, sort, pageRequest);
         List<UserSpiResponse> list = page.getContent();
-        for (UserSpiResponse userSpiResponse : list) {
+        list.forEach(userSpiResponse -> {
             List<UserSpiDataInExcel> userSpiDataInExcels = new ArrayList<>();
-
-            for (UserSpiData userSpiData : userSpiResponse.getAuth()) {
+            userSpiResponse.getAuth().forEach(userSpiData -> {
                 UserSpiDataInExcel userSpiDataInExcel = new UserSpiDataInExcel();
-                nullAwareBeanUtilsBean.copyProperties(userSpiDataInExcel, userSpiData);
+                try {
+                    nullAwareBeanUtilsBean.copyProperties(userSpiDataInExcel, userSpiData);
+                } catch (IllegalAccessException | InvocationTargetException e) {
+                    throw new RuntimeException(e);
+                }
                 userSpiDataInExcels.add(userSpiDataInExcel);
-            }
+            });
             hashMap.put(userSpiResponse.get_id(), userSpiDataInExcels);
-        }
+        });
         Workbook workbook = ExcelUtils.createWorkbookOnResultSpi(hashMap, "UserDetailsBySpi");
-//        createFileAndSendEmail(workbook);
-
         return workbook;
     }
 
@@ -207,6 +210,12 @@ public class UserServiceImpl implements UserService {
             log.error("Error happened while sending result to user :{}", e.getMessage());
         }
     }
+
+
+
+
+
+
 
     @Override
     public Page<UserEligibilityAggregation> getUserEligibilityByAge(UserFilterData filter, FilterSortRequest.SortRequest<UserSortBy> sort, PageRequest pagination) throws JSONException {
@@ -243,6 +252,7 @@ public class UserServiceImpl implements UserService {
         User user = getUserModel(id);
         if (userAddRequest.getFirstName() != null) {
             user.setFirstName(userAddRequest.getFirstName());
+            user.setFullName(userHelper.getFullName(user));
         }
         if (userAddRequest.getEmail() != null) {
             user.setEmail(userAddRequest.getEmail());
@@ -268,22 +278,6 @@ public class UserServiceImpl implements UserService {
         }
         userRepository.save(user);
 
-    }
-
-    public void difference(UserAddRequest userAddRequest, User user, HashMap<String, String> changedProperties) throws InvocationTargetException, IllegalAccessException {
-        User user1 = new User();
-        nullAwareBeanUtilsBean.copyProperties(user1, userAddRequest);
-        user1.setId(user.getId());
-        for (Field field : user.getClass().getDeclaredFields()) {
-            field.setAccessible(true);
-            Object value = field.get(user);
-            Object value1 = field.get(user1);
-            if (value != null && value1 != null) {
-                if (!Objects.equals(value, value1)) {
-                    changedProperties.put(field.getName(), value1.toString());
-                }
-            }
-        }
     }
 
 }

@@ -16,11 +16,12 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.List;
+import java.util.Map;
 
 public interface PurchaseLogHistoryService {
     PurchaseLogHistoryResponse addPurchaseLog(PurchaseLogHistoryAddRequest purchaseLogHistoryAddRequest, String customerId,String itemName);
 
-    Object updatePurchaseLog(PurchaseLogHistoryAddRequest purchaseLogHistoryAddRequest, String id) throws InvocationTargetException, IllegalAccessException;
+    void updatePurchaseLog(PurchaseLogHistoryAddRequest purchaseLogHistoryAddRequest, String id) throws InvocationTargetException, IllegalAccessException, NoSuchFieldException;
 
     PurchaseLogHistoryResponse getPurchaseLogById(String id);
 
@@ -49,5 +50,9 @@ public interface PurchaseLogHistoryService {
 
 
     Workbook getPurchaseDetailsByCustomer(PurchaseLogFilter filter, FilterSortRequest.SortRequest<PurchaseLogSortBy> sort, PageRequest pageRequest) throws InvocationTargetException, IllegalAccessException, JSONException;
+
+//    List<List<Map<Object, Object>>> getCanvasjsChartData();
+
+
 }
 

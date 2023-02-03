@@ -21,6 +21,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -31,6 +32,7 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("purchaseLogHistory")
@@ -55,9 +57,9 @@ public class PurchaseLogHistoryController {
 
     @RequestMapping(name = "updatePurchaseLogHistory", value = "/update/{id}", method = RequestMethod.POST)
     @Access (levels = Role.ADMIN)
-    public DataResponse<Object> updatePurchaseLog(@RequestBody PurchaseLogHistoryAddRequest purchaseLogHistoryAddRequest, @RequestParam String id) throws InvocationTargetException, IllegalAccessException {
+    public DataResponse<Object> updatePurchaseLog(@RequestBody PurchaseLogHistoryAddRequest purchaseLogHistoryAddRequest, @RequestParam String id) throws InvocationTargetException, IllegalAccessException, NoSuchFieldException {
         DataResponse<Object> dataResponse = new DataResponse<>();
-        dataResponse.setData(purchaseLogHistoryService.updatePurchaseLog(purchaseLogHistoryAddRequest, id));
+        purchaseLogHistoryService.updatePurchaseLog(purchaseLogHistoryAddRequest, id);
         dataResponse.setStatus(Response.getOkResponse(ResponseConstant.UPDATED_SUCCESSFULLY));
         return dataResponse;
     }
@@ -198,9 +200,14 @@ public class PurchaseLogHistoryController {
               .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + "purchased_Log_History_xlsx" + "\"")
               .contentType(MediaType.parseMediaType("application/vnd.ms-excel"))
               .body(resource);
-
-
     }
 
+//    @RequestMapping(name = "purchaseLogHistoryChart",value = "/chart",method = RequestMethod.GET)
+//    @Access (levels = Role.ANONYMOUS)
+//    public String springMVC(ModelMap modelMap) {
+//        List<List<Map<Object, Object>>> canvasjsDataList = purchaseLogHistoryService.getCanvasjsChartData();
+//        modelMap.addAttribute("dataPointsList", canvasjsDataList);
+//        return "chart";
+//    }
 
 }

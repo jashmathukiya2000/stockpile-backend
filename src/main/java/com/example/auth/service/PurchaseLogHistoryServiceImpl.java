@@ -1,17 +1,16 @@
 package com.example.auth.service;
 
+import com.example.auth.commons.FileLoader;
 import com.example.auth.commons.advice.NullAwareBeanUtilsBean;
 import com.example.auth.commons.constant.MessageConstant;
 import com.example.auth.commons.exception.InvalidRequestException;
 import com.example.auth.commons.exception.NotFoundException;
+import com.example.auth.commons.helper.UserHelper;
 import com.example.auth.decorator.*;
 import com.example.auth.decorator.pagination.FilterSortRequest;
 import com.example.auth.decorator.pagination.PurchaseLogFilter;
 import com.example.auth.decorator.pagination.PurchaseLogSortBy;
-import com.example.auth.model.Customer;
-import com.example.auth.model.ExcelHelper;
-import com.example.auth.model.Item;
-import com.example.auth.model.PurchaseLogHistory;
+import com.example.auth.model.*;
 import com.example.auth.repository.CustomerRepository;
 import com.example.auth.repository.ItemRepository;
 import com.example.auth.repository.PurchaseLogHistoryRepository;
@@ -26,7 +25,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
-import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.util.*;
 
@@ -39,15 +37,21 @@ public class PurchaseLogHistoryServiceImpl implements PurchaseLogHistoryService 
     private final NullAwareBeanUtilsBean nullAwareBeanUtilsBean;
     private final ItemRepository itemRepository;
     private final ItemService itemService;
+    private final UserHelper userHelper;
 
-    public PurchaseLogHistoryServiceImpl(PurchaseLogHistoryRepository purchaseLogHistoryRepository, ModelMapper modelMapper, CustomerRepository customerRepository, NullAwareBeanUtilsBean nullAwareBeanUtilsBean, ItemRepository itemRepository, ItemService itemService) {
+
+    public PurchaseLogHistoryServiceImpl(PurchaseLogHistoryRepository purchaseLogHistoryRepository, ModelMapper modelMapper, CustomerRepository customerRepository, NullAwareBeanUtilsBean nullAwareBeanUtilsBean, ItemRepository itemRepository, ItemService itemService, UserHelper userHelper) {
         this.purchaseLogHistoryRepository = purchaseLogHistoryRepository;
         this.modelMapper = modelMapper;
         this.customerRepository = customerRepository;
         this.nullAwareBeanUtilsBean = nullAwareBeanUtilsBean;
         this.itemRepository = itemRepository;
         this.itemService = itemService;
+        this.userHelper = userHelper;
+
     }
+
+
 
     @Override
     public PurchaseLogHistoryResponse addPurchaseLog(PurchaseLogHistoryAddRequest purchaseLogHistoryAddRequest, String customerId, String itemName) {
@@ -73,6 +77,7 @@ public class PurchaseLogHistoryServiceImpl implements PurchaseLogHistoryService 
 
     }
 
+
     public void setItemTotalPrice(String itemName, PurchaseLogHistory purchaseLogHistory) {
         Item item = itemRepository.findByItemNameAndSoftDeleteIsFalse(itemName);
         item.setQuantity(item.getQuantity() - purchaseLogHistory.getQuantity());
@@ -87,12 +92,11 @@ public class PurchaseLogHistoryServiceImpl implements PurchaseLogHistoryService 
     }
 
     @Override
-    public Object updatePurchaseLog(PurchaseLogHistoryAddRequest purchaseLogHistoryAddRequest, String id) throws InvocationTargetException, IllegalAccessException {
+    public void updatePurchaseLog(PurchaseLogHistoryAddRequest purchaseLogHistoryAddRequest, String id) throws InvocationTargetException, IllegalAccessException, NoSuchFieldException {
         PurchaseLogHistory purchaseLogHistory = getItemPurchaseLogById(id);
-        HashMap<String, String> changedProperties = new HashMap<>();
         updatePurchaseLogHistory(id, purchaseLogHistoryAddRequest);
-        difference(purchaseLogHistory, purchaseLogHistoryAddRequest, changedProperties);
-        return null;
+        userHelper.difference(purchaseLogHistory, purchaseLogHistoryAddRequest);
+
     }
 
     @Override
@@ -173,25 +177,37 @@ public class PurchaseLogHistoryServiceImpl implements PurchaseLogHistoryService 
         return ExcelUtils.createWorkbookFromData(purchaseLogHistoryByMonthInExcel, "Purchse details by month" + filter.getMonth());
     }
 
+
     @Override
     public Workbook getPurchaseDetailsByCustomer(PurchaseLogFilter filter, FilterSortRequest.SortRequest<PurchaseLogSortBy> sort, PageRequest pageRequest) throws InvocationTargetException, IllegalAccessException, JSONException {
         HashMap<String, List<PurchaseLogExcelGenerator>> hashMap = new LinkedHashMap<>();
         Page<ItemPurchaseAggregationResponse> itemPurchaseAggregationResponse = purchaseLogHistoryRepository.getPurchaseDetailsByCustomer(filter, sort, pageRequest);
         List<ItemPurchaseAggregationResponse> list = itemPurchaseAggregationResponse.getContent();
-        for (ItemPurchaseAggregationResponse purchaseAggregationResponse : list) {
+        list.forEach(purchaseAggregationResponse -> {
             List<PurchaseLogExcelGenerator> purchaseLogExcelGenerators = new ArrayList<>();
-            for (ItemDetail itemDetail : purchaseAggregationResponse.getItemDetail()) {
+            purchaseAggregationResponse.getItemDetail().forEach(itemDetail -> {
                 PurchaseLogExcelGenerator purchaseLogExcelGenerator = new PurchaseLogExcelGenerator();
-                nullAwareBeanUtilsBean.copyProperties(purchaseLogExcelGenerator, itemDetail);
+                try {
+                    nullAwareBeanUtilsBean.copyProperties(purchaseLogExcelGenerator, itemDetail);
+                } catch (IllegalAccessException | InvocationTargetException e) {
+                    throw new RuntimeException(e);
+                }
                 purchaseLogExcelGenerators.add(purchaseLogExcelGenerator);
-            }
+            });
             hashMap.put(purchaseAggregationResponse.get_id(), purchaseLogExcelGenerators);
-        }
-        log.info("hashMap:{}", hashMap);
+        });
+
+        getPurchaseHistory();
         Workbook workbook = ExcelUtils.createWorkbookOnBookDetailsData(hashMap, "PurchaseDetails");
         return workbook;
-
     }
+
+//    @Override
+//    public List<List<Map<Object, Object>>> getCanvasjsChartData() {
+//        return canvasjsChartData.getCanvasjsDataList();
+//
+//    }
+
 
     Customer getcustomerById(String id) {
         return customerRepository.findByIdAndSoftDeleteIsFalse(id).orElseThrow(() -> new NotFoundException(MessageConstant.ID_NOT_FOUND));
@@ -206,34 +222,19 @@ public class PurchaseLogHistoryServiceImpl implements PurchaseLogHistoryService 
         if (purchaseLogHistory != null) {
             if (purchaseLogHistoryAddRequest.getQuantity() > 0) {
                 purchaseLogHistory.setQuantity(purchaseLogHistoryAddRequest.getQuantity());
+                findTotal(id);
             }
             purchaseLogHistoryRepository.save(purchaseLogHistory);
         }
 
     }
 
-    public void difference(PurchaseLogHistory purchaseLogHistory, PurchaseLogHistoryAddRequest purchaseLogHistoryAddRequest, HashMap<String, String> changedProperties) throws InvocationTargetException, IllegalAccessException {
-        PurchaseLogHistory purchaseLogHistory1 = new PurchaseLogHistory();
-        nullAwareBeanUtilsBean.copyProperties(purchaseLogHistory1, purchaseLogHistoryAddRequest);
-        purchaseLogHistory1.setId(purchaseLogHistory.getId());
-        for (Field field : purchaseLogHistory.getClass().getDeclaredFields()) {
-            field.setAccessible(true);
-            Object value = field.get(purchaseLogHistory);
-            Object value1 = field.get(purchaseLogHistory1);
-            if (value != null && value1 != null) {
-                if (!Objects.equals(value, value1)) {
-                    changedProperties.put(field.getName(), value1.toString());
-                }
-            }
-        }
-    }
 
     public void findDiscountInRupee(PurchaseLogHistory purchaseLogHistory, String itemName) {
         Item item = itemRepository.findByItemNameAndSoftDeleteIsFalse(itemName);
         purchaseLogHistory.setDiscountInRupee((purchaseLogHistory.getPrice() * purchaseLogHistory.getQuantity() * purchaseLogHistory.getDiscountInPercent()) / 100);
         purchaseLogHistory.setTotalPrice(item.getPrice() * purchaseLogHistory.getQuantity() - purchaseLogHistory.getDiscountInRupee());
     }
-
 
     public double findTotal(String customerId) {
         double total = 0;
@@ -242,6 +243,18 @@ public class PurchaseLogHistoryServiceImpl implements PurchaseLogHistoryService 
             total += logHistory.getTotalPrice();
         }
         return total;
+    }
+
+    public String getPurchaseHistory() {
+         PurchaseLogHistoryAddRequest purchaseLogHistoryAddRequest = new PurchaseLogHistoryAddRequest();
+
+          TemplateParser<PurchaseLogHistoryAddRequest> templateParser = new TemplateParser<>();
+
+          String url = templateParser.compileTemplate(FileLoader.loadHtmlTemplateOrReturnNull("purchaseLogHistory"), purchaseLogHistoryAddRequest);
+
+          log.info("url :{}", url);
+
+           return url;
     }
 }
 

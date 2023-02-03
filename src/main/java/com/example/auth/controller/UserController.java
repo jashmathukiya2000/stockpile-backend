@@ -51,7 +51,7 @@ public class UserController {
     }
     @RequestMapping(name = "updateUser", value = "/update", method = RequestMethod.POST)
     @Access(levels = Role.ADMIN)
-    public DataResponse<UserResponse> updateUser(@RequestParam String id, @RequestBody UserAddRequest userAddRequest) throws InvocationTargetException, IllegalAccessException {
+    public DataResponse<UserResponse> updateUser(@RequestParam String id, @RequestBody UserAddRequest userAddRequest) throws InvocationTargetException, IllegalAccessException, NoSuchFieldException {
         DataResponse<UserResponse> dataResponse = new DataResponse<>();
         userService.updateUser(id, userAddRequest);
         dataResponse.setStatus(Response.getOkResponse(ResponseConstant.UPDATED_SUCCESSFULLY));

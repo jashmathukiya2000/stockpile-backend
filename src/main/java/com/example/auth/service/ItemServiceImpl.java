@@ -3,7 +3,6 @@ package com.example.auth.service;
 import com.example.auth.commons.advice.NullAwareBeanUtilsBean;
 import com.example.auth.commons.constant.MessageConstant;
 import com.example.auth.commons.exception.NotFoundException;
-import com.example.auth.commons.service.AdminConfigurationService;
 import com.example.auth.decorator.ItemAddRequest;
 import com.example.auth.decorator.ItemAggregationResponse;
 import com.example.auth.decorator.ItemResponse;
@@ -46,13 +45,13 @@ public class ItemServiceImpl implements ItemService {
 
     @Override
     public ItemResponse addItem(String categoryId, ItemAddRequest itemAddRequest) throws InvocationTargetException, IllegalAccessException {
+        checkValidation(itemAddRequest);
         Item item = modelMapper.map(itemAddRequest, Item.class);
         Category category = getCategoryModel(categoryId);
         item.setCategoryId(category.getId());
-        findPrice(itemAddRequest, item);
+        setPrice(itemAddRequest, item);
         item.setDate(currentDate());
         ItemResponse itemResponse = modelMapper.map(item, ItemResponse.class);
-        checkValidation(itemAddRequest);
         itemRepository.save(item);
         return itemResponse;
     }
@@ -66,7 +65,7 @@ public class ItemServiceImpl implements ItemService {
     public ItemResponse updateItem(String id, ItemAddRequest itemAddRequest) throws InvocationTargetException, IllegalAccessException {
         Item item = getById(id);
         ItemResponse itemResponse = modelMapper.map(item, ItemResponse.class);
-        HashMap<String, String> changedProperties = new HashMap<>();
+        Map<String, String> changedProperties = new HashMap<>();
         updateItemData(id, itemAddRequest);
         difference(item, itemAddRequest, changedProperties);
         return itemResponse;
@@ -84,7 +83,6 @@ public class ItemServiceImpl implements ItemService {
         return itemResponse;
     }
 
-
     @Override
     public List<ItemResponse> getAllItems() {
         List<Item> items = itemRepository.findBySoftDeleteFalse();
@@ -94,7 +92,6 @@ public class ItemServiceImpl implements ItemService {
             itemResponses.add(itemResponse);
 
         });
-
         return itemResponses;
     }
 
@@ -104,6 +101,13 @@ public class ItemServiceImpl implements ItemService {
         item.setSoftDelete(true);
         itemRepository.save(item);
 
+    }
+
+
+    public void setPrice(ItemAddRequest itemAddRequest, Item item) {
+        item.setPrice(Double.parseDouble(new DecimalFormat("##.##").format(itemAddRequest.getPrice())));
+        item.setDiscountInRupee((item.getPrice() * item.getQuantity() * item.getDiscountInPercent()) / 100);
+        item.setTotalPrice(item.getPrice() * item.getQuantity() - item.getDiscountInRupee());
     }
 
     public void checkValidation(ItemAddRequest itemAddRequest) {
@@ -126,12 +130,6 @@ public class ItemServiceImpl implements ItemService {
             throw new NotFoundException(MessageConstant.INVALID);
         }
 
-    }
-
-    public void findPrice(ItemAddRequest itemAddRequest, Item item) {
-        item.setPrice(Double.parseDouble(new DecimalFormat("##.##").format(itemAddRequest.getPrice())));
-        item.setDiscountInRupee((item.getPrice() * item.getQuantity() * item.getDiscountInPercent()) / 100);
-        item.setTotalPrice(item.getPrice() * item.getQuantity() - item.getDiscountInRupee());
     }
 
     @Override
@@ -173,7 +171,7 @@ public class ItemServiceImpl implements ItemService {
             }
             if (itemAddRequest.getPrice() > 0) {
                 item.setPrice(Double.parseDouble(new DecimalFormat("##.##").format(itemAddRequest.getPrice())));
-                findPrice(itemAddRequest, item);
+                setPrice(itemAddRequest, item);
             }
             if (itemAddRequest.getDiscountInPercent() > 0) {
                 item.setDiscountInPercent(itemAddRequest.getDiscountInPercent());
@@ -185,7 +183,7 @@ public class ItemServiceImpl implements ItemService {
         }
     }
 
-    public void difference(Item item, ItemAddRequest itemAddRequest, HashMap<String, String> changedProperties) throws InvocationTargetException, IllegalAccessException {
+    public Map<String, String> difference(Item item, ItemAddRequest itemAddRequest, Map<String, String> changedProperties) throws InvocationTargetException, IllegalAccessException {
         Item item1 = new Item();
         nullAwareBeanUtilsBean.copyProperties(item1, itemAddRequest);
         item1.setId(item.getId());
@@ -199,9 +197,8 @@ public class ItemServiceImpl implements ItemService {
                 }
             }
         }
+        return changedProperties;
     }
-
-
 }
 
 

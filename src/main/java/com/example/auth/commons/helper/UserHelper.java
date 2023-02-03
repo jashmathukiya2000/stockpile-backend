@@ -1,24 +1,34 @@
 package com.example.auth.commons.helper;
 
+import com.amazonaws.services.apigateway.model.Model;
+import com.example.auth.commons.advice.NullAwareBeanUtilsBean;
+import com.example.auth.decorator.user.UserAddRequest;
 import com.example.auth.model.User;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
+import org.bson.Document;
+import org.springframework.beans.factory.annotation.Autowired;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
+import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 public class UserHelper {
+    @Autowired
+    NullAwareBeanUtilsBean nullAwareBeanUtilsBean;
+
     String firstName;
     String middleName;
     String lastName;
     String fullName;
+
+
     public String getFullName(User user) {
         this.firstName = StringUtils.normalizeSpace(user.getFirstName());
         this.middleName = StringUtils.normalizeSpace(user.getMiddleName());
@@ -56,6 +66,31 @@ public class UserHelper {
         return string;
     }
 
+    public  Map<String, String> difference(Object object1, Object object2) throws IllegalAccessException, NoSuchFieldException {
+        Map<String, String> changedProperties = new HashMap<>();
+        for (Field field : object1.getClass().getDeclaredFields()) {
+            field.setAccessible(true);
 
-
+            Field field2 = object2.getClass().getDeclaredField(field.getName());
+            field2.setAccessible(true);
+            Object value = field.get(object1);
+            Object value1 = field2.get(object2);
+            if (value != null && value1 != null) {
+                if (!Objects.equals(value, value1)) {
+                    changedProperties.put(field.getName(), value1.toString());
+                }
+            }
+        }
+        return changedProperties;
+    }
 }
+
+
+
+
+
+
+
+
+
+
