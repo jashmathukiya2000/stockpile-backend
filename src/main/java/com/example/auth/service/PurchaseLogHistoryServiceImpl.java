@@ -3,6 +3,7 @@ package com.example.auth.service;
 import com.example.auth.commons.FileLoader;
 import com.example.auth.commons.advice.NullAwareBeanUtilsBean;
 import com.example.auth.commons.constant.MessageConstant;
+import com.example.auth.commons.decorator.ExcelUtils;
 import com.example.auth.commons.exception.InvalidRequestException;
 import com.example.auth.commons.exception.NotFoundException;
 import com.example.auth.commons.helper.UserHelper;
@@ -51,13 +52,15 @@ public class PurchaseLogHistoryServiceImpl implements PurchaseLogHistoryService 
 
     }
 
-
-
     @Override
     public PurchaseLogHistoryResponse addPurchaseLog(PurchaseLogHistoryAddRequest purchaseLogHistoryAddRequest, String customerId, String itemName) {
+
         PurchaseLogHistory purchaseLogHistory = modelMapper.map(purchaseLogHistoryAddRequest, PurchaseLogHistory.class);
+
         Customer customer = getcustomerById(customerId);
+
         Item item = itemRepository.findByItemNameAndSoftDeleteIsFalse(itemName);
+
         if (purchaseLogHistory.getQuantity() <= item.getQuantity()) {
             purchaseLogHistory.setCustomerId(customer.getId());
             purchaseLogHistory.setItemName(item.getItemName());
@@ -246,15 +249,15 @@ public class PurchaseLogHistoryServiceImpl implements PurchaseLogHistoryService 
     }
 
     public String getPurchaseHistory() {
-         PurchaseLogHistoryAddRequest purchaseLogHistoryAddRequest = new PurchaseLogHistoryAddRequest();
+        PurchaseLogHistoryAddRequest purchaseLogHistoryAddRequest = new PurchaseLogHistoryAddRequest();
 
-          TemplateParser<PurchaseLogHistoryAddRequest> templateParser = new TemplateParser<>();
+        TemplateParser<PurchaseLogHistoryAddRequest> templateParser = new TemplateParser<>();
 
-          String url = templateParser.compileTemplate(FileLoader.loadHtmlTemplateOrReturnNull("purchaseLogHistory"), purchaseLogHistoryAddRequest);
+        String url = templateParser.compileTemplate(FileLoader.loadHtmlTemplateOrReturnNull("purchaseLogHistory"), purchaseLogHistoryAddRequest);
 
-          log.info("url :{}", url);
+        log.info("url :{}", url);
 
-           return url;
+        return url;
     }
 }
 

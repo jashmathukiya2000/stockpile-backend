@@ -35,29 +35,34 @@ class PurchaseLogHistoryResponseServiceImplTest {
     private final ModelMapper modelMapper = PurchaseLogHistoryServiceImplTestGenerator.getModelMapper();
     private final CustomerRepository customerRepository = mock(CustomerRepository.class);
     private final NullAwareBeanUtilsBean nullAwareBeanUtilsBean = mock(NullAwareBeanUtilsBean.class);
-    private final ItemService itemService=mock(ItemService.class);
-    private final ItemRepository itemRepository=mock(ItemRepository.class);
-    private final UserHelper userHelper=mock(UserHelper.class);
+    private final ItemService itemService = mock(ItemService.class);
+    private final ItemRepository itemRepository = mock(ItemRepository.class);
+    private final UserHelper userHelper = mock(UserHelper.class);
 
-    private final PurchaseLogHistoryServiceImpl purchaseLogHistoryService = spy(new PurchaseLogHistoryServiceImpl(purchaseLogHistoryRepository, modelMapper, customerRepository, nullAwareBeanUtilsBean,itemRepository,itemService,userHelper));
+    private final PurchaseLogHistoryServiceImpl purchaseLogHistoryService = spy(new PurchaseLogHistoryServiceImpl(purchaseLogHistoryRepository, modelMapper, customerRepository, nullAwareBeanUtilsBean, itemRepository, itemService, userHelper));
 
     @Test
     void testAddPurchaseLogHistory() {
         //given
-        var item=PurchaseLogHistoryServiceImplTestGenerator.item();
+
+
         Date date = purchaseLogHistoryService.currentDate();
+
         var customer = PurchaseLogHistoryServiceImplTestGenerator.mockCustomer();
+
         var purchaseLogHistory = PurchaseLogHistoryServiceImplTestGenerator.mockPurchaseLogHistory(date);
-        var purchaseLogAddRequest = PurchaseLogHistoryServiceImplTestGenerator.mockPurchaseLogHistoryAddRequest(item);
+
+        var purchaseLogAddRequest = PurchaseLogHistoryServiceImplTestGenerator.mockPurchaseLogHistoryAddRequest();
+
         var purchaseLogResponse = PurchaseLogHistoryServiceImplTestGenerator.mockPurchaseLogHistoryResponse(date, customerId);
 
         doReturn(date).when(purchaseLogHistoryService).currentDate();
 
         when(customerRepository.findByIdAndSoftDeleteIsFalse(customerId)).thenReturn(java.util.Optional.ofNullable(customer));
-        when(purchaseLogHistoryRepository.save(purchaseLogHistory)).thenReturn(purchaseLogHistory);
 
+        when(purchaseLogHistoryRepository.save(purchaseLogHistory)).thenReturn(purchaseLogHistory);
         //when
-        var actualData = purchaseLogHistoryService.addPurchaseLog(purchaseLogAddRequest, customerId,null );
+        var actualData = purchaseLogHistoryService.addPurchaseLog(purchaseLogAddRequest, customerId, "mouse");
 
         //then
         Assertions.assertEquals(purchaseLogResponse, actualData);
@@ -69,12 +74,12 @@ class PurchaseLogHistoryResponseServiceImplTest {
         //given
         var customer = PurchaseLogHistoryServiceImplTestGenerator.mockCustomer();
 
-        var purchaseLogAddRequest = PurchaseLogHistoryServiceImplTestGenerator.mockPurchaseLogHistoryAddRequest(null);
+        var purchaseLogAddRequest = PurchaseLogHistoryServiceImplTestGenerator.mockPurchaseLogHistoryAddRequest();
 
         when(customerRepository.findByIdAndSoftDeleteIsFalse(customerId)).thenReturn(java.util.Optional.ofNullable(customer));
 
         //when
-        Throwable exception = assertThrows(NotFoundException.class, () -> purchaseLogHistoryService.addPurchaseLog(purchaseLogAddRequest, null,null ));
+        Throwable exception = assertThrows(NotFoundException.class, () -> purchaseLogHistoryService.addPurchaseLog(purchaseLogAddRequest, null, null));
 
         //then
         Assertions.assertEquals("Id not found", exception.getMessage());
@@ -107,7 +112,7 @@ class PurchaseLogHistoryResponseServiceImplTest {
     void testGetPurchaseLogHistory() {
         //given
         Date date = purchaseLogHistoryService.currentDate();
-        var item=PurchaseLogHistoryServiceImplTestGenerator.getItem();
+        var item = PurchaseLogHistoryServiceImplTestGenerator.getItem();
         var purchaseLogHistory = PurchaseLogHistoryServiceImplTestGenerator.mockPurchaseLogHistory(date);
         var purchaseLogResponse = PurchaseLogHistoryServiceImplTestGenerator.mockPurchaseLogHistoryResponse(date, id);
         doReturn(date).when(purchaseLogHistoryService).currentDate();

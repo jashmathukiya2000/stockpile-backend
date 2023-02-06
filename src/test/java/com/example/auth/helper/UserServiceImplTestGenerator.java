@@ -1,18 +1,18 @@
 package com.example.auth.helper;
 
+import com.example.auth.commons.decorator.ExcelUtils;
 import com.example.auth.commons.enums.Role;
-import com.example.auth.decorator.user.UserAddRequest;
-import com.example.auth.decorator.user.UserAggregationResponse;
-import com.example.auth.decorator.user.UserFilter;
-import com.example.auth.decorator.user.UserResponse;
+import com.example.auth.decorator.UserExcelResponse;
+import com.example.auth.decorator.user.*;
 import com.example.auth.model.User;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.convention.MatchingStrategies;
+import org.springframework.data.domain.Page;
 
 import java.util.List;
 
 public class UserServiceImplTestGenerator {
-
+    private final static String id = "id";
 
     public static ModelMapper getModelMapper() {
         ModelMapper modelMapper = new ModelMapper();
@@ -20,7 +20,7 @@ public class UserServiceImplTestGenerator {
         return modelMapper;
     }
 
-    public static UserAddRequest getMockUserAddRequest( ) {
+    public static UserAddRequest getMockUserAddRequest() {
         return UserAddRequest.builder()
                 .firstName("sans")
                 .middleName("km")
@@ -38,7 +38,6 @@ public class UserServiceImplTestGenerator {
                 .firstName("sans")
                 .middleName("km")
                 .lastName("shukla")
-                .fullName("sans km shukla")
                 .occupation("java developer")
                 .email("sanskrityshukla4@gmail.com")
                 .age(21)
@@ -104,6 +103,59 @@ public class UserServiceImplTestGenerator {
         return UserResponse.builder().role(role).build();
     }
 
+    public static List<UserExcelResponse> getExcelResponse() {
+        return List.of(UserExcelResponse.builder()
+                .age(23)
+                .firstName("sans")
+                .middleName("km")
+                .lastName("shukla")
+                .fullName("sans km shukla")
+                .age(21)
+                .occupation("java developer")
+                .salary(25000)
+                .build());
+    }
 
+    public static List<UserSpiDataInExcel> getUserSpiData(){
+        return List.of(UserSpiDataInExcel.builder()
+                ._id(id)
+                .firstName("krish")
+                .email("krish@gmail.com")
+                 .semester("7")
+                .build());
+    }
+    public static List<UserSpiResponse> getSpiResponse(){
+        return List.of(UserSpiResponse.builder()
+                ._id(id)
+                .auth(getSpiData())
+                .build());
+    }
+     public static List<UserSpiData> getSpiData(){
+        return List.of(UserSpiData.builder()
+                ._id(id)
+                 .firstName("krish")
+                .email("krish@gmail.com")
+                .semester("7")
+                .build());
+
+    }
+
+    public static UserSpiResponse getSpiResponseInExcel(){
+        return UserSpiResponse.builder()
+                .build();
+    }
+
+    public static List<UserSpiResponse> getSpiResponseInExcels(){
+        return List.of(UserSpiResponse.builder()
+                .auth(getSpiData())
+                .build());
+    }
+
+
+    public static Page<UserSpiResponse> getMockPage() {
+        return (Page<UserSpiResponse>) UserSpiResponse.builder()
+                .count(5)
+                .build();
+    }
 }
 

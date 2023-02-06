@@ -13,7 +13,8 @@ public enum UserSortBy {
     AGE("Age"),
     FIRST_NAME("firstName"),
     LAST_NAME("lastName"),
-    EMAIL("email");
+    EMAIL("email"),
+    SPI("spi");
 
 
     @JsonIgnore

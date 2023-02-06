@@ -1,20 +1,17 @@
-package com.example.auth.decorator.user;
+package com.example.auth.decorator;
 
 import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-@Builder
-public class UserSpiData {
-    String _id;
-    String firstName;
-    String email;
+public class ResultEmailRequest {
+    String fullName;
     String semester;
-
-
+    String spi;
+    String cgpi;
+    String email;
 
 }

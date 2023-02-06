@@ -52,10 +52,10 @@ public class PurchaseLogHistoryServiceImplTestGenerator {
     }
 
 
-    public static PurchaseLogHistoryAddRequest mockPurchaseLogHistoryAddRequest(Item item) {
+    public static PurchaseLogHistoryAddRequest mockPurchaseLogHistoryAddRequest() {
         return PurchaseLogHistoryAddRequest
                 .builder()
-                .quantity(item.getQuantity())
+                .quantity(5)
                 .build();
 
     }

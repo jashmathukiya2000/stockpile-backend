@@ -2,15 +2,17 @@ package com.example.auth.decorator.user;
 
 import com.example.auth.decorator.ExcelField;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
+@Builder
 public class UserSpiDataInExcel {
     String _id;
-    String name;
+    String firstName;
     String email;
     String semester;
     int sum;
@@ -22,9 +24,9 @@ public class UserSpiDataInExcel {
     public String getId(){
         return _id;
 
-    }  @ExcelField(excelHeader = "Name",position = 3)
+    }  @ExcelField(excelHeader = "firstName",position = 3)
     public String getName(){
-        return name;
+        return firstName;
 
     }  @ExcelField(excelHeader = "Email",position = 4)
     public String getEmail(){

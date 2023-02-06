@@ -15,7 +15,7 @@
       "_id": "$result.spi",
       "auth": {
         "$push": {
-          "name": "$name",
+          "firstName": "$firstName",
           "email": "$email",
           "_id": "$_id",
           "spi": "$result.spi",
