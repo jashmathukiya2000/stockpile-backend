@@ -33,11 +33,12 @@ public class UserServiceImplTestGenerator {
                 .build();
     }
 
-    public static UserResponse getMockUserResponse(String token) {
+    public static UserResponse getMockUserResponse(String token,String fullName) {
         return UserResponse.builder()
                 .firstName("sans")
                 .middleName("km")
                 .lastName("shukla")
+                .fullName(fullName)
                 .occupation("java developer")
                 .email("sanskrityshukla4@gmail.com")
                 .age(21)

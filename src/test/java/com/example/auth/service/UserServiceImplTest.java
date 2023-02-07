@@ -42,6 +42,7 @@ import static org.mockito.Mockito.*;
 class UserServiceImplTest {
     private final static String id = "id";
     private final Role role = Role.ADMIN;
+    private final static String  FullName="sans km shukla";
     private final String token = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJST0xFIjpbIlVTRVIiXSwic3ViIjoiNjM4NzM1Y2NhNjc5ODkwZmYxNTA3YTFmIiwiSUQiOiI2Mzg3MzVjY2E2Nzk4OTBmZjE1MDdhMWYiLCJleHAiOjE2NzQ2NDI5MDcsImlhdCI6MTY3NDU1NjUwN30.fZCV0ei64hZJGUZ1stmaOd_yb34PO21_aHh16kowM9U";
     private final UserRepository userRepository = Mockito.mock(UserRepository.class);
     private final ModelMapper modelMapper = UserServiceImplTestGenerator.getModelMapper();
@@ -59,7 +60,7 @@ class UserServiceImplTest {
         var user = UserServiceImplTestGenerator.getMockUser(null);
         String FullName = userHelper.getFullName(user);
         var userAddRequest = UserServiceImplTestGenerator.getMockUserAddRequest();
-        var userResponse = UserServiceImplTestGenerator.getMockUserResponse(null);
+        var userResponse = UserServiceImplTestGenerator.getMockUserResponse(null,null);
         when(userRepository.findByIdAndSoftDeleteIsFalse(id)).thenReturn(Optional.of(user));
         //when
 
@@ -76,7 +77,7 @@ class UserServiceImplTest {
         var user = UserServiceImplTestGenerator.getMockUser(null);
 
         var userAddRequest = UserServiceImplTestGenerator.getMockUserAddRequest();
-        var userResponse = UserServiceImplTestGenerator.getMockUserResponse(null);
+        var userResponse = UserServiceImplTestGenerator.getMockUserResponse(null,fullName);
         when(userRepository.findByIdAndSoftDeleteIsFalse(id)).thenReturn(Optional.of(user));
         when(userHelper.getFullName()).thenReturn(fullName);
         when(userRepository.save(user)).thenReturn(user);
@@ -110,7 +111,7 @@ class UserServiceImplTest {
     void TestgetUser() throws InvocationTargetException, IllegalAccessException {
         //given
         var user = UserServiceImplTestGenerator.getMockUser(null);
-        var response = UserServiceImplTestGenerator.getMockUserResponse(null);
+        var response = UserServiceImplTestGenerator.getMockUserResponse(null,FullName);
         when(userRepository.findByIdAndSoftDeleteIsFalse(id)).thenReturn(Optional.of(user));
 
         //when
