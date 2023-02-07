@@ -1,7 +1,6 @@
 package com.example.auth.helper;
 
-import com.example.auth.decorator.PurchaseLogHistoryAddRequest;
-import com.example.auth.decorator.PurchaseLogHistoryResponse;
+import com.example.auth.decorator.*;
 import com.example.auth.model.Customer;
 import com.example.auth.model.Item;
 import com.example.auth.model.PurchaseLogHistory;
@@ -114,6 +113,7 @@ public class PurchaseLogHistoryServiceImplTestGenerator {
     }
     public static Item getItem(){
         return Item.builder().itemName("mouse")
+                .id(id)
                 .categoryId(customerId)
                 .discountInRupee(3000)
                 .discountInPercent(5)
@@ -123,11 +123,27 @@ public class PurchaseLogHistoryServiceImplTestGenerator {
                 .build();
     }
 
-    public static Item item(){
-        return Item.builder()
-                .quantity(5)
+
+    public static List<ItemPurchaseAggregationResponse> getItemPurchaseAggregationResponse(){
+        return List.of(ItemPurchaseAggregationResponse.builder()
+                ._id(id)
+                .itemDetail(getItemDetails())
+                .build());
+    }
+
+    public static List<ItemDetail> getItemDetails(){
+        return List.of(ItemDetail.builder()
+                .itemName("mouse")
+                .build());
+    }
+
+    public static  PurchaseLogExcelGenerator getPurchaseLogExcelGenerator(){
+        return PurchaseLogExcelGenerator.builder()
+                .itemName("mouse")
                 .build();
     }
+
+
 
 
 

@@ -1,8 +1,11 @@
 package com.example.auth.service;
 
 import com.example.auth.commons.advice.NullAwareBeanUtilsBean;
+import com.example.auth.commons.decorator.ExcelUtils;
 import com.example.auth.commons.exception.NotFoundException;
 import com.example.auth.commons.helper.UserHelper;
+import com.example.auth.decorator.ItemPurchaseAggregationResponse;
+import com.example.auth.decorator.PurchaseLogExcelGenerator;
 import com.example.auth.decorator.PurchaseLogHistoryResponse;
 import com.example.auth.decorator.pagination.FilterSortRequest;
 import com.example.auth.decorator.pagination.Pagination;
@@ -13,6 +16,7 @@ import com.example.auth.model.Item;
 import com.example.auth.repository.CustomerRepository;
 import com.example.auth.repository.ItemRepository;
 import com.example.auth.repository.PurchaseLogHistoryRepository;
+import org.json.JSONException;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.modelmapper.ModelMapper;
@@ -22,7 +26,11 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.*;
@@ -39,12 +47,15 @@ class PurchaseLogHistoryResponseServiceImplTest {
     private final ItemRepository itemRepository = mock(ItemRepository.class);
     private final UserHelper userHelper = mock(UserHelper.class);
 
+
     private final PurchaseLogHistoryServiceImpl purchaseLogHistoryService = spy(new PurchaseLogHistoryServiceImpl(purchaseLogHistoryRepository, modelMapper, customerRepository, nullAwareBeanUtilsBean, itemRepository, itemService, userHelper));
 
     @Test
     void testAddPurchaseLogHistory() {
         //given
 
+
+            var item=PurchaseLogHistoryServiceImplTestGenerator.getItem();
 
         Date date = purchaseLogHistoryService.currentDate();
 
@@ -54,13 +65,18 @@ class PurchaseLogHistoryResponseServiceImplTest {
 
         var purchaseLogAddRequest = PurchaseLogHistoryServiceImplTestGenerator.mockPurchaseLogHistoryAddRequest();
 
-        var purchaseLogResponse = PurchaseLogHistoryServiceImplTestGenerator.mockPurchaseLogHistoryResponse(date, customerId);
+        var purchaseLogResponse = PurchaseLogHistoryServiceImplTestGenerator.mockPurchaseLogHistoryResponse(date, null);
 
-        doReturn(date).when(purchaseLogHistoryService).currentDate();
+
+
+         when(itemRepository.findByItemNameAndSoftDeleteIsFalse("mouse")).thenReturn(item);
 
         when(customerRepository.findByIdAndSoftDeleteIsFalse(customerId)).thenReturn(java.util.Optional.ofNullable(customer));
 
         when(purchaseLogHistoryRepository.save(purchaseLogHistory)).thenReturn(purchaseLogHistory);
+
+        doReturn(date).when(purchaseLogHistoryService).currentDate();
+
         //when
         var actualData = purchaseLogHistoryService.addPurchaseLog(purchaseLogAddRequest, customerId, "mouse");
 
@@ -88,25 +104,25 @@ class PurchaseLogHistoryResponseServiceImplTest {
     }
 
 
-//    @Test
-//    void testUpdatePurchaseLogHistory() throws InvocationTargetException, IllegalAccessException {
-//        //given
-//        Date date = purchaseLogHistoryService.currentDate();
-//
-//        var purchaseLogHistory = PurchaseLogHistoryServiceImplTestGenerator.mockPurchaseLogHistory(date);
-//        var purchaseLogAddRequest = PurchaseLogHistoryServiceImplTestGenerator.mockPurchaseLogHistoryAddRequest();
-//        var purchaseLogResponse = PurchaseLogHistoryServiceImplTestGenerator.mockPurchaseLogHistoryResponse(date, id);
-//        doReturn(date).when(purchaseLogHistoryService).currentDate();
-//
-//        when(purchaseLogHistoryRepository.findByIdAndSoftDeleteIsFalse(id)).thenReturn(java.util.Optional.ofNullable(purchaseLogHistory));
-//
-//        //when
-//        var actualData = purchaseLogHistoryService.updatePurchaseLogHistory(id, purchaseLogAddRequest);
-//
-//        //then
-//        verify(purchaseLogHistoryRepository, times(2)).findByIdAndSoftDeleteIsFalse(id);
-//
-//    }
+    @Test
+    void testUpdatePurchaseLogHistory() throws InvocationTargetException, IllegalAccessException {
+        //given
+        Date date = purchaseLogHistoryService.currentDate();
+
+        var purchaseLogHistory = PurchaseLogHistoryServiceImplTestGenerator.mockPurchaseLogHistory(date);
+        var purchaseLogAddRequest = PurchaseLogHistoryServiceImplTestGenerator.mockPurchaseLogHistoryAddRequest();
+        var purchaseLogResponse = PurchaseLogHistoryServiceImplTestGenerator.mockPurchaseLogHistoryResponse(date, id);
+        doReturn(date).when(purchaseLogHistoryService).currentDate();
+
+        when(purchaseLogHistoryRepository.findByIdAndSoftDeleteIsFalse(id)).thenReturn(java.util.Optional.ofNullable(purchaseLogHistory));
+
+        //when
+         purchaseLogHistoryService.updatePurchaseLogHistory(id, purchaseLogAddRequest);
+
+        //then
+        verify(purchaseLogHistoryRepository, times(1)).findByIdAndSoftDeleteIsFalse(id);
+
+    }
 
     @Test
     void testGetPurchaseLogHistory() {
@@ -208,6 +224,45 @@ class PurchaseLogHistoryResponseServiceImplTest {
 
         //then
         Assertions.assertEquals("Id not found", exception.getMessage());
+
+    }
+
+    @Test
+    void testGetPurchaseDetailsByCustomer() throws JSONException, InvocationTargetException, IllegalAccessException {
+
+        PurchaseLogFilter filter = new PurchaseLogFilter();
+
+        filter.setIds(filter.getIds());
+
+        FilterSortRequest.SortRequest<PurchaseLogSortBy> sort = new FilterSortRequest.SortRequest<>();
+
+        sort.setSortBy(PurchaseLogSortBy.ITEM_NAME);
+
+        sort.setOrderBy(Sort.Direction.ASC);
+
+        Pagination pagination = new Pagination();
+
+        pagination.setPage(0);
+
+        pagination.setLimit(5);
+
+        PageRequest pageRequest = PageRequest.of(pagination.getPage(), pagination.getLimit());
+
+
+        var itemPurchaseAggregationResponse=PurchaseLogHistoryServiceImplTestGenerator.getItemPurchaseAggregationResponse();
+
+        Page<ItemPurchaseAggregationResponse> page = new PageImpl<>(itemPurchaseAggregationResponse);
+
+
+        HashMap<String, List<PurchaseLogExcelGenerator>> hashMap =  PurchaseLogHistoryServiceImplTestGenerator.getPurchaseLogExcelGenerator();
+
+        when(purchaseLogHistoryRepository.getPurchaseDetailsByCustomer(filter,sort,pageRequest)).thenReturn(page);
+
+        var actualData=purchaseLogHistoryService.getPurchaseDetailsByCustomer(filter,sort,pageRequest);
+
+        var expectedData= ExcelUtils.createWorkbookOnBookDetailsData(hashMap,"PurchaseDetails");
+
+       Assertions.assertEquals(expectedData.getNumberOfSheets(),actualData.getNumberOfSheets());
 
     }
 

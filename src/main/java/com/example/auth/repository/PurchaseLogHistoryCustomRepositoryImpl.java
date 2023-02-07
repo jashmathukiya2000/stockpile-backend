@@ -2,16 +2,12 @@ package com.example.auth.repository;
 
 import com.example.auth.commons.decorator.FileReader;
 import com.example.auth.commons.model.AggregationUtils;
-import com.example.auth.decorator.CustomAggregationOperation;
-import com.example.auth.decorator.ItemPurchaseAggregationResponse;
-import com.example.auth.decorator.PurchaseAggregationResponse;
-import com.example.auth.decorator.PurchaseLogHistoryResponse;
+import com.example.auth.decorator.*;
 import com.example.auth.decorator.pagination.CountQueryResult;
 import com.example.auth.decorator.pagination.FilterSortRequest;
 import com.example.auth.decorator.pagination.PurchaseLogFilter;
 import com.example.auth.decorator.pagination.PurchaseLogSortBy;
 import com.example.auth.model.PurchaseLogHistory;
-import com.google.api.client.json.Json;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.bson.Document;
@@ -144,37 +140,23 @@ public class PurchaseLogHistoryCustomRepositoryImpl implements PurchaseLogHistor
 
 
     @Override
-    public List<PurchaseAggregationResponse> findItemPurchaseDetailsByMonthYear() {
+    public List<PurchaseAggregationResponse> findItemPurchaseDetailsByMonthYear() throws JSONException {
         List<AggregationOperation> operations = getItemPurchaseByMonthAndYear();
         Aggregation aggregation = newAggregation(operations);
         log.info("output:{}", operations);
         return mongoTemplate.aggregate(aggregation, "purchaseLogHistory", PurchaseAggregationResponse.class).getMappedResults();
     }
 
-    public List<AggregationOperation> getItemPurchaseByMonthAndYear() {
+    public List<AggregationOperation> getItemPurchaseByMonthAndYear() throws JSONException {
         List<AggregationOperation> operations = new ArrayList<>();
-        Criteria criteria = new Criteria();
-        criteria = criteria.and("softDelete").is(false);
-        operations.add(match(criteria));
-        operations.add(new CustomAggregationOperation(new Document("$set",
-                new Document("month", new Document("$month", "$date"))
-                        .append("year", new Document("$year", "$date")))));
-        operations.add(new CustomAggregationOperation(new Document("$group", new Document("_id",
-                new Document("month", "$month").append("year", "$year")
-                        .append("itemName", "$itemName"))
-                .append("itemDetails", new Document("$push", new Document("customerId", "$customerId")
-                        .append("price", "$price")))
-                .append("count", new Document("$sum", 1.0))
-                .append("totalPrice", new Document("$sum", "$price")))));
-        operations.add(new CustomAggregationOperation(new Document("$group",
-                new Document("_id", new Document("month", "$_id.month").append("year", "$_id.year"))
-                        .append("itemDetail", new Document("$push",
-                                new Document("itemName", "$_id.itemName")
-                                        .append("count", "$count")
-                                        .append("totalPrice", new Document("$sum", "" + "$itemDetails.price"))))
-                        .append("totalItem", new Document("$sum", "$count"))
-        )));
-        return operations;
+        String fileName=FileReader.loadFile("aggregation/PurchaseLogHistoryByMonthAndYear.json");
+        JSONObject jsonObject=new JSONObject(fileName);
+
+        operations.add(new CustomAggregationOperation(Document.parse(CustomAggregationOperation.getJson(jsonObject,"setMonthAndYear",Object.class))));
+        operations.add(new CustomAggregationOperation(Document.parse(CustomAggregationOperation.getJson(jsonObject,"matchMonthAndYear",Object.class))));
+        operations.add(new CustomAggregationOperation(Document.parse(CustomAggregationOperation.getJson(jsonObject,"groupByMonthYearItemName",Object.class))));
+        operations.add(new CustomAggregationOperation(Document.parse(CustomAggregationOperation.getJson(jsonObject,"groupByMonthYear",Object.class))));
+    return  operations;
     }
 
     @Override

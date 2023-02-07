@@ -17,7 +17,7 @@ public interface PurchaseLogHistoryCustomRepository {
 
 
 
-    public List<PurchaseAggregationResponse> findItemPurchaseDetailsByMonthYear();
+    public List<PurchaseAggregationResponse> findItemPurchaseDetailsByMonthYear() throws JSONException;
 
     public List<ItemPurchaseAggregationResponse> getPurchaseDetailsByCustomerName();
 

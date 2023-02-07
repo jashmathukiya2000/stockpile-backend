@@ -280,76 +280,39 @@ class UserServiceImplTest {
 
 
 
-
-
-
-
-
-//    @Test
-//    void testGetUserDetailsByResultSpi() throws JSONException, InvocationTargetException, IllegalAccessException {
-//        UserFilterData userFilter = new UserFilterData();
-//        userFilter.setId(userFilter.getId());
-//        FilterSortRequest.SortRequest<UserSortBy> sort = new FilterSortRequest.SortRequest<>();
-//        sort.setSortBy(UserSortBy.SPI);
-//        sort.setOrderBy(Sort.Direction.ASC);
-//
-//        Pagination pagination = new Pagination();
-//        pagination.setPage(1);
-//        pagination.setLimit(5);
-//        PageRequest pageRequest = PageRequest.of(pagination.getPage(), pagination.getLimit());
-//
-//        var userSpiDataInExcel =UserServiceImplTestGenerator.getUserSpiData();
-//
-//        var userSpiDataInExcels=UserServiceImplTestGenerator.getSpiResponseInExcel();
-//
-//        var userSpiResponse=UserServiceImplTestGenerator.getSpiResponse();
-//
-//        var userSpiData=UserServiceImplTestGenerator.getSpiResponseInExcels();
-//
-//        Page<UserSpiResponse> page=new PageImpl<>(userSpiResponse);
-//
-//
-//        HashMap<String, List> hashMap= new LinkedHashMap<>();
-//
-//
-//        when(userRepository.getUserDetailsByResultSpi(userFilter,sort,pageRequest));
-//
-//        when(page.getContent()).thenReturn(userSpiResponse);
-//
-//       Workbook workbook=ExcelUtils.createWorkbookOnResultSpi((userSpiDataInExcels.get_id(),   userSpiData.add(userSpiDataInExcels)),"UserDetailsBySpi");
-//
-//
-
-//
-//
-//  }
-
-
     @Test
     void testGetUserDetailsByResultSpi() throws JSONException, InvocationTargetException, IllegalAccessException {
         UserFilterData userFilter = new UserFilterData();
-          userFilter.setId(userFilter.getId());
-        FilterSortRequest.SortRequest<UserSortBy> sort = new FilterSortRequest.SortRequest<>();
-       sort.setSortBy(UserSortBy.SPI);
-       sort.setOrderBy(Sort.Direction.ASC);
+
+         userFilter.setId(userFilter.getId());
+
+         FilterSortRequest.SortRequest<UserSortBy> sort = new FilterSortRequest.SortRequest<>();
+
+         sort.setSortBy(UserSortBy.SPI);
+
+        sort.setOrderBy(Sort.Direction.ASC);
+
         Pagination pagination = new Pagination();
-        pagination.setPage(1);
+
+        pagination.setPage(0);
+
         pagination.setLimit(5);
+
         PageRequest pageRequest = PageRequest.of(pagination.getPage(), pagination.getLimit());
 
         var userSpiResponse = UserServiceImplTestGenerator.getSpiResponse();
 
+        Page<UserSpiResponse> page = new PageImpl<>(userSpiResponse);
+
         HashMap<String, List<UserSpiDataInExcel>> userSpiDataInExcels = UserServiceImplTestGenerator.getSpiResponseInExcel();
 
-        Page<UserSpiResponse> page = mock(Page.class);
-
-        when(page.getContent()).thenReturn(userSpiResponse);
 
         when(userRepository.getUserDetailsByResultSpi(userFilter, sort, pageRequest)).thenReturn(page);
 
-        Workbook actualData = userService.getUserDetailsByResultSpi(userFilter, sort, pageRequest);
+        var actualData = userService.getUserDetailsByResultSpi(userFilter, sort, pageRequest);
 
-        Workbook expectedData = ExcelUtils.createWorkbookOnResultSpi(userSpiDataInExcels, "UserDetailsBySpi");
+        var expectedData = ExcelUtils.createWorkbookOnResultSpi(userSpiDataInExcels, "UserDetailsBySpi");
+
          Assertions. assertEquals(expectedData.getNumberOfSheets(), actualData.getNumberOfSheets());
     }
 

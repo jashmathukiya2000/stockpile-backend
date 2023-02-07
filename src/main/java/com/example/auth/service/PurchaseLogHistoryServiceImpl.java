@@ -49,7 +49,6 @@ public class PurchaseLogHistoryServiceImpl implements PurchaseLogHistoryService 
         this.itemRepository = itemRepository;
         this.itemService = itemService;
         this.userHelper = userHelper;
-
     }
 
     @Override
@@ -78,6 +77,13 @@ public class PurchaseLogHistoryServiceImpl implements PurchaseLogHistoryService 
             throw new InvalidRequestException(MessageConstant.ITEM_QUANITY_OUT_OF_STOCK);
         }
 
+    }
+
+    @VisibleForTesting
+    Item getQuantity(){
+        Item item= new Item();
+        item.getQuantity();
+        return item;
     }
 
 
@@ -157,8 +163,8 @@ public class PurchaseLogHistoryServiceImpl implements PurchaseLogHistoryService 
 
 
     @Override
-    public List<PurchaseAggregationResponse> getItemPurchaseDetailsByMonthYear() {
-        return purchaseLogHistoryRepository.findItemPurchaseDetailsByMonthYear();
+    public List<PurchaseAggregationResponse> getItemPurchaseDetailsByMonthYear() throws JSONException {
+        return purchaseLogHistoryRepository.findItemPurchaseDetailsByMonthYear( );
 
     }
 

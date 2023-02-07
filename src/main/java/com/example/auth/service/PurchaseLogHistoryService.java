@@ -16,7 +16,6 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.List;
-import java.util.Map;
 
 public interface PurchaseLogHistoryService {
     PurchaseLogHistoryResponse addPurchaseLog(PurchaseLogHistoryAddRequest purchaseLogHistoryAddRequest, String customerId,String itemName);
@@ -41,7 +40,7 @@ public interface PurchaseLogHistoryService {
 
 
 
-    List<PurchaseAggregationResponse> getItemPurchaseDetailsByMonthYear();
+    List<PurchaseAggregationResponse> getItemPurchaseDetailsByMonthYear() throws JSONException;
 
     List<ItemPurchaseAggregationResponse> getPurchaseDetailsByCustomerName();
 

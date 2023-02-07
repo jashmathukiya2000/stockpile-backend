@@ -169,7 +169,7 @@ public class PurchaseLogHistoryController {
 
     @RequestMapping(name = "getItemPurchaseDetailsByMonthYear",value = "/month/Year", method = RequestMethod.POST)
     @Access (levels = Role.ANONYMOUS)
-    public ListResponse<PurchaseAggregationResponse> findItemPurchaseDetailsByMonthYear(){
+    public ListResponse<PurchaseAggregationResponse> findItemPurchaseDetailsByMonthYear() throws JSONException {
         ListResponse<PurchaseAggregationResponse> listResponse= new ListResponse<>();
         listResponse.setData(purchaseLogHistoryService.getItemPurchaseDetailsByMonthYear());
         listResponse.setStatus(Response.getOkResponse());

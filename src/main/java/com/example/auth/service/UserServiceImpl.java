@@ -246,6 +246,7 @@ public class UserServiceImpl implements UserService {
 
 
     public User getUserModel(String id) {
+
         return userRepository.findByIdAndSoftDeleteIsFalse(id).orElseThrow(() -> new NotFoundException(MessageConstant.USER_ID_NOT_FOUND));
     }
 

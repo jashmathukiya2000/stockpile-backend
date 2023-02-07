@@ -116,20 +116,14 @@ public class UserServiceImplTestGenerator {
                 .build());
     }
 
-    public static List<UserSpiDataInExcel> getUserSpiData(){
-        return List.of(UserSpiDataInExcel.builder()
-                ._id(id)
-                .firstName("krish")
-                .email("krish@gmail.com")
-                 .semester("7")
-                .build());
-    }
+
     public static List<UserSpiResponse> getSpiResponse(){
         return List.of(UserSpiResponse.builder()
                 ._id(id)
                 .auth(getSpiData())
                 .build());
     }
+
      public static List<UserSpiData> getSpiData(){
         return List.of(UserSpiData.builder()
                 ._id(id)
@@ -139,23 +133,10 @@ public class UserServiceImplTestGenerator {
                 .build());
 
     }
-
     public static UserSpiResponse getSpiResponseInExcel(){
         return UserSpiResponse.builder()
                 .build();
     }
 
-    public static List<UserSpiResponse> getSpiResponseInExcels(){
-        return List.of(UserSpiResponse.builder()
-                .auth(getSpiData())
-                .build());
-    }
-
-
-    public static Page<UserSpiResponse> getMockPage() {
-        return (Page<UserSpiResponse>) UserSpiResponse.builder()
-                .count(5)
-                .build();
-    }
 }
 

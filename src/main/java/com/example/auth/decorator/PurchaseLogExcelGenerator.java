@@ -1,13 +1,18 @@
 package com.example.auth.decorator;
 
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+
+import java.util.HashMap;
+import java.util.List;
 
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class PurchaseLogExcelGenerator {
+@Builder
+public class PurchaseLogExcelGenerator extends HashMap<String, List<PurchaseLogExcelGenerator>> {
     String date;
     String itemName;
     double count;
