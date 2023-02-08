@@ -1,6 +1,6 @@
 package com.example.auth.commons.model;
 
-import com.example.auth.decorator.CustomAggregationOperation;
+import com.example.auth.commons.decorator.CustomAggregationOperation;
 import org.bson.Document;
 
 import java.util.List;

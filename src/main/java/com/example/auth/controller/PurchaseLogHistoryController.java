@@ -2,12 +2,10 @@ package com.example.auth.controller;
 
 import com.example.auth.commons.Access;
 import com.example.auth.commons.constant.ResponseConstant;
-import com.example.auth.commons.decorator.ExcelUtils;
-import com.example.auth.commons.decorator.GeneralHelper;
+import com.example.auth.commons.decorator.*;
 import com.example.auth.commons.enums.Role;
 import com.example.auth.decorator.*;
 import com.example.auth.decorator.pagination.*;
-import com.example.auth.model.ExcelGenerator;
 import com.example.auth.model.ExcelHelper;
 import com.example.auth.model.GeneratePdfReport;
 import com.example.auth.model.PurchaseLogHistory;
@@ -47,7 +45,7 @@ public class PurchaseLogHistoryController {
 
     @RequestMapping(name = "addPurchaseLog", value = "/add", method = RequestMethod.POST)
     @Access (levels = Role.ADMIN)
-    public DataResponse<PurchaseLogHistoryResponse> addPurchaseLog(@RequestBody PurchaseLogHistoryAddRequest purchaseLogHistoryAddRequest, @RequestParam String customerId,@RequestParam String itemName) {
+    public DataResponse<PurchaseLogHistoryResponse> addPurchaseLog(@RequestBody PurchaseLogHistoryAddRequest purchaseLogHistoryAddRequest, @RequestParam String customerId, @RequestParam String itemName) {
         DataResponse<PurchaseLogHistoryResponse> dataResponse = new DataResponse<>();
         dataResponse.setData(purchaseLogHistoryService.addPurchaseLog(purchaseLogHistoryAddRequest, customerId,itemName));
         dataResponse.setStatus(Response.getOkResponse(ResponseConstant.SAVED_SUCCESSFULLY));
@@ -118,20 +116,6 @@ public class PurchaseLogHistoryController {
     }
 
 
-    @RequestMapping(name = "generateExcelFile", value = "/export-to-excel", method = RequestMethod.POST)
-    @Access (levels = Role.ANONYMOUS)
-    public void exportIntoExcelFile(HttpServletResponse response, @RequestParam String customerId) throws IOException {
-        response.setContentType("application/octet-stream");
-        DateFormat dateFormatter = new SimpleDateFormat("yyyy-MM-dd_HH:mm:ss");
-        String currentDateTime = dateFormatter.format(new Date());
-        String headerKey = "Content-Disposition";
-        String headerValue = "attachment; filename=Invoice" + currentDateTime + ".xlsx";
-        response.setHeader(headerKey, headerValue);
-
-        List<PurchaseLogHistory> customerLog = purchaseLogHistoryService.findById(customerId);
-        ExcelGenerator generator = new ExcelGenerator(customerLog);
-        generator.generateExcelFile(response);
-    }
 
     @RequestMapping(name = "uploadExcelFile", value = "/upload/excelFile", method = RequestMethod.POST)
     @Access (levels = Role.ADMIN)
@@ -201,12 +185,16 @@ public class PurchaseLogHistoryController {
               .body(resource);
     }
 
-//    @RequestMapping(name = "purchaseLogHistoryChart",value = "/chart",method = RequestMethod.GET)
-//    @Access (levels = Role.ANONYMOUS)
-//    public String springMVC(ModelMap modelMap) {
-//        List<List<Map<Object, Object>>> canvasjsDataList = purchaseLogHistoryService.getCanvasjsChartData();
-//        modelMap.addAttribute("dataPointsList", canvasjsDataList);
-//        return "chart";
-//    }
+    @RequestMapping(name = "getDateFilters",value = "/monthYear", method = RequestMethod.POST)
+    @Access (levels = Role.ANONYMOUS)
+    public PageResponse<MainDateFilter> getDateFilters(@RequestBody FilterSortRequest<PurchaseLogFilter, PurchaseLogSortBy> filterSortRequest,MainDateFilter mainDateFilter ) throws JSONException {
+        PageResponse<MainDateFilter> pageResponse = new PageResponse<>();
+        Page<MainDateFilter> mainDateFilters = purchaseLogHistoryService.getDateFilters(filterSortRequest.getFilter(), filterSortRequest.getSort(),
+                generalHelper.getPagination(filterSortRequest.getPagination().getPage(), filterSortRequest.getPagination().getLimit()),mainDateFilter);
+           pageResponse.setStatus(Response.getOkResponse());
+           pageResponse.setData(mainDateFilters);
+       return pageResponse;
+    }
+
 
 }

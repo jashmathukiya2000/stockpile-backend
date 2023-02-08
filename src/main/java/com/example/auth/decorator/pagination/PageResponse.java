@@ -1,6 +1,6 @@
 package com.example.auth.decorator.pagination;
 
-import com.example.auth.decorator.Response;
+import com.example.auth.commons.decorator.Response;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;

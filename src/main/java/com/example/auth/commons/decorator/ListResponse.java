@@ -1,5 +1,6 @@
-package com.example.auth.decorator;
+package com.example.auth.commons.decorator;
 
+import com.example.auth.commons.decorator.Response;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;

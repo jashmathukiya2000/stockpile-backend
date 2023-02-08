@@ -4,6 +4,8 @@ import com.example.auth.commons.FileLoader;
 import com.example.auth.commons.advice.NullAwareBeanUtilsBean;
 import com.example.auth.commons.constant.MessageConstant;
 import com.example.auth.commons.decorator.ExcelUtils;
+import com.example.auth.commons.decorator.MonthConfig;
+import com.example.auth.commons.decorator.TemplateParser;
 import com.example.auth.commons.exception.InvalidRequestException;
 import com.example.auth.commons.exception.NotFoundException;
 import com.example.auth.commons.helper.UserHelper;
@@ -24,10 +26,12 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
+import org.joda.time.DateTime;
 
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.util.*;
+
 
 @Service
 @Slf4j
@@ -49,6 +53,8 @@ public class PurchaseLogHistoryServiceImpl implements PurchaseLogHistoryService 
         this.itemRepository = itemRepository;
         this.itemService = itemService;
         this.userHelper = userHelper;
+
+
     }
 
     @Override
@@ -80,8 +86,8 @@ public class PurchaseLogHistoryServiceImpl implements PurchaseLogHistoryService 
     }
 
     @VisibleForTesting
-    Item getQuantity(){
-        Item item= new Item();
+    Item getQuantity() {
+        Item item = new Item();
         item.getQuantity();
         return item;
     }
@@ -164,7 +170,7 @@ public class PurchaseLogHistoryServiceImpl implements PurchaseLogHistoryService 
 
     @Override
     public List<PurchaseAggregationResponse> getItemPurchaseDetailsByMonthYear() throws JSONException {
-        return purchaseLogHistoryRepository.findItemPurchaseDetailsByMonthYear( );
+        return purchaseLogHistoryRepository.findItemPurchaseDetailsByMonthYear();
 
     }
 
@@ -211,11 +217,47 @@ public class PurchaseLogHistoryServiceImpl implements PurchaseLogHistoryService 
         return workbook;
     }
 
-//    @Override
-//    public List<List<Map<Object, Object>>> getCanvasjsChartData() {
-//        return canvasjsChartData.getCanvasjsDataList();
-//
-//    }
+    @Override
+    public Page<MainDateFilter> getDateFilters(PurchaseLogFilter filter, FilterSortRequest.SortRequest<PurchaseLogSortBy> sort, PageRequest pagination, MainDateFilter mainDateFilter) throws JSONException {
+        MonthConfig monthConfig = new MonthConfig();
+        mainDateFilter = getMainDateFilter(monthConfig, filter);
+        System.out.println("mainDateFilter:" + mainDateFilter);
+        return purchaseLogHistoryRepository.getDateFilters(filter, sort, pagination, mainDateFilter);
+    }
+
+
+    @VisibleForTesting
+    public MainDateFilter getMainDateFilter(MonthConfig monthConfig, PurchaseLogFilter filter) {
+        List<PurchaseLogHistoryFilter> dateFilters = new LinkedList<>(getDateFilters(monthConfig, filter));
+        log.info("MainDateFilter:{}", dateFilters);
+        return MainDateFilter.builder().dateFilters(dateFilters).build();
+
+    }
+
+
+    private List<PurchaseLogHistoryFilter> getDateFilters(MonthConfig monthConfig, PurchaseLogFilter filter) {
+        List<PurchaseLogHistoryFilter> purchaseLogHistoryFilters = new ArrayList<>();
+        DateTime dateTime = new DateTime().withMonthOfYear(filter.getMonth()).withYear(filter.getYear()).withDayOfMonth(1);
+        log.info("dateTime:{}", dateTime);
+        purchaseLogHistoryFilters.add(getDateFilter(filter.getMonth(), filter.getYear(), false));
+        int monthDifference = monthConfig.getGetGetAccountingDashBoardMonthDifference();
+        if (monthDifference > 0) {
+            for (int i = 1; i <= monthDifference; i++) {
+                boolean last = monthDifference == i;
+                DateTime updatedDateTime = dateTime.minusMonths(i);
+                purchaseLogHistoryFilters.add(getDateFilter(updatedDateTime.getMonthOfYear(), updatedDateTime.getYear(), last));
+            }
+        }
+        log.info("purchaseLogHistoryFilters:{}", purchaseLogHistoryFilters);
+        return purchaseLogHistoryFilters;
+
+
+    }
+
+
+    private PurchaseLogHistoryFilter getDateFilter(int month, int year, boolean last) {
+        return PurchaseLogHistoryFilter.builder().month(month).year(year).last(last).build();
+    }
 
 
     Customer getcustomerById(String id) {

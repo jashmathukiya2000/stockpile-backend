@@ -1,4 +1,4 @@
-package com.example.auth.decorator;
+package com.example.auth.commons.decorator;
 
 import org.bson.Document;
 import org.json.JSONException;

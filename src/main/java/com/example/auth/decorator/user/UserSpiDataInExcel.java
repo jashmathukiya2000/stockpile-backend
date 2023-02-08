@@ -1,6 +1,6 @@
 package com.example.auth.decorator.user;
 
-import com.example.auth.decorator.ExcelField;
+import com.example.auth.commons.decorator.ExcelField;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;

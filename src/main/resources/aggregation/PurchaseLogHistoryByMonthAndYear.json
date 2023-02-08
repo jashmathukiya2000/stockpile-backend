@@ -86,12 +86,3 @@
   }
 }
 
-//The above code is a MongoDB aggregation pipeline expression that performs a conditional match on a document field $date. It matches only those documents whose month value in the field $date is greater than or equal to 3 - 2 and less than or equal to 1.
-//
-//In detail:
-//
-//"$gte": [ { "$month": "$date" }, { "$subtract": [3, 2 ] } ] checks if the month value of the $date field is greater than or equal to 3 - 2 = 1.
-//"$lte": [ { "$month": "$date" }, 1 ] checks if the month value of the $date field is less than or equal to 1.
-//So, the expression as a whole will match only those documents whose month value in the $date field is between 1 and 1, i.e. only those documents where the month value is 1.
-//
-//It should be noted that in MongoDB the month value of a date is zero-based, meaning January is 0, February is 1, and so on.

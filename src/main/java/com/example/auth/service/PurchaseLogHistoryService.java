@@ -1,9 +1,6 @@
 package com.example.auth.service;
 
-import com.example.auth.decorator.ItemPurchaseAggregationResponse;
-import com.example.auth.decorator.PurchaseAggregationResponse;
-import com.example.auth.decorator.PurchaseLogHistoryAddRequest;
-import com.example.auth.decorator.PurchaseLogHistoryResponse;
+import com.example.auth.decorator.*;
 import com.example.auth.decorator.pagination.FilterSortRequest;
 import com.example.auth.decorator.pagination.PurchaseLogFilter;
 import com.example.auth.decorator.pagination.PurchaseLogSortBy;
@@ -39,7 +36,6 @@ public interface PurchaseLogHistoryService {
 
 
 
-
     List<PurchaseAggregationResponse> getItemPurchaseDetailsByMonthYear() throws JSONException;
 
     List<ItemPurchaseAggregationResponse> getPurchaseDetailsByCustomerName();
@@ -50,8 +46,8 @@ public interface PurchaseLogHistoryService {
 
     Workbook getPurchaseDetailsByCustomer(PurchaseLogFilter filter, FilterSortRequest.SortRequest<PurchaseLogSortBy> sort, PageRequest pageRequest) throws InvocationTargetException, IllegalAccessException, JSONException;
 
-//    List<List<Map<Object, Object>>> getCanvasjsChartData();
 
 
+    Page<MainDateFilter> getDateFilters(PurchaseLogFilter filter, FilterSortRequest.SortRequest<PurchaseLogSortBy> sort, PageRequest pagination, MainDateFilter mainDateFilter) throws JSONException;
 }
 

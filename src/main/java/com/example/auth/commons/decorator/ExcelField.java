@@ -1,4 +1,4 @@
-package com.example.auth.decorator;
+package com.example.auth.commons.decorator;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;

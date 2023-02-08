@@ -1,6 +1,6 @@
 package com.example.auth.repository;
 
-import com.example.auth.decorator.CustomAggregationOperation;
+import com.example.auth.commons.decorator.CustomAggregationOperation;
 import com.example.auth.decorator.pagination.CountQueryResult;
 import com.example.auth.decorator.pagination.CustomerFilter;
 import com.example.auth.decorator.pagination.CustomerSortBy;

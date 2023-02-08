@@ -17,6 +17,7 @@ import java.util.*;
 @AllArgsConstructor
 @Component
 @Builder
+
 public class AdminConfiguration {
     @Id
     String id;
@@ -42,6 +43,8 @@ public class AdminConfiguration {
     Set<String> techAdmins = getTechAdminEmails();
     NotificationConfiguration notificationConfiguration;
     Map<String,String> userImportMappingFields = new LinkedHashMap<>();
+
+    int getAccountingDashBoardMonthDifference=2;
 
 
     private Set<String> getRequiredItems() {
@@ -88,4 +91,8 @@ public class AdminConfiguration {
         userImportMappingFields.put("MobileNo", "mobileNo");
 
     }
-}
+
+
+
+
+    }

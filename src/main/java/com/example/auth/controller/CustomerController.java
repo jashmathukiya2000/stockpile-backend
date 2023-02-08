@@ -4,10 +4,9 @@ import com.example.auth.commons.Access;
 import com.example.auth.commons.constant.ResponseConstant;
 import com.example.auth.commons.decorator.GeneralHelper;
 import com.example.auth.commons.enums.Role;
-import com.example.auth.decorator.DataResponse;
-import com.example.auth.decorator.ItemPurchaseAggregationResponse;
-import com.example.auth.decorator.ListResponse;
-import com.example.auth.decorator.Response;
+import com.example.auth.commons.decorator.DataResponse;
+import com.example.auth.commons.decorator.ListResponse;
+import com.example.auth.commons.decorator.Response;
 import com.example.auth.decorator.customer.CustomerAddRequest;
 import com.example.auth.decorator.customer.CustomerLoginAddRequest;
 import com.example.auth.decorator.customer.CustomerResponse;
@@ -46,7 +45,8 @@ public class CustomerController {
 
     @RequestMapping(name = "login", value = "/login/email", method = RequestMethod.POST)
     @Access(levels = Role.ANONYMOUS)
-    public DataResponse<CustomerResponse> login(@RequestBody CustomerLoginAddRequest customerLoginAddRequest) throws IllegalAccessException, NoSuchAlgorithmException, InvocationTargetException {
+    public DataResponse<CustomerResponse> login(@RequestBody CustomerLoginAddRequest customerLoginAddRequest)
+            throws IllegalAccessException, NoSuchAlgorithmException, InvocationTargetException {
         DataResponse<CustomerResponse> dataResponse = new DataResponse<>();
         dataResponse.setData(customerService.login(customerLoginAddRequest));
         dataResponse.setStatus(Response.getOkResponse(ResponseConstant.LOGIN_SUCCESSFULL));

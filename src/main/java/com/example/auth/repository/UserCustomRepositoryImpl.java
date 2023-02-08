@@ -1,7 +1,7 @@
 package com.example.auth.repository;
 
 import com.example.auth.commons.decorator.FileReader;
-import com.example.auth.decorator.CustomAggregationOperation;
+import com.example.auth.commons.decorator.CustomAggregationOperation;
 import com.example.auth.decorator.UserEligibilityAggregation;
 import com.example.auth.decorator.pagination.CountQueryResult;
 import com.example.auth.decorator.pagination.FilterSortRequest;

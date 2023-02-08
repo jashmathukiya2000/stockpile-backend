@@ -5,6 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.Date;
 import java.util.Set;
 
 @Data
@@ -13,11 +14,14 @@ import java.util.Set;
 public class PurchaseLogFilter {
     String search;
     Set<String> ids;
+    int month;
+    int year;
+    Date date;
 
 
     @JsonIgnore
     boolean softDelete;
-    int month;
+
 
     public String getSearch() {
         if (search != null) {

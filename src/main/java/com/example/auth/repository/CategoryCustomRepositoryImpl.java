@@ -1,12 +1,11 @@
 package com.example.auth.repository;
 
-import com.example.auth.decorator.CustomAggregationOperation;
+import com.example.auth.commons.decorator.CustomAggregationOperation;
 import com.example.auth.decorator.category.CategoryResponse;
 import com.example.auth.decorator.pagination.CategoryFilter;
 import com.example.auth.decorator.pagination.CategorySortBy;
 import com.example.auth.decorator.pagination.CountQueryResult;
 import com.example.auth.decorator.pagination.FilterSortRequest;
-import com.example.auth.model.Category;
 import org.apache.commons.lang3.StringUtils;
 import org.bson.Document;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,7 +24,6 @@ import org.springframework.util.CollectionUtils;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 
 import static org.springframework.data.mongodb.core.aggregation.Aggregation.*;

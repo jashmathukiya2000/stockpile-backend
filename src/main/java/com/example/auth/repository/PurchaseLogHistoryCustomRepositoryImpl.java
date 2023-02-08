@@ -1,6 +1,8 @@
 package com.example.auth.repository;
 
+import com.example.auth.commons.decorator.CustomAggregationOperation;
 import com.example.auth.commons.decorator.FileReader;
+import com.example.auth.commons.decorator.TemplateParser;
 import com.example.auth.commons.model.AggregationUtils;
 import com.example.auth.decorator.*;
 import com.example.auth.decorator.pagination.CountQueryResult;
@@ -149,14 +151,16 @@ public class PurchaseLogHistoryCustomRepositoryImpl implements PurchaseLogHistor
 
     public List<AggregationOperation> getItemPurchaseByMonthAndYear() throws JSONException {
         List<AggregationOperation> operations = new ArrayList<>();
-        String fileName=FileReader.loadFile("aggregation/PurchaseLogHistoryByMonthAndYear.json");
-        JSONObject jsonObject=new JSONObject(fileName);
+        String json = FileReader.loadFile("aggregation/PurchaseLogHistoryByMonthAndYear.json");
+//        json=new TemplateParser<MainDataFilter>().compileTemplate(json,mainDataFilter);
 
-        operations.add(new CustomAggregationOperation(Document.parse(CustomAggregationOperation.getJson(jsonObject,"setMonthAndYear",Object.class))));
-        operations.add(new CustomAggregationOperation(Document.parse(CustomAggregationOperation.getJson(jsonObject,"matchMonthAndYear",Object.class))));
-        operations.add(new CustomAggregationOperation(Document.parse(CustomAggregationOperation.getJson(jsonObject,"groupByMonthYearItemName",Object.class))));
-        operations.add(new CustomAggregationOperation(Document.parse(CustomAggregationOperation.getJson(jsonObject,"groupByMonthYear",Object.class))));
-    return  operations;
+        JSONObject jsonObject = new JSONObject(json);
+
+        operations.add(new CustomAggregationOperation(Document.parse(CustomAggregationOperation.getJson(jsonObject, "setMonthAndYear", Object.class))));
+        operations.add(new CustomAggregationOperation(Document.parse(CustomAggregationOperation.getJson(jsonObject, "matchMonthAndYear", Object.class))));
+        operations.add(new CustomAggregationOperation(Document.parse(CustomAggregationOperation.getJson(jsonObject, "groupByMonthYearItemName", Object.class))));
+        operations.add(new CustomAggregationOperation(Document.parse(CustomAggregationOperation.getJson(jsonObject, "groupByMonthYear", Object.class))));
+        return operations;
     }
 
     @Override
@@ -202,6 +206,54 @@ public class PurchaseLogHistoryCustomRepositoryImpl implements PurchaseLogHistor
 
     }
 
+    @Override
+    public Page<MainDateFilter> getDateFilters(PurchaseLogFilter filter, FilterSortRequest.SortRequest<PurchaseLogSortBy> sort, PageRequest pagination, MainDateFilter mainDateFilter) throws JSONException {
+        List<AggregationOperation> operations = getDate(filter, sort, pagination, mainDateFilter, true);
+        Aggregation aggregation = newAggregation(operations);
+        List<MainDateFilter> mainDateFilters = mongoTemplate.aggregate(aggregation, "purchaseLogHistory", MainDateFilter.class).getMappedResults();
+        List<AggregationOperation> operationList = getDate(filter, sort, pagination, mainDateFilter, false);
+        operationList.add(group().count().as("count"));
+        operations.add(project("count"));
+        Aggregation aggregation1 = newAggregation(PurchaseLogHistory.class, operationList);
+        AggregationResults<CountQueryResult> countQueryResults = mongoTemplate.aggregate(aggregation1, "purchaseLogHistory", CountQueryResult.class);
+        long count = countQueryResults.getMappedResults().size() == 0 ? 0 : countQueryResults.getMappedResults().get(0).getCount();
+        return PageableExecutionUtils.getPage(
+                mainDateFilters,
+                pagination,
+                () -> count);
+
+    }
+
+    private List<AggregationOperation> getDate(PurchaseLogFilter filter, FilterSortRequest.SortRequest<PurchaseLogSortBy> sort, PageRequest pagination, MainDateFilter mainDateFilter, boolean addPage) throws JSONException {
+        List<AggregationOperation> operations = new ArrayList<>();
+        String json = FileReader.loadFile("aggregation/MonthDetails.json");
+        json = new TemplateParser<MainDateFilter>().compileTemplate(json, mainDateFilter);
+        System.out.println("jsonData" + json);
+        JSONObject jsonObject = new JSONObject(json);
+        System.out.println("jsonObject" + jsonObject);
+        operations.add(new CustomAggregationOperation(Document.parse(CustomAggregationOperation.getJson(jsonObject, "setMonthYearInString", Object.class))));
+        log.info("setMonthYearInString:{}", operations);
+        operations.add(new CustomAggregationOperation(Document.parse(CustomAggregationOperation.getJson(jsonObject, "matchMonthAndYear", Object.class))));
+        log.info("matchMonthAndYear:{}", operations);
+        operations.add(new CustomAggregationOperation(Document.parse(CustomAggregationOperation.getJson(jsonObject, "groupByMonthYearItemName", Object.class))));
+        log.info("groupByMonthYearItemName:{}", operations);
+        operations.add(new CustomAggregationOperation(Document.parse(CustomAggregationOperation.getJson(jsonObject, "groupByMonthYear", Object.class))));
+        log.info("groupByMonthYear:{}", operations);
+        if (addPage) {
+            if (sort != null && sort.getSortBy() != null && sort.getOrderBy() != null) {
+                operations.add(new SortOperation(Sort.by(sort.getOrderBy(), sort.getSortBy().getValue())));
+            }
+            if (pagination != null) {
+
+                operations.add(skip(pagination.getOffset()));
+                operations.add(limit(pagination.getPageSize()));
+            }
+        }
+        System.out.println("operations" + operations);
+        return operations;
+
+    }
+
     private List<AggregationOperation> purchaseDetailsByCustomer(PurchaseLogFilter filter, FilterSortRequest.SortRequest<PurchaseLogSortBy> sort, PageRequest pageRequest, boolean addPage) throws JSONException {
         List<AggregationOperation> operations = new ArrayList<>();
         String fileName = FileReader.loadFile("aggregation/PurchaseLogByMonthYear.json");
@@ -223,6 +275,7 @@ public class PurchaseLogHistoryCustomRepositoryImpl implements PurchaseLogHistor
                 operations.add(limit(pageRequest.getPageSize()));
             }
         }
+
         return operations;
     }
 
@@ -247,6 +300,7 @@ public class PurchaseLogHistoryCustomRepositoryImpl implements PurchaseLogHistor
         return operations;
 
     }
+
     public List<AggregationOperation> getDetailsByCustomerName() {
         List<AggregationOperation> operations = new ArrayList<>();
         Criteria criteria = new Criteria();

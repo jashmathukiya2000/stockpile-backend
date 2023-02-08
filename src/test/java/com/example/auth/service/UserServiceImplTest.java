@@ -194,10 +194,15 @@ class UserServiceImplTest {
     void testGetToken() throws InvocationTargetException, IllegalAccessException {
         //given
         var user = UserServiceImplTestGenerator.getMockUser(role);
+
         JWTUser jwtUser = new JWTUser(id, Collections.singletonList(user.getRole().toString()));
+
         String token = jwtTokenUtil.generateToken(jwtUser);
+
         var response = UserServiceImplTestGenerator.getResponse(role);
+
         response.setToken(token);
+
         when(userRepository.findByIdAndSoftDeleteIsFalse(id)).thenReturn(Optional.ofNullable(user));
 
         //when
@@ -265,15 +270,17 @@ class UserServiceImplTest {
 
     @Test
     void testGetAllUserInExcel() throws InvocationTargetException, IllegalAccessException {
+        //given
         var response = UserServiceImplTestGenerator.getMockResponse();
 
         var userExcelResponse = UserServiceImplTestGenerator.getExcelResponse();
 
         var workbook = ExcelUtils.createWorkbookFromData(userExcelResponse, "UserDetails");
 
+        //when
         var actualData = userService.getAllUserInExcel();
 
-
+        //then
         Assertions.assertEquals(workbook.getNumberOfSheets(), actualData.getNumberOfSheets());
     }
 
@@ -283,6 +290,8 @@ class UserServiceImplTest {
 
     @Test
     void testGetUserDetailsByResultSpi() throws JSONException, InvocationTargetException, IllegalAccessException {
+        //given
+
         UserFilterData userFilter = new UserFilterData();
 
          userFilter.setId(userFilter.getId());
@@ -310,10 +319,12 @@ class UserServiceImplTest {
 
         when(userRepository.getUserDetailsByResultSpi(userFilter, sort, pageRequest)).thenReturn(page);
 
+        //when
         var actualData = userService.getUserDetailsByResultSpi(userFilter, sort, pageRequest);
 
         var expectedData = ExcelUtils.createWorkbookOnResultSpi(userSpiDataInExcels, "UserDetailsBySpi");
 
+        //then
          Assertions. assertEquals(expectedData.getNumberOfSheets(), actualData.getNumberOfSheets());
     }
 

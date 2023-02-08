@@ -1,15 +1,18 @@
 package com.example.auth.decorator;
 
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-@Data
-@NoArgsConstructor
-@AllArgsConstructor
-public class DataResponse<T> {
-    T data;
-    Response status;
+import java.util.List;
 
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
+@Builder
+public class MainDateFilter {
+
+ List<PurchaseLogHistoryFilter> dateFilters;
 
 }
