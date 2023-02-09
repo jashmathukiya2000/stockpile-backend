@@ -1,4 +1,5 @@
 package com.example.auth.commons.decorator;
+
 import lombok.Data;
 
 import lombok.NoArgsConstructor;

@@ -9,6 +9,10 @@ import com.example.auth.commons.decorator.TemplateParser;
 import com.example.auth.commons.exception.InvalidRequestException;
 import com.example.auth.commons.exception.NotFoundException;
 import com.example.auth.commons.helper.UserHelper;
+import com.example.auth.commons.model.AdminConfiguration;
+import com.example.auth.commons.model.EmailModel;
+import com.example.auth.commons.service.AdminConfigurationService;
+import com.example.auth.commons.utils.Utils;
 import com.example.auth.decorator.*;
 import com.example.auth.decorator.pagination.FilterSortRequest;
 import com.example.auth.decorator.pagination.PurchaseLogFilter;
@@ -19,15 +23,18 @@ import com.example.auth.repository.ItemRepository;
 import com.example.auth.repository.PurchaseLogHistoryRepository;
 import com.google.api.client.repackaged.com.google.common.annotations.VisibleForTesting;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.io.FileUtils;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.json.JSONException;
 import org.modelmapper.ModelMapper;
+import org.springframework.core.io.ByteArrayResource;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import org.joda.time.DateTime;
 
+import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.util.*;
@@ -43,9 +50,11 @@ public class PurchaseLogHistoryServiceImpl implements PurchaseLogHistoryService 
     private final ItemRepository itemRepository;
     private final ItemService itemService;
     private final UserHelper userHelper;
+    private final AdminConfigurationService adminConfigurationService;
+    private final Utils utils;
 
 
-    public PurchaseLogHistoryServiceImpl(PurchaseLogHistoryRepository purchaseLogHistoryRepository, ModelMapper modelMapper, CustomerRepository customerRepository, NullAwareBeanUtilsBean nullAwareBeanUtilsBean, ItemRepository itemRepository, ItemService itemService, UserHelper userHelper) {
+    public PurchaseLogHistoryServiceImpl(PurchaseLogHistoryRepository purchaseLogHistoryRepository, ModelMapper modelMapper, CustomerRepository customerRepository, NullAwareBeanUtilsBean nullAwareBeanUtilsBean, ItemRepository itemRepository, ItemService itemService, UserHelper userHelper, AdminConfigurationService adminConfigurationService, Utils utils) {
         this.purchaseLogHistoryRepository = purchaseLogHistoryRepository;
         this.modelMapper = modelMapper;
         this.customerRepository = customerRepository;
@@ -55,6 +64,8 @@ public class PurchaseLogHistoryServiceImpl implements PurchaseLogHistoryService 
         this.userHelper = userHelper;
 
 
+        this.adminConfigurationService = adminConfigurationService;
+        this.utils = utils;
     }
 
     @Override
@@ -214,22 +225,26 @@ public class PurchaseLogHistoryServiceImpl implements PurchaseLogHistoryService 
 
         getPurchaseHistory();
         Workbook workbook = ExcelUtils.createWorkbookOnBookDetailsData(hashMap, "PurchaseDetails");
+        createFileAndSendEmail(workbook);
         return workbook;
     }
 
+
     @Override
-    public Page<MainDateFilter> getDateFilters(PurchaseLogFilter filter, FilterSortRequest.SortRequest<PurchaseLogSortBy> sort, PageRequest pagination, MainDateFilter mainDateFilter) throws JSONException {
+    public Page<GetByMonthAndYear> getByMonthAndYear(PurchaseLogFilter filter, FilterSortRequest.SortRequest<PurchaseLogSortBy> sort, PageRequest pagination,MainDateFilter mainDateFilter) throws JSONException {
         MonthConfig monthConfig = new MonthConfig();
+
         mainDateFilter = getMainDateFilter(monthConfig, filter);
-        System.out.println("mainDateFilter:" + mainDateFilter);
-        return purchaseLogHistoryRepository.getDateFilters(filter, sort, pagination, mainDateFilter);
+
+        return purchaseLogHistoryRepository.getByMonthAndYear(filter, sort, pagination,mainDateFilter);
     }
 
 
     @VisibleForTesting
     public MainDateFilter getMainDateFilter(MonthConfig monthConfig, PurchaseLogFilter filter) {
+
         List<PurchaseLogHistoryFilter> dateFilters = new LinkedList<>(getDateFilters(monthConfig, filter));
-        log.info("MainDateFilter:{}", dateFilters);
+
         return MainDateFilter.builder().dateFilters(dateFilters).build();
 
     }
@@ -237,14 +252,20 @@ public class PurchaseLogHistoryServiceImpl implements PurchaseLogHistoryService 
 
     private List<PurchaseLogHistoryFilter> getDateFilters(MonthConfig monthConfig, PurchaseLogFilter filter) {
         List<PurchaseLogHistoryFilter> purchaseLogHistoryFilters = new ArrayList<>();
+
         DateTime dateTime = new DateTime().withMonthOfYear(filter.getMonth()).withYear(filter.getYear()).withDayOfMonth(1);
-        log.info("dateTime:{}", dateTime);
+
         purchaseLogHistoryFilters.add(getDateFilter(filter.getMonth(), filter.getYear(), false));
-        int monthDifference = monthConfig.getGetGetAccountingDashBoardMonthDifference();
+
+        int monthDifference = monthConfig.getGetPurchaseHistoryMonthDifference();
+
         if (monthDifference > 0) {
             for (int i = 1; i <= monthDifference; i++) {
+
                 boolean last = monthDifference == i;
+
                 DateTime updatedDateTime = dateTime.minusMonths(i);
+
                 purchaseLogHistoryFilters.add(getDateFilter(updatedDateTime.getMonthOfYear(), updatedDateTime.getYear(), last));
             }
         }
@@ -306,6 +327,36 @@ public class PurchaseLogHistoryServiceImpl implements PurchaseLogHistoryService 
         log.info("url :{}", url);
 
         return url;
+    }
+
+    private void createFileAndSendEmail(Workbook workBook) {
+        try {
+            File file = new File("UserData.xlsx");
+            ByteArrayResource resource = ExcelUtils.getBiteResourceFromWorkbook(workBook);
+            FileUtils.writeByteArrayToFile(file, resource.getByteArray());
+            File path = new File("C:\\Users\\TRPC05\\Downloads" + file.getName());
+            path.createNewFile();
+            sendmail(path);
+        } catch (Exception e) {
+            log.error("Error happened in excel generation or send email of excel: {}", e.getMessage());
+        }
+    }
+
+    private void sendmail(File file) throws InvocationTargetException, IllegalAccessException {
+
+        AdminConfiguration adminConfiguration = adminConfigurationService.getConfiguration();
+        try {
+            EmailModel emailModel = new EmailModel();
+            emailModel.setTo("sanskriti.s@techroversolutions.com");
+            System.out.println(emailModel.getTo());
+            emailModel.setCc(adminConfiguration.getTechAdmins());
+            System.out.println(emailModel.getCc());
+            emailModel.setSubject("UserData");
+            emailModel.setFile(file);
+            utils.sendEmailNow(emailModel);
+        } catch (Exception e) {
+            log.error("Error happened while sending result to user :{}", e.getMessage());
+        }
     }
 }
 

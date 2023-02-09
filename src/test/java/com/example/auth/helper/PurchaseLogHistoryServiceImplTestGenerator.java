@@ -1,5 +1,6 @@
 package com.example.auth.helper;
 
+import com.example.auth.commons.decorator.MonthConfig;
 import com.example.auth.decorator.*;
 import com.example.auth.model.Customer;
 import com.example.auth.model.Item;
@@ -127,21 +128,62 @@ public class PurchaseLogHistoryServiceImplTestGenerator {
     public static List<ItemPurchaseAggregationResponse> getItemPurchaseAggregationResponse(){
         return List.of(ItemPurchaseAggregationResponse.builder()
                 ._id(id)
-                .itemDetail(getItemDetails())
+                .itemDetail(getItemDetail())
                 .build());
     }
 
-    public static List<ItemDetail> getItemDetails(){
-        return List.of(ItemDetail.builder()
-                .itemName("mouse")
-                .build());
-    }
+
 
     public static  PurchaseLogExcelGenerator getPurchaseLogExcelGenerator(){
         return PurchaseLogExcelGenerator.builder()
                 .itemName("mouse")
                 .build();
     }
+
+    public static MainDateFilter getMainDateFilter(){
+        return MainDateFilter.builder()
+                .dateFilters(getPurchaseLogHistoryFilter())
+                .build();
+    }
+
+    public static List<PurchaseLogHistoryFilter> getPurchaseLogHistoryFilter(){
+        return List.of(PurchaseLogHistoryFilter.builder().build());
+    }
+
+    public static MonthConfig getMonthConfig(){
+        return MonthConfig.builder().build();
+    }
+
+    public static List<GetByMonthAndYear> getByMonthAndYear(){
+        return List.of(GetByMonthAndYear.builder()
+                .itemDetail(getItemDetails())
+                .totalItem(4)
+                .build());
+    }
+
+    public static List<ItemDetail> getItemDetail(){
+        return List.of(ItemDetail.builder()
+                .itemName("mouse")
+                .build());
+    }
+
+    public static List<ItemDetails> getItemDetails(){
+        return List.of(ItemDetails.builder()
+                .itemName("mouse")
+                .build());
+    }
+
+    public static List<PurchaseLogHistoryFilter> getPurchaseHistoryFilter(){
+        return List.of(PurchaseLogHistoryFilter.builder()
+                .last(false)
+                .month(1)
+                .year(2023)
+                .build());
+    }
+
+
+
+
 
 
 

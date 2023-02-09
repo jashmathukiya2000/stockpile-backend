@@ -1,9 +1,6 @@
 package com.example.auth.repository;
 
-import com.example.auth.decorator.ItemPurchaseAggregationResponse;
-import com.example.auth.decorator.MainDateFilter;
-import com.example.auth.decorator.PurchaseAggregationResponse;
-import com.example.auth.decorator.PurchaseLogHistoryResponse;
+import com.example.auth.decorator.*;
 import com.example.auth.decorator.pagination.FilterSortRequest;
 import com.example.auth.decorator.pagination.PurchaseLogFilter;
 import com.example.auth.decorator.pagination.PurchaseLogSortBy;
@@ -26,5 +23,6 @@ public interface PurchaseLogHistoryCustomRepository {
 
     Page<ItemPurchaseAggregationResponse> getPurchaseDetailsByCustomer(PurchaseLogFilter filter, FilterSortRequest.SortRequest<PurchaseLogSortBy> sort, PageRequest pageRequest) throws JSONException;
 
-    Page<MainDateFilter> getDateFilters(PurchaseLogFilter filter, FilterSortRequest.SortRequest<PurchaseLogSortBy> sort, PageRequest pagination, MainDateFilter mainDateFilter) throws JSONException;
+
+    Page<GetByMonthAndYear> getByMonthAndYear(PurchaseLogFilter filter, FilterSortRequest.SortRequest<PurchaseLogSortBy> sort, PageRequest pageRequest, MainDateFilter mainDateFilter) throws JSONException;
 }

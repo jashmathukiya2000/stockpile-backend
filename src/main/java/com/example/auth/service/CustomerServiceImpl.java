@@ -1,8 +1,11 @@
 package com.example.auth.service;
 
+import com.example.auth.commons.FileLoader;
 import com.example.auth.commons.JWTUser;
 import com.example.auth.commons.advice.NullAwareBeanUtilsBean;
 import com.example.auth.commons.constant.MessageConstant;
+import com.example.auth.commons.decorator.TemplateModel;
+import com.example.auth.commons.decorator.TemplateParser;
 import com.example.auth.commons.enums.PasswordEncryptionType;
 import com.example.auth.commons.enums.Role;
 import com.example.auth.commons.exception.InvalidRequestException;
@@ -13,6 +16,7 @@ import com.example.auth.commons.service.AdminConfigurationService;
 import com.example.auth.commons.utils.JwtTokenUtil;
 import com.example.auth.commons.utils.PasswordUtils;
 import com.example.auth.commons.utils.Utils;
+import com.example.auth.decorator.PurchaseLogHistoryAddRequest;
 import com.example.auth.decorator.customer.CustomerAddRequest;
 import com.example.auth.decorator.customer.CustomerLoginAddRequest;
 import com.example.auth.decorator.customer.CustomerResponse;
@@ -98,18 +102,22 @@ public class CustomerServiceImpl implements CustomerService {
         customer.setDate(new Date());
         customer.setOtpSendtime(new Date());
         customer.setLoginTime(new Date());
-        EmailModel emailModel = new EmailModel();
         String otp = generateOtp();
+        customer.setOtp(otp);
+        EmailModel emailModel = new EmailModel();
         emailModel.setMessage(otp);
+        TemplateParser<EmailModel> templateParser = new TemplateParser<>();
+        String url = templateParser.compileTemplate(FileLoader.loadHtmlTemplateOrReturnNull("send_otp"), emailModel);
         emailModel.setTo("sanskriti.s@techroversolutions.com");
         emailModel.setCc(adminConfiguration.getTechAdmins());
         emailModel.setSubject("OTP Verification");
         utils.sendEmailNow(emailModel);
-        customer.setOtp(otp);
         customer.setLogin(true);
         customerResponse.setOtp(customer.getOtp());
         customerRepository.save(customer);
+        System.out.println("customer" + customerResponse);
         return customerResponse;
+
     }
 
     @VisibleForTesting
@@ -253,15 +261,14 @@ public class CustomerServiceImpl implements CustomerService {
         }
     }
 
-     public Customer getUserByEmail(String email) {
+    public Customer getUserByEmail(String email) {
         return customerRepository.findUserByEmailAndSoftDeleteIsFalse(email).orElseThrow(() -> new NotFoundException(MessageConstant.USER_NOT_FOUND));
-     }
-
-     public Customer getById(String id) {
-         return customerRepository.findByIdAndSoftDeleteIsFalse(id).orElseThrow(() -> new NotFoundException(MessageConstant.USER_NOT_FOUND));
-
     }
 
+    public Customer getById(String id) {
+        return customerRepository.findByIdAndSoftDeleteIsFalse(id).orElseThrow(() -> new NotFoundException(MessageConstant.USER_NOT_FOUND));
+
+    }
 
 
 }

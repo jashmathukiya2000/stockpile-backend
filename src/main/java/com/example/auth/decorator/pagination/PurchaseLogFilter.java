@@ -16,8 +16,6 @@ public class PurchaseLogFilter {
     Set<String> ids;
     int month;
     int year;
-    Date date;
-
 
     @JsonIgnore
     boolean softDelete;

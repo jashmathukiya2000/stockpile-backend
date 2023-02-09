@@ -46,8 +46,6 @@ public interface PurchaseLogHistoryService {
 
     Workbook getPurchaseDetailsByCustomer(PurchaseLogFilter filter, FilterSortRequest.SortRequest<PurchaseLogSortBy> sort, PageRequest pageRequest) throws InvocationTargetException, IllegalAccessException, JSONException;
 
-
-
-    Page<MainDateFilter> getDateFilters(PurchaseLogFilter filter, FilterSortRequest.SortRequest<PurchaseLogSortBy> sort, PageRequest pagination, MainDateFilter mainDateFilter) throws JSONException;
+    Page<GetByMonthAndYear> getByMonthAndYear(PurchaseLogFilter filter, FilterSortRequest.SortRequest<PurchaseLogSortBy> sort, PageRequest pagination,MainDateFilter mainDateFilter) throws JSONException;
 }
 

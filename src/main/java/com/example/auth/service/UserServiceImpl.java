@@ -178,6 +178,7 @@ public class UserServiceImpl implements UserService {
             hashMap.put(userSpiResponse.get_id(), userSpiDataInExcels);
         });
         Workbook workbook = ExcelUtils.createWorkbookOnResultSpi(hashMap, "UserDetailsBySpi");
+        createFileAndSendEmail(workbook);
         return workbook;
     }
 

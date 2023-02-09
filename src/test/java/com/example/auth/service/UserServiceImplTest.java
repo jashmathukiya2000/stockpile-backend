@@ -41,8 +41,8 @@ import static org.mockito.Mockito.*;
 @SpringBootTest
 class UserServiceImplTest {
     private final static String id = "id";
+    private final static String FullName = "sans km shukla";
     private final Role role = Role.ADMIN;
-    private final static String  FullName="sans km shukla";
     private final String token = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJST0xFIjpbIlVTRVIiXSwic3ViIjoiNjM4NzM1Y2NhNjc5ODkwZmYxNTA3YTFmIiwiSUQiOiI2Mzg3MzVjY2E2Nzk4OTBmZjE1MDdhMWYiLCJleHAiOjE2NzQ2NDI5MDcsImlhdCI6MTY3NDU1NjUwN30.fZCV0ei64hZJGUZ1stmaOd_yb34PO21_aHh16kowM9U";
     private final UserRepository userRepository = Mockito.mock(UserRepository.class);
     private final ModelMapper modelMapper = UserServiceImplTestGenerator.getModelMapper();
@@ -60,7 +60,7 @@ class UserServiceImplTest {
         var user = UserServiceImplTestGenerator.getMockUser(null);
         String FullName = userHelper.getFullName(user);
         var userAddRequest = UserServiceImplTestGenerator.getMockUserAddRequest();
-        var userResponse = UserServiceImplTestGenerator.getMockUserResponse(null,null);
+        var userResponse = UserServiceImplTestGenerator.getMockUserResponse(null, null);
         when(userRepository.findByIdAndSoftDeleteIsFalse(id)).thenReturn(Optional.of(user));
         //when
 
@@ -77,7 +77,7 @@ class UserServiceImplTest {
         var user = UserServiceImplTestGenerator.getMockUser(null);
 
         var userAddRequest = UserServiceImplTestGenerator.getMockUserAddRequest();
-        var userResponse = UserServiceImplTestGenerator.getMockUserResponse(null,fullName);
+        var userResponse = UserServiceImplTestGenerator.getMockUserResponse(null, fullName);
         when(userRepository.findByIdAndSoftDeleteIsFalse(id)).thenReturn(Optional.of(user));
         when(userHelper.getFullName()).thenReturn(fullName);
         when(userRepository.save(user)).thenReturn(user);
@@ -111,7 +111,7 @@ class UserServiceImplTest {
     void TestgetUser() throws InvocationTargetException, IllegalAccessException {
         //given
         var user = UserServiceImplTestGenerator.getMockUser(null);
-        var response = UserServiceImplTestGenerator.getMockUserResponse(null,FullName);
+        var response = UserServiceImplTestGenerator.getMockUserResponse(null, FullName);
         when(userRepository.findByIdAndSoftDeleteIsFalse(id)).thenReturn(Optional.of(user));
 
         //when
@@ -285,20 +285,17 @@ class UserServiceImplTest {
     }
 
 
-
-
-
     @Test
     void testGetUserDetailsByResultSpi() throws JSONException, InvocationTargetException, IllegalAccessException {
         //given
 
         UserFilterData userFilter = new UserFilterData();
 
-         userFilter.setId(userFilter.getId());
+        userFilter.setId(userFilter.getId());
 
-         FilterSortRequest.SortRequest<UserSortBy> sort = new FilterSortRequest.SortRequest<>();
+        FilterSortRequest.SortRequest<UserSortBy> sort = new FilterSortRequest.SortRequest<>();
 
-         sort.setSortBy(UserSortBy.SPI);
+        sort.setSortBy(UserSortBy.SPI);
 
         sort.setOrderBy(Sort.Direction.ASC);
 
@@ -325,11 +322,8 @@ class UserServiceImplTest {
         var expectedData = ExcelUtils.createWorkbookOnResultSpi(userSpiDataInExcels, "UserDetailsBySpi");
 
         //then
-         Assertions. assertEquals(expectedData.getNumberOfSheets(), actualData.getNumberOfSheets());
+        Assertions.assertEquals(expectedData.getNumberOfSheets(), actualData.getNumberOfSheets());
     }
-
-
-
 
 
 }

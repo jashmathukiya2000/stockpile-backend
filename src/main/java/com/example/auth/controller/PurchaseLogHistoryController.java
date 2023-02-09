@@ -185,14 +185,15 @@ public class PurchaseLogHistoryController {
               .body(resource);
     }
 
-    @RequestMapping(name = "getDateFilters",value = "/monthYear", method = RequestMethod.POST)
+
+    @RequestMapping(name = "getByMonthAndYear",value = "/monthYear", method = RequestMethod.POST)
     @Access (levels = Role.ANONYMOUS)
-    public PageResponse<MainDateFilter> getDateFilters(@RequestBody FilterSortRequest<PurchaseLogFilter, PurchaseLogSortBy> filterSortRequest,MainDateFilter mainDateFilter ) throws JSONException {
-        PageResponse<MainDateFilter> pageResponse = new PageResponse<>();
-        Page<MainDateFilter> mainDateFilters = purchaseLogHistoryService.getDateFilters(filterSortRequest.getFilter(), filterSortRequest.getSort(),
+    public PageResponse<GetByMonthAndYear> getByMonthAndYear(@RequestBody FilterSortRequest<PurchaseLogFilter, PurchaseLogSortBy> filterSortRequest,MainDateFilter mainDateFilter ) throws JSONException {
+        PageResponse<GetByMonthAndYear> pageResponse = new PageResponse<>();
+        Page<GetByMonthAndYear> getByMonthAndYears = purchaseLogHistoryService.getByMonthAndYear(filterSortRequest.getFilter(), filterSortRequest.getSort(),
                 generalHelper.getPagination(filterSortRequest.getPagination().getPage(), filterSortRequest.getPagination().getLimit()),mainDateFilter);
            pageResponse.setStatus(Response.getOkResponse());
-           pageResponse.setData(mainDateFilters);
+           pageResponse.setData(getByMonthAndYears);
        return pageResponse;
     }
 

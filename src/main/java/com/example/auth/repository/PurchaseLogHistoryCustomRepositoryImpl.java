@@ -152,7 +152,6 @@ public class PurchaseLogHistoryCustomRepositoryImpl implements PurchaseLogHistor
     public List<AggregationOperation> getItemPurchaseByMonthAndYear() throws JSONException {
         List<AggregationOperation> operations = new ArrayList<>();
         String json = FileReader.loadFile("aggregation/PurchaseLogHistoryByMonthAndYear.json");
-//        json=new TemplateParser<MainDataFilter>().compileTemplate(json,mainDataFilter);
 
         JSONObject jsonObject = new JSONObject(json);
 
@@ -206,11 +205,13 @@ public class PurchaseLogHistoryCustomRepositoryImpl implements PurchaseLogHistor
 
     }
 
+//
+
     @Override
-    public Page<MainDateFilter> getDateFilters(PurchaseLogFilter filter, FilterSortRequest.SortRequest<PurchaseLogSortBy> sort, PageRequest pagination, MainDateFilter mainDateFilter) throws JSONException {
+    public Page<GetByMonthAndYear> getByMonthAndYear(PurchaseLogFilter filter, FilterSortRequest.SortRequest<PurchaseLogSortBy> sort, PageRequest pagination, MainDateFilter mainDateFilter) throws JSONException {
         List<AggregationOperation> operations = getDate(filter, sort, pagination, mainDateFilter, true);
         Aggregation aggregation = newAggregation(operations);
-        List<MainDateFilter> mainDateFilters = mongoTemplate.aggregate(aggregation, "purchaseLogHistory", MainDateFilter.class).getMappedResults();
+        List<GetByMonthAndYear> mainDateFilters = mongoTemplate.aggregate(aggregation, "purchaseLogHistory", GetByMonthAndYear.class).getMappedResults();
         List<AggregationOperation> operationList = getDate(filter, sort, pagination, mainDateFilter, false);
         operationList.add(group().count().as("count"));
         operations.add(project("count"));
@@ -226,19 +227,24 @@ public class PurchaseLogHistoryCustomRepositoryImpl implements PurchaseLogHistor
 
     private List<AggregationOperation> getDate(PurchaseLogFilter filter, FilterSortRequest.SortRequest<PurchaseLogSortBy> sort, PageRequest pagination, MainDateFilter mainDateFilter, boolean addPage) throws JSONException {
         List<AggregationOperation> operations = new ArrayList<>();
+
         String json = FileReader.loadFile("aggregation/MonthDetails.json");
+
         json = new TemplateParser<MainDateFilter>().compileTemplate(json, mainDateFilter);
-        System.out.println("jsonData" + json);
+
+        System.out.println("jsondata"+json);
+
         JSONObject jsonObject = new JSONObject(json);
-        System.out.println("jsonObject" + jsonObject);
+
         operations.add(new CustomAggregationOperation(Document.parse(CustomAggregationOperation.getJson(jsonObject, "setMonthYearInString", Object.class))));
-        log.info("setMonthYearInString:{}", operations);
+
         operations.add(new CustomAggregationOperation(Document.parse(CustomAggregationOperation.getJson(jsonObject, "matchMonthAndYear", Object.class))));
-        log.info("matchMonthAndYear:{}", operations);
+
         operations.add(new CustomAggregationOperation(Document.parse(CustomAggregationOperation.getJson(jsonObject, "groupByMonthYearItemName", Object.class))));
-        log.info("groupByMonthYearItemName:{}", operations);
+
         operations.add(new CustomAggregationOperation(Document.parse(CustomAggregationOperation.getJson(jsonObject, "groupByMonthYear", Object.class))));
-        log.info("groupByMonthYear:{}", operations);
+
+
         if (addPage) {
             if (sort != null && sort.getSortBy() != null && sort.getOrderBy() != null) {
                 operations.add(new SortOperation(Sort.by(sort.getOrderBy(), sort.getSortBy().getValue())));
