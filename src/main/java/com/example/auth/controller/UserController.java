@@ -220,6 +220,15 @@ public class UserController {
         pageResponse.setStatus(Response.getOkResponse());
         return pageResponse;
     }
+    @Access(levels = {Role.ADMIN})
+    @RequestMapping(name = "userChartApi", value = "chart", method = RequestMethod.GET)
+    public DataResponse<MonthAndYear> userChartApi(@RequestParam int year) {
+        DataResponse<MonthAndYear> dataResponse = new DataResponse<>();
+        dataResponse.setData(userService.userChartApi(year));
+        dataResponse.setStatus(Response.getOkResponse());
+        return dataResponse;
+    }
+
 
 
 

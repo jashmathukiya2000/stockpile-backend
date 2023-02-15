@@ -75,6 +75,48 @@ public class UserServiceImpl implements UserService {
 
     }
 
+    @Override
+    public MonthAndYear userChartApi(int year) {
+        MonthAndYear monthAndYear = new MonthAndYear();
+        List<UserDateDetails> userDateDetails = new ArrayList<>(userRepository.userChartApi(year));
+        HashMap<String, Double> month = new LinkedHashMap<>();
+        Set<String> title = new LinkedHashSet<>();
+        month.put("JAN", 1.0);
+        month.put("FEB", 2.0);
+        month.put("MAR", 3.0);
+        month.put("APR", 4.0);
+        month.put("MAY", 5.0);
+        month.put("JUNE", 6.0);
+        month.put("JUL", 7.0);
+        month.put("AUG", 8.0);
+        month.put("SEP", 9.0);
+        month.put("OCT", 10.0);
+        month.put("NOV", 11.0);
+        month.put("DEC", 12.0);
+        int totalCount = 0;
+        for (UserDateDetails userDateDetail : userDateDetails) {
+            totalCount = totalCount + (int) userDateDetail.getCount();
+        }
+        for (Map.Entry<String, Double> entry : month.entrySet()) {
+            String titleName = entry.getKey() + "-" + year;
+            title.add(titleName);
+            boolean exist = userDateDetails.stream().anyMatch(e -> e.getMonth() == entry.getValue());
+            if (!exist) {
+                UserDateDetails userDateDetails1 = new UserDateDetails();
+                userDateDetails1.setMonth(entry.getValue());
+                userDateDetails1.setYear(year);
+                userDateDetails1.setCount(0.0);
+                userDateDetails.add(userDateDetails1);
+            }
+        }
+        userDateDetails.sort(Comparator.comparing(UserDateDetails::getMonth));
+        monthAndYear.setUserDateDetails(userDateDetails);
+        monthAndYear.setTitle(title);
+        monthAndYear.setTotalCount(totalCount);
+        return monthAndYear;
+    }
+
+
 
     @Override
     public List<UserResponse> getAllUser() {

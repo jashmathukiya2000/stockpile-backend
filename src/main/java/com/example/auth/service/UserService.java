@@ -1,5 +1,6 @@
 package com.example.auth.service;
 
+import com.example.auth.decorator.MonthAndYear;
 import com.example.auth.decorator.UserEligibilityAggregation;
 import com.example.auth.decorator.pagination.FilterSortRequest;
 import com.example.auth.decorator.pagination.UserFilterData;
@@ -49,8 +50,7 @@ public interface UserService {
     void updateUser(String id, UserAddRequest userAddRequest) throws InvocationTargetException, IllegalAccessException, NoSuchFieldException;
 
 
-
-
+    MonthAndYear userChartApi(int year);
 }
 
 

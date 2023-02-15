@@ -132,16 +132,23 @@ public class PurchaseLogHistoryServiceImpl implements PurchaseLogHistoryService 
         return purchaseLogHistoryResponse;
     }
 
-    @Override
-    public List<PurchaseLogHistoryResponse> getAllPurchaseLog() {
-        List<PurchaseLogHistory> purchaseLogHistory = purchaseLogHistoryRepository.findAllBySoftDeleteFalse();
-        List<PurchaseLogHistoryResponse> list = new ArrayList<>();
-        purchaseLogHistory.forEach(purchaseLogHistory1 -> {
-            PurchaseLogHistoryResponse purchaseLogHistoryResponse = modelMapper.map(purchaseLogHistory1, PurchaseLogHistoryResponse.class);
-            list.add(purchaseLogHistoryResponse);
-        });
-        return list;
-    }
+
+@Override
+public List<PurchaseLogHistoryResponse> getAllPurchaseLog() {
+    List<PurchaseLogHistory> purchaseLogHistory = purchaseLogHistoryRepository.findAllBySoftDeleteFalse();
+    List<PurchaseLogHistoryResponse> list = new ArrayList<>();
+    purchaseLogHistory.sort((p1, p2) -> p2.getDate().compareTo(p1.getDate()));
+    purchaseLogHistory.forEach(purchaseLogHistory1 -> {
+        PurchaseLogHistoryResponse purchaseLogHistoryResponse = modelMapper.map(purchaseLogHistory1, PurchaseLogHistoryResponse.class);
+        list.add(purchaseLogHistoryResponse);
+    });
+    return list;
+}
+
+
+
+
+
 
     @Override
     public Object deletePurchaseLogById(String id) {
@@ -206,12 +213,19 @@ public class PurchaseLogHistoryServiceImpl implements PurchaseLogHistoryService 
 
     @Override
     public Workbook getPurchaseDetailsByCustomer(PurchaseLogFilter filter, FilterSortRequest.SortRequest<PurchaseLogSortBy> sort, PageRequest pageRequest) throws InvocationTargetException, IllegalAccessException, JSONException {
+
         HashMap<String, List<PurchaseLogExcelGenerator>> hashMap = new LinkedHashMap<>();
+
         Page<ItemPurchaseAggregationResponse> itemPurchaseAggregationResponse = purchaseLogHistoryRepository.getPurchaseDetailsByCustomer(filter, sort, pageRequest);
+
         List<ItemPurchaseAggregationResponse> list = itemPurchaseAggregationResponse.getContent();
+
         list.forEach(purchaseAggregationResponse -> {
+
             List<PurchaseLogExcelGenerator> purchaseLogExcelGenerators = new ArrayList<>();
+
             purchaseAggregationResponse.getItemDetail().forEach(itemDetail -> {
+
                 PurchaseLogExcelGenerator purchaseLogExcelGenerator = new PurchaseLogExcelGenerator();
                 try {
                     nullAwareBeanUtilsBean.copyProperties(purchaseLogExcelGenerator, itemDetail);
@@ -231,12 +245,12 @@ public class PurchaseLogHistoryServiceImpl implements PurchaseLogHistoryService 
 
 
     @Override
-    public Page<GetByMonthAndYear> getByMonthAndYear(PurchaseLogFilter filter, FilterSortRequest.SortRequest<PurchaseLogSortBy> sort, PageRequest pagination,MainDateFilter mainDateFilter) throws JSONException {
+    public Page<GetByMonthAndYear> getByMonthAndYear(PurchaseLogFilter filter, FilterSortRequest.SortRequest<PurchaseLogSortBy> sort, PageRequest pagination, MainDateFilter mainDateFilter) throws JSONException {
         MonthConfig monthConfig = new MonthConfig();
 
         mainDateFilter = getMainDateFilter(monthConfig, filter);
 
-        return purchaseLogHistoryRepository.getByMonthAndYear(filter, sort, pagination,mainDateFilter);
+        return purchaseLogHistoryRepository.getByMonthAndYear(filter, sort, pagination, mainDateFilter);
     }
 
 
@@ -269,14 +283,15 @@ public class PurchaseLogHistoryServiceImpl implements PurchaseLogHistoryService 
                 purchaseLogHistoryFilters.add(getDateFilter(updatedDateTime.getMonthOfYear(), updatedDateTime.getYear(), last));
             }
         }
-        log.info("purchaseLogHistoryFilters:{}", purchaseLogHistoryFilters);
-        return purchaseLogHistoryFilters;
 
+
+        return purchaseLogHistoryFilters;
 
     }
 
 
     private PurchaseLogHistoryFilter getDateFilter(int month, int year, boolean last) {
+
         return PurchaseLogHistoryFilter.builder().month(month).year(year).last(last).build();
     }
 
@@ -301,7 +316,6 @@ public class PurchaseLogHistoryServiceImpl implements PurchaseLogHistoryService 
 
     }
 
-
     public void findDiscountInRupee(PurchaseLogHistory purchaseLogHistory, String itemName) {
         Item item = itemRepository.findByItemNameAndSoftDeleteIsFalse(itemName);
         purchaseLogHistory.setDiscountInRupee((purchaseLogHistory.getPrice() * purchaseLogHistory.getQuantity() * purchaseLogHistory.getDiscountInPercent()) / 100);
@@ -317,6 +331,7 @@ public class PurchaseLogHistoryServiceImpl implements PurchaseLogHistoryService 
         return total;
     }
 
+    //for understanding use of template parser
     public String getPurchaseHistory() {
         PurchaseLogHistoryAddRequest purchaseLogHistoryAddRequest = new PurchaseLogHistoryAddRequest();
 
@@ -331,7 +346,7 @@ public class PurchaseLogHistoryServiceImpl implements PurchaseLogHistoryService 
 
     private void createFileAndSendEmail(Workbook workBook) {
         try {
-            File file = new File("UserData.xlsx");
+            File file = new File("PurchaseData.xlsx");
             ByteArrayResource resource = ExcelUtils.getBiteResourceFromWorkbook(workBook);
             FileUtils.writeByteArrayToFile(file, resource.getByteArray());
             File path = new File("C:\\Users\\TRPC05\\Downloads" + file.getName());
@@ -358,6 +373,8 @@ public class PurchaseLogHistoryServiceImpl implements PurchaseLogHistoryService 
             log.error("Error happened while sending result to user :{}", e.getMessage());
         }
     }
+
+
 }
 
 

@@ -3,6 +3,8 @@ package com.example.auth.commons.config;
 import com.google.common.collect.Lists;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.web.servlet.config.annotation.EnableWebMvc;
+import springfox.documentation.PathProvider;
 import springfox.documentation.builders.ApiInfoBuilder;
 import springfox.documentation.builders.ParameterBuilder;
 import springfox.documentation.builders.PathSelectors;
@@ -17,6 +19,9 @@ import springfox.documentation.swagger2.annotations.EnableSwagger2;
 import java.util.ArrayList;
 import java.util.List;
 
+import static springfox.documentation.builders.RequestHandlerSelectors.basePackage;
+
+
 @Configuration
 @EnableSwagger2
 public class SwaggerConfig {
@@ -25,7 +30,7 @@ public class SwaggerConfig {
         return new Docket(
                 DocumentationType.SWAGGER_2)
                 .select()
-                .apis(RequestHandlerSelectors.basePackage("com.example.auth.controller"))
+                .apis(basePackage("com.example.auth.controller"))
                 .paths(PathSelectors.regex("/*.*"))
                 .build()
                 .globalOperationParameters(getParameters())

@@ -1,5 +1,6 @@
 package com.example.auth.repository;
 
+import com.example.auth.decorator.UserDateDetails;
 import com.example.auth.decorator.UserDetailsExcelResponse;
 import com.example.auth.decorator.UserEligibilityAggregation;
 import com.example.auth.decorator.pagination.UserFilterData;
@@ -31,4 +32,5 @@ public interface UserCustomRepository {
 
     Page<UserEligibilityAggregation> getUserEligibilityByAge(UserFilterData filter, FilterSortRequest.SortRequest<UserSortBy> sort, PageRequest pagination) throws JSONException;
 
+    List<UserDateDetails> userChartApi(int year);
 }

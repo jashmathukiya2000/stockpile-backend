@@ -2,6 +2,7 @@ package com.example.auth.repository;
 
 import com.example.auth.commons.decorator.FileReader;
 import com.example.auth.commons.decorator.CustomAggregationOperation;
+import com.example.auth.decorator.UserDateDetails;
 import com.example.auth.decorator.UserEligibilityAggregation;
 import com.example.auth.decorator.pagination.CountQueryResult;
 import com.example.auth.decorator.pagination.FilterSortRequest;
@@ -247,6 +248,7 @@ public class UserCustomRepositoryImpl implements UserCustomRepository {
 
     }
 
+
     public List<AggregationOperation> getEligibilityByAge(UserFilterData filter, FilterSortRequest.SortRequest<UserSortBy> sort, PageRequest pagination, boolean addPage) throws JSONException {
         List<AggregationOperation> operations = new ArrayList<>();
         String fileName = FileReader.loadFile("aggregation/getUserEligibilityByAge.json");
@@ -266,6 +268,30 @@ public class UserCustomRepositoryImpl implements UserCustomRepository {
         }
         return operations;
     }
+    @Override
+    public List<UserDateDetails> userChartApi(int year) {
+        List<AggregationOperation> operations = usersCountByMonthAndYear(year);
+        Aggregation aggregation = newAggregation(operations);
+        return mongoTemplate.aggregate(aggregation, "users", UserDateDetails.class).getMappedResults();
+    }
+    private List<AggregationOperation> usersCountByMonthAndYear(int year) {
+        List<AggregationOperation> operations = new ArrayList<>();
+        Criteria criteria = new Criteria();
+        criteria = criteria.and("softDelete").is(false);
+        operations.add(match(criteria));
+     /*   operations.add(new CustomAggregationOperation(new Document("$set",new Document()
+                .append("year",new Document("$year","$date")))));
+        operations.add(new CustomAggregationOperation( new Document("$match",new Document("year",year))));
+        operations.add(new CustomAggregationOperation( new Document("$group",new Document("_id","$year")
+                .append("year",new Document("$first","$year"))
+                .append("count",new Document("$sum",1)))));*/
+        operations.add(new CustomAggregationOperation(new Document("$set", new Document().append("year", new Document("$year", "$date")).append("month", new Document("$month", "$date")))));
+        operations.add(new CustomAggregationOperation(new Document("$match", new Document("year", year))));
+        operations.add(new CustomAggregationOperation(new Document("$group", new Document("_id", "$month").append("month", new Document("$first", "$month")).append("year", new Document("$first", "$year")).append("count", new Document("$sum", 1)).append("userIds", new Document("$push", new Document("$toString", "$_id"))))));
+        operations.add(new CustomAggregationOperation(new Document("$sort", new Document("month", 1))));
+        return operations;
+    }
+
 
 }
 
