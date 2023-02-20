@@ -47,6 +47,7 @@ public class UserController {
         return dataResponse;
 
     }
+
     @RequestMapping(name = "updateUser", value = "/update", method = RequestMethod.POST)
     @Access(levels = Role.ADMIN)
     public DataResponse<UserResponse> updateUser(@RequestParam String id, @RequestBody UserAddRequest userAddRequest) throws InvocationTargetException, IllegalAccessException, NoSuchFieldException {
@@ -149,88 +150,141 @@ public class UserController {
         return tokenResponse;
     }
 
-    @RequestMapping(name = "getIdFromToken", value = "/{id}", method = RequestMethod.POST)
+    @RequestMapping(name = "getIdFromToken", value = "/{id}", method = RequestMethod.GET)
+
     @Access(levels = Role.ANONYMOUS)
+
     public TokenResponse<String> getIdFromToken(@RequestParam String token) {
+
         TokenResponse<String> tokenResponse = new TokenResponse<>();
+
         tokenResponse.setData(userService.getIdFromToken(token));
+
         tokenResponse.setStatus(Response.getOkResponse(ResponseConstant.OK));
+
         tokenResponse.setToken(token);
+
         return tokenResponse;
     }
 
     @RequestMapping(name = "getExpirationDateFromToken", value = "/expirationDate/token", method = RequestMethod.POST)
+
     @Access(levels = Role.ANONYMOUS)
+
     public TokenResponse<Date> getExpirationDateFromToken(@RequestParam String token) {
+
         TokenResponse<Date> tokenResponse = new TokenResponse<>();
+
         tokenResponse.setData(userService.getExpirationDateFromToken(token));
+
         tokenResponse.setStatus(Response.getOkResponse());
+
         tokenResponse.setToken(token);
+
         return tokenResponse;
     }
 
     @RequestMapping(name = "isTokenExpired", value = "/tokenExpired", method = RequestMethod.POST)
+
     @Access(levels = Role.ANONYMOUS)
+
     public TokenResponse<Boolean> isTokenExpired(@RequestParam String token) {
+
         TokenResponse<Boolean> tokenResponse = new TokenResponse<>();
+
         tokenResponse.setData(userService.isTokenExpired(token));
+
         tokenResponse.setStatus(Response.getOkResponse());
+
         tokenResponse.setToken(token);
 
         return tokenResponse;
     }
 
     @RequestMapping(name = "getAllUserInExcel", value = "/getAll/excel", method = RequestMethod.POST)
+
     @Access(levels = Role.ANONYMOUS)
+
     public ResponseEntity<Resource> getAllUserInExcel() throws IOException, InvocationTargetException, IllegalAccessException {
+
         Workbook workbook = userService.getAllUserInExcel();
+
         assert workbook != null;
+
         ByteArrayResource resource = ExcelUtils.getBiteResourceFromWorkbook(workbook);
+
         return ResponseEntity.ok()
+
                 .contentLength(resource.contentLength())
+
                 .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + "user_purchased_bookDetail_xlsx" + "\"")
+
                 .contentType(MediaType.parseMediaType("application/vnd.ms-excel"))
+
                 .body(resource);
     }
 
 
     @RequestMapping(name = "getUserDetailsByResultSpi", value = "/result/spi", method = RequestMethod.POST)
+
     @Access(levels = Role.ANONYMOUS)
+
     public ResponseEntity<Resource> getUserDetailsByResultSpi(@RequestBody FilterSortRequest<UserFilterData, UserSortBy> filterSortRequest) throws IOException, IllegalAccessException, JSONException, InvocationTargetException {
+
         UserFilterData filter = filterSortRequest.getFilter();
+
         FilterSortRequest.SortRequest<UserSortBy> sort = filterSortRequest.getSort();
+
         Pagination pagination = filterSortRequest.getPagination();
+
         PageRequest pageRequest = PageRequest.of(pagination.getPage(), pagination.getLimit());
+
         Workbook workbook = userService.getUserDetailsByResultSpi(filter, sort, pageRequest);
+
         assert workbook != null;
+
         ByteArrayResource resource = ExcelUtils.getBiteResourceFromWorkbook(workbook);
+
         return ResponseEntity.ok()
+
                 .contentLength(resource.contentLength())
+
                 .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + "userDetail_xlsx" + "\"")
+
                 .contentType(MediaType.parseMediaType("application/vnd.ms-excel"))
+
                 .body(resource);
     }
 
+
     @RequestMapping(name = "getUserEligibilityByAge", value = "/user/Age", method = RequestMethod.POST)
     @Access(levels = Role.ANONYMOUS)
-    public PageResponse<UserEligibilityAggregation> getUserEligibilityByAge(@RequestBody FilterSortRequest<UserFilterData,UserSortBy> filterSortRequest) throws IOException, IllegalAccessException, JSONException, InvocationTargetException {
-        PageResponse<UserEligibilityAggregation> pageResponse= new PageResponse<>();
-        pageResponse.setData(userService.getUserEligibilityByAge(filterSortRequest.getFilter(),filterSortRequest.getSort(),
-                generalHelper.getPagination(filterSortRequest.getPagination().getPage(),filterSortRequest.getPagination().getLimit())));
+
+    public PageResponse<UserEligibilityAggregation> getUserEligibilityByAge(@RequestBody FilterSortRequest<UserFilterData, UserSortBy> filterSortRequest) throws IOException, IllegalAccessException, JSONException, InvocationTargetException {
+
+        PageResponse<UserEligibilityAggregation> pageResponse = new PageResponse<>();
+
+        pageResponse.setData(userService.getUserEligibilityByAge(filterSortRequest.getFilter(), filterSortRequest.getSort(),
+
+                generalHelper.getPagination(filterSortRequest.getPagination().getPage(), filterSortRequest.getPagination().getLimit())));
+
         pageResponse.setStatus(Response.getOkResponse());
         return pageResponse;
     }
+
     @Access(levels = {Role.ADMIN})
     @RequestMapping(name = "userChartApi", value = "chart", method = RequestMethod.GET)
+
     public DataResponse<MonthAndYear> userChartApi(@RequestParam int year) {
+
         DataResponse<MonthAndYear> dataResponse = new DataResponse<>();
+
         dataResponse.setData(userService.userChartApi(year));
+
         dataResponse.setStatus(Response.getOkResponse());
+
         return dataResponse;
     }
-
-
-
 
 
 

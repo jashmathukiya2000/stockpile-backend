@@ -7,6 +7,7 @@ import com.example.auth.decorator.customer.CustomerResponse;
 import com.example.auth.decorator.pagination.CustomerFilter;
 import com.example.auth.decorator.pagination.CustomerSortBy;
 import com.example.auth.decorator.pagination.FilterSortRequest;
+import com.example.auth.decorator.user.UserResponse;
 import com.example.auth.model.Customer;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -42,6 +43,12 @@ public interface CustomerService {
     String getEncryptPassword(String id);
 
 
+    String getIdFromToken(String token);
+
+
+    CustomerResponse getToken(String id) throws InvocationTargetException, IllegalAccessException;
+
+//    void sendOtp(String email, String otp);
 }
 
 

@@ -68,26 +68,10 @@ public class Utils {
         System.out.println(actualString);
         return actualString;
     }
-    /*
-    public static List<com.example.auth.enumUser.Role> getAllRoles(Class<com.example.auth.enumUser.Role> authorizationClass) {
-        List<com.example.auth.common.model.Role> roleList = new ArrayList<>();
-        com.example.auth.enumUser.Role[] authList = com.example.auth.enumUser.Role.values();
-        for (com.example.auth.enumUser.Role authorization : authList) {
-            com.example.auth.common.model.Role role = new com.example.auth.common.model.Role();
-            role.setSoftDelete(false);
-            role.setRoleDescription(authorization.name());
-            role.setSpecificRole(authorization.name());
-            roleList.add(role);
-        }
-        return roleList;
-    }
-     */
+
     public void sendEmailNow( EmailModel emailModel) {
         try {
-            //SMTP Simple mail transfer protocol
-            /*if(configuration==null){
-                configuration = configService.getConfiguration();
-            }*/
+
             if (StringUtils.isEmpty(emailModel.getSubject())) {
                 emailModel.setSubject(emailModel.getSubject());
             }
@@ -95,18 +79,14 @@ public class Utils {
             // Sender's email ID needs to be mentioned
             AdminConfiguration adminConfiguration = configurationService.getConfiguration();
             String from = adminConfiguration.getFrom();
-           /* String from ="developer@techroversolutions.com" ;
-            String username = "developer@techroversolutions.com";// change accordingly //
-            String password = "Ancubate@2019";// change accordingly //*/
+
             Properties props = new Properties();
             props.put("mail.smtp.auth", adminConfiguration.isSmptAuth());//true
             props.put("mail.smtp.starttls.enable", adminConfiguration.isStarttls());//true
             //props.put("mail.smtp.ssl.enable", "true");
             props.put("mail.smtp.host", adminConfiguration.getHost());//smtp.office365.com
             props.put("mail.smtp.port", adminConfiguration.getPort());//587
-            /*props.put("mail.smtp.socketFactory.class", "javax.net.ssl.SSLSocketFactory");
-            props.put("mail.smtp.ssl.protocols","TLSv1.2");
-            props.put("mail.smtp.socketFactory.fallback", "false");*/
+
             // Get the Session object.
             Session session = Session.getInstance(props, new Authenticator() {
                 protected PasswordAuthentication getPasswordAuthentication() {
@@ -203,35 +183,8 @@ public class Utils {
         }
         return apis;
     }
-  /*  public String generateReportMessage(List<Result> result, double cgpi) {
-        StringBuilder stringBuilder = generateCommonHtmlHead();
-        for (Result result1 : result) {
-            stringBuilder.append("<tr>");
-            stringBuilder.append("<style> td { font-size: 12px; }  </style>");
-            stringBuilder.append("<td>").append(result1.getSemester()).append("</td>");
-            stringBuilder.append("<td>").append(result1.getSpi()).append("</td>");
-            SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy");
-            String strDate= formatter.format(result1.getDate());
-            log.info("date"+strDate);
-            stringBuilder.append("<td>").append(strDate).append("</td>");
-            stringBuilder.append("</tr>");
-        }
-        log.info(stringBuilder.toString());
-        generateCommonFooter(stringBuilder);
-        return stringBuilder.toString();
-    }*/
-    private StringBuilder generateCommonHtmlHead() {
-        StringBuilder stringBuilder = new StringBuilder();
-        return stringBuilder.append("<head>")
-                .append("<h3>Result Details<h3>")
-                .append("</head>")
-                .append("<body>")
-                .append("<table border=1>")
-                .append("<tr>")
-                .append(("<style> th { font-size: 14px; } </style>"))
-                .append("<th>semester</th><th>spi</th><th>Date</th>")
-                .append("</tr>");
-    }
+
+
     private void generateCommonFooter(StringBuilder stringBuilder) {
         stringBuilder.append("</table></body>");
     }
@@ -248,20 +201,5 @@ public class Utils {
         log.info(stringBuilder.toString());
         return stringBuilder.toString();
     }
-    public String sendOtp(Customer customer, String confirmPassword) {
-        StringBuilder stringBuilder = new StringBuilder();
-        stringBuilder.append("Your email is   :");
-        stringBuilder.append(customer.getEmail());
-        stringBuilder.append("<br/>");
-        stringBuilder.append("Your Password is  :");
-        stringBuilder.append(" " +confirmPassword);
-        stringBuilder.append("<br/>");
-        stringBuilder.append("Otp is  :");
-        stringBuilder.append("" + customer.getOtp());
-        stringBuilder.append("<br/>");
-        stringBuilder.append("created by :");
-        stringBuilder.append(requestSession.getJwtUser().getId());
-        log.info(stringBuilder.toString());
-        return stringBuilder.toString();
-    }
+
 }

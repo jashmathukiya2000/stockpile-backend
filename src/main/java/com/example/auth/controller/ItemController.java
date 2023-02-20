@@ -40,7 +40,7 @@ public class ItemController {
 
     @RequestMapping(name = "updateItem", value = "/update", method = RequestMethod.POST)
     @Access(levels = Role.ANONYMOUS)
-    public DataResponse<ItemResponse> updateItem(@RequestParam String id, @RequestBody ItemAddRequest itemAddRequest) throws InvocationTargetException, IllegalAccessException {
+    public DataResponse<ItemResponse> updateItem(@RequestParam String id, @RequestBody ItemAddRequest itemAddRequest) throws InvocationTargetException, IllegalAccessException, NoSuchFieldException {
         DataResponse<ItemResponse> dataResponse = new DataResponse<>();
         dataResponse.setData(itemService.updateItem(id, itemAddRequest));
         dataResponse.setStatus(Response.getOkResponse(ResponseConstant.UPDATED_SUCCESSFULLY));

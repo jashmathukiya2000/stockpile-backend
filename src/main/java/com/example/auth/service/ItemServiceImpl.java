@@ -3,6 +3,7 @@ package com.example.auth.service;
 import com.example.auth.commons.advice.NullAwareBeanUtilsBean;
 import com.example.auth.commons.constant.MessageConstant;
 import com.example.auth.commons.exception.NotFoundException;
+import com.example.auth.commons.helper.UserHelper;
 import com.example.auth.decorator.ItemAddRequest;
 import com.example.auth.decorator.ItemAggregationResponse;
 import com.example.auth.decorator.ItemResponse;
@@ -31,28 +32,37 @@ public class ItemServiceImpl implements ItemService {
     private final ItemRepository itemRepository;
     private final ModelMapper modelMapper;
     private final NullAwareBeanUtilsBean nullAwareBeanUtilsBean;
+    private final UserHelper userHelper;
 
 
-    public ItemServiceImpl(CategoryRepository categoryRepository, ItemRepository itemRepository, ModelMapper modelMapper, NullAwareBeanUtilsBean nullAwareBeanUtilsBean) {
+    public ItemServiceImpl(CategoryRepository categoryRepository, ItemRepository itemRepository, ModelMapper modelMapper, NullAwareBeanUtilsBean nullAwareBeanUtilsBean, UserHelper userHelper) {
         this.categoryRepository = categoryRepository;
         this.itemRepository = itemRepository;
         this.modelMapper = modelMapper;
         this.nullAwareBeanUtilsBean = nullAwareBeanUtilsBean;
-
-
+        this.userHelper = userHelper;
     }
 
 
     @Override
     public ItemResponse addItem(String categoryId, ItemAddRequest itemAddRequest) throws InvocationTargetException, IllegalAccessException {
+
         checkValidation(itemAddRequest);
+
         Item item = modelMapper.map(itemAddRequest, Item.class);
+
         Category category = getCategoryModel(categoryId);
+
         item.setCategoryId(category.getId());
+
         setPrice(itemAddRequest, item);
+
         item.setDate(currentDate());
+
         ItemResponse itemResponse = modelMapper.map(item, ItemResponse.class);
+
         itemRepository.save(item);
+
         return itemResponse;
     }
 
@@ -62,33 +72,41 @@ public class ItemServiceImpl implements ItemService {
     }
 
     @Override
-    public ItemResponse updateItem(String id, ItemAddRequest itemAddRequest) throws InvocationTargetException, IllegalAccessException {
+    public ItemResponse updateItem(String id, ItemAddRequest itemAddRequest) throws InvocationTargetException, IllegalAccessException, NoSuchFieldException {
+
         Item item = getById(id);
+
         ItemResponse itemResponse = modelMapper.map(item, ItemResponse.class);
-        Map<String, String> changedProperties = new HashMap<>();
+
         updateItemData(id, itemAddRequest);
-        difference(item, itemAddRequest, changedProperties);
+
+        userHelper.difference(item, itemAddRequest);
+
         return itemResponse;
     }
 
-    @Override
-    public List<ItemAggregationResponse> getItemByAggregation() {
-        return itemRepository.getItemByAggregation();
-    }
 
     @Override
     public ItemResponse getItemById(String id) {
+
         Item item = getById(id);
+
         ItemResponse itemResponse = modelMapper.map(item, ItemResponse.class);
+
         return itemResponse;
     }
 
     @Override
     public List<ItemResponse> getAllItems() {
+
         List<Item> items = itemRepository.findBySoftDeleteFalse();
+
         List<ItemResponse> itemResponses = new ArrayList<>();
+
         items.forEach(item -> {
+
             ItemResponse itemResponse = modelMapper.map(item, ItemResponse.class);
+
             itemResponses.add(itemResponse);
 
         });
@@ -97,17 +115,59 @@ public class ItemServiceImpl implements ItemService {
 
     @Override
     public void deleteItemById(String id) {
+
         Item item = getById(id);
+
         item.setSoftDelete(true);
+
         itemRepository.save(item);
 
     }
 
 
     public void setPrice(ItemAddRequest itemAddRequest, Item item) {
+
         item.setPrice(Double.parseDouble(new DecimalFormat("##.##").format(itemAddRequest.getPrice())));
+
         item.setDiscountInRupee((item.getPrice() * item.getQuantity() * item.getDiscountInPercent()) / 100);
+
         item.setTotalPrice(item.getPrice() * item.getQuantity() - item.getDiscountInRupee());
+    }
+
+
+    @Override
+    public List<ItemAggregationResponse> getItemByAggregation() {
+
+        return itemRepository.getItemByAggregation();
+    }
+    @Override
+    public Page<ItemResponse> getAllItemsByPagination(ItemFilter filter, FilterSortRequest.SortRequest<ItemSortBy> sort, PageRequest pageRequest) {
+        return itemRepository.getAllItemsByPagination(filter, sort, pageRequest);
+    }
+
+
+    public Category getCategoryModel(String categoryId) {
+        return categoryRepository.findByIdAndSoftDeleteIsFalse(categoryId).orElseThrow(() -> new NotFoundException(MessageConstant.ID_NOT_FOUND));
+    }
+
+    private Item getById(String id) {
+        return itemRepository.findByIdAndSoftDeleteIsFalse(id).orElseThrow(() -> new NotFoundException(MessageConstant.ID_NOT_FOUND));
+
+    }
+
+    @Override
+    public void removeItems(String id) {
+
+        List<Item> items = itemRepository.findByCategoryIdAndSoftDeleteFalse(id);
+
+        if (!CollectionUtils.isEmpty(items)) {
+
+            items.forEach(item -> {
+
+                item.setSoftDelete(true);
+            });
+            itemRepository.saveAll(items);
+        }
     }
 
     public void checkValidation(ItemAddRequest itemAddRequest) {
@@ -132,38 +192,17 @@ public class ItemServiceImpl implements ItemService {
 
     }
 
-    @Override
-    public Page<ItemResponse> getAllItemsByPagination(ItemFilter filter, FilterSortRequest.SortRequest<ItemSortBy> sort, PageRequest pageRequest) {
-        return itemRepository.getAllItemsByPagination(filter, sort, pageRequest);
-    }
-
-
-    public Category getCategoryModel(String categoryId) {
-        return categoryRepository.findByIdAndSoftDeleteIsFalse(categoryId).orElseThrow(() -> new NotFoundException(MessageConstant.ID_NOT_FOUND));
-    }
-
-    private Item getById(String id) {
-        return itemRepository.findByIdAndSoftDeleteIsFalse(id).orElseThrow(() -> new NotFoundException(MessageConstant.ID_NOT_FOUND));
-
-    }
-
-    @Override
-    public void removeItems(String id) {
-        List<Item> items = itemRepository.findByCategoryIdAndSoftDeleteFalse(id);
-        if (!CollectionUtils.isEmpty(items)) {
-            items.forEach(item -> {
-                item.setSoftDelete(true);
-            });
-            itemRepository.saveAll(items);
-        }
-    }
 
     public void updateItemData(String id, ItemAddRequest itemAddRequest) throws InvocationTargetException, IllegalAccessException {
+
         Item item = getById(id);
         if (item != null) {
             if (itemAddRequest.getQuantity() > 0) {
+
                 item.setQuantity(itemAddRequest.getQuantity());
+
                 item.setDiscountInRupee((item.getPrice() * item.getQuantity() * item.getDiscountInPercent()) / 100);
+
                 item.setTotalPrice(item.getPrice() * item.getQuantity() - item.getDiscountInRupee());
             }
             if (itemAddRequest.getItemName() != null) {
@@ -174,8 +213,11 @@ public class ItemServiceImpl implements ItemService {
                 setPrice(itemAddRequest, item);
             }
             if (itemAddRequest.getDiscountInPercent() > 0) {
+
                 item.setDiscountInPercent(itemAddRequest.getDiscountInPercent());
+
                 item.setDiscountInRupee((item.getPrice() * item.getQuantity() * item.getDiscountInPercent()) / 100);
+
                 item.setTotalPrice(item.getPrice() * item.getQuantity() - item.getDiscountInRupee());
             }
 
@@ -183,22 +225,6 @@ public class ItemServiceImpl implements ItemService {
         }
     }
 
-    public Map<String, String> difference(Item item, ItemAddRequest itemAddRequest, Map<String, String> changedProperties) throws InvocationTargetException, IllegalAccessException {
-        Item item1 = new Item();
-        nullAwareBeanUtilsBean.copyProperties(item1, itemAddRequest);
-        item1.setId(item.getId());
-        for (Field field : item.getClass().getDeclaredFields()) {
-            field.setAccessible(true);
-            Object value = field.get(item);
-            Object value1 = field.get(item1);
-            if (value != null && value1 != null) {
-                if (!Objects.equals(value, value1)) {
-                    changedProperties.put(field.getName(), value1.toString());
-                }
-            }
-        }
-        return changedProperties;
-    }
 }
 
 

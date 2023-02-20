@@ -23,7 +23,9 @@ import com.example.auth.decorator.customer.CustomerResponse;
 import com.example.auth.decorator.pagination.CustomerFilter;
 import com.example.auth.decorator.pagination.CustomerSortBy;
 import com.example.auth.decorator.pagination.FilterSortRequest;
+import com.example.auth.decorator.user.UserResponse;
 import com.example.auth.model.Customer;
+import com.example.auth.model.User;
 import com.example.auth.repository.CustomerRepository;
 import com.google.common.annotations.VisibleForTesting;
 import lombok.extern.slf4j.Slf4j;
@@ -61,6 +63,7 @@ public class CustomerServiceImpl implements CustomerService {
 
     @Override
     public CustomerResponse addCustomer(CustomerAddRequest customerAddRequest, Role role) throws InvocationTargetException, IllegalAccessException {
+        AdminConfiguration adminConfiguration = adminConfigurationService.getConfiguration();
         Customer signUpUser1 = modelMapper.map(customerAddRequest, Customer.class);
         CustomerResponse userResponse1 = modelMapper.map(customerAddRequest, CustomerResponse.class);
         if (signUpUser1.getPassword() != null) {
@@ -72,6 +75,9 @@ public class CustomerServiceImpl implements CustomerService {
         signUpUser1.setRole(role);
         userResponse1.setRole(role);
         signUpUser1.setDate(new Date());
+        String otp = generateOtp();
+        signUpUser1.setOtp(otp);
+        sendMail();
         customerRepository.save(signUpUser1);
         return userResponse1;
     }
@@ -84,69 +90,101 @@ public class CustomerServiceImpl implements CustomerService {
 
     @Override
     public CustomerResponse login(CustomerLoginAddRequest customerLoginAddRequest) throws InvocationTargetException, IllegalAccessException, NoSuchAlgorithmException {
+
         AdminConfiguration adminConfiguration = adminConfigurationService.getConfiguration();
+
         Customer customer = getUserByEmail(customerLoginAddRequest.getEmail());
+
         String userPassworod = customer.getPassword();
+
         CustomerResponse customerResponse = modelMapper.map(customer, CustomerResponse.class);
+
         boolean passwords = passwordUtils.isPasswordAuthenticated(customerLoginAddRequest.getPassword(), userPassworod, PasswordEncryptionType.BCRYPT);
+
         if (passwords) {
+
             modelMapper.map(customerResponse, Customer.class);
+
         } else {
+
             throw new InvalidRequestException(MessageConstant.INCORRECT_PASSWORD);
         }
         customerResponse.setRole(customer.getRole());
+
+        customerResponse.setId(customer.getId());
+
         JWTUser jwtUser = new JWTUser(customerLoginAddRequest.getEmail(), Collections.singletonList(customerResponse.getRole().toString()));
+
         String token = jwtTokenUtil.generateToken(jwtUser);
+
         nullAwareBeanUtilsBean.copyProperties(customerResponse, customer);
+
         customerResponse.setToken(token);
+
         customer.setDate(new Date());
+
         customer.setOtpSendtime(new Date());
+
         customer.setLoginTime(new Date());
+
         String otp = generateOtp();
+
+        sendMail();
+
         customer.setOtp(otp);
-        EmailModel emailModel = new EmailModel();
-        emailModel.setMessage(otp);
-        TemplateParser<EmailModel> templateParser = new TemplateParser<>();
-        String url = templateParser.compileTemplate(FileLoader.loadHtmlTemplateOrReturnNull("send_otp"), emailModel);
-        emailModel.setTo("sanskriti.s@techroversolutions.com");
-        emailModel.setCc(adminConfiguration.getTechAdmins());
-        emailModel.setSubject("OTP Verification");
-        utils.sendEmailNow(emailModel);
+
         customer.setLogin(true);
+
         customerResponse.setOtp(customer.getOtp());
+
         customerRepository.save(customer);
-        System.out.println("customer" + customerResponse);
+
         return customerResponse;
 
     }
 
     @VisibleForTesting
     public String generateOtp() {
+
         Random rnd = new Random();
+
         int number = rnd.nextInt(999999);
+
         String otp = String.format("%06d", number);
+
         return otp;
     }
 
+
     @Override
     public Page<Customer> getAllCustomerByPagination(CustomerFilter filter, FilterSortRequest.SortRequest<CustomerSortBy> sort, PageRequest pagination) {
+
         return customerRepository.getAllCustomerByPagination(filter, sort, pagination);
     }
 
     @Override
     public CustomerResponse getCustomerById(String id) {
+
         Customer customer = getById(id);
+
         CustomerResponse customerResponse = modelMapper.map(customer, CustomerResponse.class);
+
         return customerResponse;
     }
 
     @Override
     public List<CustomerResponse> getAllCustomer() {
+
         List<Customer> customerResponses = customerRepository.findAllBySoftDeleteFalse();
+
         List<CustomerResponse> list = new ArrayList<>();
+
         customerResponses.forEach(customer -> {
+
             CustomerResponse customerResponse = modelMapper.map(customer, CustomerResponse.class);
+
             list.add(customerResponse);
+
         });
 
         return list;
@@ -166,8 +204,9 @@ public class CustomerServiceImpl implements CustomerService {
         boolean customer1 = customerRepository.existsByOtpAndEmailAndSoftDeleteIsFalse(otp, email);
         if (customer1) {
             Customer customer = getUserByEmail(email);
-            System.out.println("otpSendTime:" + customer.getOtpSendtime());
+
             if (customer.getOtpSendtime().getTime() + OTP_VALID_DURATION < System.currentTimeMillis()) {
+
                 throw new InvalidRequestException(MessageConstant.OTP_EXPIRED);
             }
         } else {
@@ -187,14 +226,23 @@ public class CustomerServiceImpl implements CustomerService {
 
     @Override
     public void forgetPassword(String email) {
+
         Customer customer = getUserByEmail(email);
+
         String otp = generateOtp();
+
         EmailModel emailModel = new EmailModel();
+
         emailModel.setMessage(otp);
-        emailModel.setTo("sanskriti.s@techroversolutions.com");
+
+        emailModel.setTo("jash.g@techroversolutions.com");
+
         emailModel.setSubject("OTP Verification");
+
         utils.sendEmailNow(emailModel);
+
         customer.setOtp(otp);
+
         customerRepository.save(customer);
 
     }
@@ -211,15 +259,49 @@ public class CustomerServiceImpl implements CustomerService {
 
     }
 
+    public void sendMail() throws InvocationTargetException, IllegalAccessException {
+
+        AdminConfiguration adminConfiguration = adminConfigurationService.getConfiguration();
+
+        String otp = generateOtp();
+
+        EmailModel emailModel = new EmailModel();
+
+        emailModel.setMessage(otp);
+
+        TemplateParser<EmailModel> templateParser = new TemplateParser<>();
+
+        String url = templateParser.compileTemplate(FileLoader.loadHtmlTemplateOrReturnNull("send_otp"), emailModel);
+
+        emailModel.setMessage(url);
+
+        emailModel.setTo("roynilus@outlook.com");
+
+        emailModel.setCc(adminConfiguration.getTechAdmins());
+
+        emailModel.setSubject("OTP Verification");
+
+        utils.sendEmailNow(emailModel);
+
+    }
+
     @Override
     public String getEncryptPassword(String id) {
+
         Customer customer = getById(id);
+
         CustomerResponse customerResponse = new CustomerResponse();
+
         customerResponse.setName(customer.getName());
+
         customerResponse.setPassword(customer.getPassword());
+
         if (customer.getPassword() != null) {
+
             String password = PasswordUtils.encryptPassword(customer.getPassword());
+
             customer.setPassword(password);
+
             customerRepository.save(customer);
             return password;
         } else {
@@ -227,20 +309,63 @@ public class CustomerServiceImpl implements CustomerService {
         }
     }
 
+    @Override
+    public String getIdFromToken(String token) {
+
+        String id = jwtTokenUtil.getCustomerIdFromToken(token);
+
+        boolean exist = customerRepository.existsById(id);
+
+        if (exist) {
+            return id;
+        } else {
+            throw new InvalidRequestException(MessageConstant.INVALID_TOKEN);
+        }
+
+    }
+
+    @Override
+    public CustomerResponse getToken(String id) throws InvocationTargetException, IllegalAccessException {
+        Customer customer = getById(id);
+
+        CustomerResponse customerResponse = new CustomerResponse();
+
+        customerResponse.setRole(customer.getRole());
+
+        JWTUser jwtUser = new JWTUser(id, Collections.singletonList(customerResponse.getRole().toString()));
+
+
+        String token = jwtTokenUtil.generateToken(jwtUser);
+
+
+        nullAwareBeanUtilsBean.copyProperties(customerResponse, customer);
+
+        customerResponse.setToken(token);
+
+
+        return customerResponse;
+    }
+
 
     @VisibleForTesting
+
     public String passwords(String confirmPassword) {
+
         return passwordUtils.encryptPassword(confirmPassword);
+
     }
 
 
     public void checkValidation(CustomerAddRequest customerAddRequest) throws InvocationTargetException, IllegalAccessException {
+
+
         AdminConfiguration adminConfiguration = adminConfigurationService.getConfiguration();
 
         if (!customerAddRequest.getPassword().equals(customerAddRequest.getConfirmPassword())) {
             throw new InvalidRequestException(MessageConstant.INCORRECT_PASSWORD);
         }
         if (!customerAddRequest.getContact().matches(adminConfiguration.getMobileNoRegex())) {
+
             throw new InvalidRequestException(MessageConstant.INVALID_PHONE_NUMBER);
         }
         if (!customerAddRequest.getName().matches(adminConfiguration.getNameRegex())) {
@@ -269,7 +394,6 @@ public class CustomerServiceImpl implements CustomerService {
         return customerRepository.findByIdAndSoftDeleteIsFalse(id).orElseThrow(() -> new NotFoundException(MessageConstant.USER_NOT_FOUND));
 
     }
-
 
 }
 

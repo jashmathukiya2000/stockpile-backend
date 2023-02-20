@@ -25,7 +25,7 @@ public interface ItemService {
 
     void removeItems(String id);
 
-    ItemResponse updateItem(String id, ItemAddRequest itemAddRequest) throws InvocationTargetException, IllegalAccessException;
+    ItemResponse updateItem(String id, ItemAddRequest itemAddRequest) throws InvocationTargetException, IllegalAccessException, NoSuchFieldException;
 
     List<ItemAggregationResponse> getItemByAggregation();
 }

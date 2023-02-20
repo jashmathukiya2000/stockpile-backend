@@ -25,6 +25,7 @@ import java.util.List;
 @Service
 @Slf4j
 public class CategoryServiceImpl implements CategoryService {
+
     private final CategoryRepository categoryRepository;
     private final ModelMapper modelMapper;
     private final NullAwareBeanUtilsBean nullAwareBeanUtilsBean;
@@ -40,37 +41,57 @@ public class CategoryServiceImpl implements CategoryService {
     }
 
     public CategoryResponse addCategory(CategoryAddRequest categoryAddRequest) throws InvocationTargetException, IllegalAccessException {
+
         Category category = modelMapper.map(categoryAddRequest, Category.class);
+
         category.setDate(new Date());
+
         CategoryResponse categoryResponse = modelMapper.map(categoryAddRequest, CategoryResponse.class);
+
         checkValidation(categoryAddRequest);
+
         categoryRepository.save(category);
+
         return categoryResponse;
     }
 
     @Override
     public CategoryResponse updateCategory(String id, CategoryAddRequest categoryAddRequest) {
+
         Category category = getById(id);
+
         category.setDate(new Date());
+
         category.setCategoryName(categoryAddRequest.getCategoryName());
+
         CategoryResponse categoryResponse = modelMapper.map(categoryAddRequest, CategoryResponse.class);
+
         categoryRepository.save(category);
+
         return categoryResponse;
     }
 
     @Override
     public CategoryResponse getCategoryById(String id) {
+
         Category category = getById(id);
+
         CategoryResponse categoryResponse = modelMapper.map(category, CategoryResponse.class);
+
         return categoryResponse;
     }
 
     @Override
     public List<CategoryResponse> getAllCategory() {
+
         List<Category> category = categoryRepository.findAllBySoftDeleteFalse();
+
         List<CategoryResponse> categoryResponses = new ArrayList<>();
+
         category.forEach(category1 -> {
+
             CategoryResponse categoryResponse = modelMapper.map(category1, CategoryResponse.class);
+
             categoryResponses.add(categoryResponse);
         });
         return categoryResponses;
@@ -78,14 +99,19 @@ public class CategoryServiceImpl implements CategoryService {
 
     @Override
     public void deleteCategory(String id) {
+
         Category category = getById(id);
+
         itemService.removeItems(id);
+
         category.setSoftDelete(true);
+
         categoryRepository.save(category);
     }
 
 
     public void checkValidation(CategoryAddRequest categoryAddRequest) throws InvocationTargetException, IllegalAccessException {
+
         AdminConfiguration adminConfiguration = adminConfigurationService.getConfiguration();
 
 

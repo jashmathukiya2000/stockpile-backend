@@ -40,19 +40,27 @@ public class ResultServiceImpl implements ResultService {
 
     @Override
     public UserResponse addResult(String id, Result result) throws InvocationTargetException, IllegalAccessException {
+
         List<Result> results = new ArrayList<>();
+
         List<Result> finalResults = new ArrayList<>();
+
         User user1 = getUserModel(id);
+
         double sum = 0;
         double cgpa = 0;
+
         if (!CollectionUtils.isEmpty(user1.getResult())) {
+
             results = user1.getResult();
+
             checkResultValidation(result);
 
             boolean matchFound = results.parallelStream()
                     .anyMatch(result1 -> result1.getSemester() == result.getSemester());
 
             if (matchFound) {
+
                 throw new NotFoundException(MessageConstant.SEMESTER_ALREADY_EXIST);
             }
 
@@ -64,11 +72,17 @@ public class ResultServiceImpl implements ResultService {
             sum += result1.getSpi();
         }
         cgpa = sum / finalResults.size();
+
         cgpa = Double.parseDouble(new DecimalFormat("##.##").format(cgpa));
+
         user1.setCgpa(cgpa);
+
         user1.setResult(finalResults);
+
         userRepository.save(user1);
+
         UserResponse userResponse = new UserResponse();
+
         modelMapper.map(user1, userResponse);
 
         return userResponse;
@@ -86,10 +100,13 @@ public class ResultServiceImpl implements ResultService {
     }
 
     public void checkResultValidation(Result result) throws InvocationTargetException, IllegalAccessException {
+
         AdminConfiguration adminConfiguration = adminConfigurationService.getConfiguration();
+
         String sem = String.valueOf(result.getSemester());
 
         if (!sem.matches(adminConfiguration.getSemesterRegex())) {
+
             throw new InvalidRequestException(MessageConstant.INVALID_SEMESTER);
 
         }

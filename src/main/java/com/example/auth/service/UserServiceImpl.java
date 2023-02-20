@@ -58,28 +58,40 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserResponse addUser(UserAddRequest userAddRequest) {
+
         User user = modelMapper.map(userAddRequest, User.class);
+
         user.setFullName(userHelper.getFullName(user));
+
         UserResponse userResponse1 = modelMapper.map(user, UserResponse.class);
+
         userRepository.save(user);
+
         return userResponse1;
     }
 
     @Override
     public void updateUser(String id, UserAddRequest userAddRequest) throws InvocationTargetException, IllegalAccessException, NoSuchFieldException {
+
         User user1 = getUserModel(id);
+
         update(id, userAddRequest);
+
         userHelper.difference(userAddRequest, user1);
-//       difference(userAddRequest, user1);
+
 
 
     }
 
     @Override
     public MonthAndYear userChartApi(int year) {
+
         MonthAndYear monthAndYear = new MonthAndYear();
+
         List<UserDateDetails> userDateDetails = new ArrayList<>(userRepository.userChartApi(year));
+
         HashMap<String, Double> month = new LinkedHashMap<>();
+
         Set<String> title = new LinkedHashSet<>();
         month.put("JAN", 1.0);
         month.put("FEB", 2.0);
@@ -93,8 +105,11 @@ public class UserServiceImpl implements UserService {
         month.put("OCT", 10.0);
         month.put("NOV", 11.0);
         month.put("DEC", 12.0);
+
         int totalCount = 0;
+
         for (UserDateDetails userDateDetail : userDateDetails) {
+
             totalCount = totalCount + (int) userDateDetail.getCount();
         }
         for (Map.Entry<String, Double> entry : month.entrySet()) {
@@ -103,16 +118,24 @@ public class UserServiceImpl implements UserService {
             boolean exist = userDateDetails.stream().anyMatch(e -> e.getMonth() == entry.getValue());
             if (!exist) {
                 UserDateDetails userDateDetails1 = new UserDateDetails();
+
                 userDateDetails1.setMonth(entry.getValue());
+
                 userDateDetails1.setYear(year);
+
                 userDateDetails1.setCount(0.0);
+
                 userDateDetails.add(userDateDetails1);
             }
         }
         userDateDetails.sort(Comparator.comparing(UserDateDetails::getMonth));
+
         monthAndYear.setUserDateDetails(userDateDetails);
+
         monthAndYear.setTitle(title);
+
         monthAndYear.setTotalCount(totalCount);
+
         return monthAndYear;
     }
 
@@ -120,10 +143,15 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public List<UserResponse> getAllUser() {
+
         List<User> users = userRepository.findAllBySoftDeleteFalse();
+
         List<UserResponse> userResponseList = new ArrayList<>();
+
         users.forEach(user -> {
+
             UserResponse userResponse1 = modelMapper.map(user, UserResponse.class);
+
             userResponseList.add(userResponse1);
         });
 
@@ -145,21 +173,33 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserResponse getToken(String id) throws InvocationTargetException, IllegalAccessException {
+
         User user = getUserModel(id);
+
         UserResponse userResponse = new UserResponse();
+
         userResponse.setRole(user.getRole());
+
         JWTUser jwtUser = new JWTUser(id, Collections.singletonList(userResponse.getRole().toString()));
+
         String token = jwtTokenUtil.generateToken(jwtUser);
+
         nullAwareBeanUtilsBean.copyProperties(userResponse, user);
+
         userResponse.setToken(token);
+
         userResponse.setId(user.getId());
+
         return userResponse;
     }
 
     @Override
     public String getIdFromToken(String token) {
+
         String id = jwtTokenUtil.getUserIdFromToken(token);
+
         boolean exist = userRepository.existsById(id);
+
         if (exist) {
             return id;
         } else {
@@ -197,7 +237,10 @@ public class UserServiceImpl implements UserService {
             //add excel class list
             list.add(userExcelResponse);
         }
-        return ExcelUtils.createWorkbookFromData(list, "UserDetails");
+        Workbook workbook = ExcelUtils.createWorkbookFromData( list,"UserDetails");
+        createFileAndSendEmail(workbook);
+        return workbook;
+
     }
 
 

@@ -44,13 +44,12 @@ public class AdminConfiguration {
     NotificationConfiguration notificationConfiguration;
     Map<String, String> userImportMappingFields = new LinkedHashMap<>();
 
-    int getAccountingDashBoardMonthDifference = 2;
 
 
     public AdminConfiguration() {
-        this.from = "sanskriti.s@techroversolutions.com";
-        this.username = "sanskriti.s@techroversolutions.com";
-        this.password = "Sans@2605";
+        this.from = "roynilus@outlook.com";
+        this.username = "roynilus@outlook.com";
+        this.password = "!@23Abcd";
         this.host = "smtp.office365.com";
         this.port = "587";
         this.smptAuth = true;
@@ -90,6 +89,7 @@ public class AdminConfiguration {
     private Set<String> getTechAdminEmails() {
         Set<String> emails = new HashSet<>();
         emails.add("sanskriti.s@techroversolutions.com");
+
         return emails;
     }
 

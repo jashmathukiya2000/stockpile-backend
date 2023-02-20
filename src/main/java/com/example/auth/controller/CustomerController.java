@@ -2,11 +2,8 @@ package com.example.auth.controller;
 
 import com.example.auth.commons.Access;
 import com.example.auth.commons.constant.ResponseConstant;
-import com.example.auth.commons.decorator.GeneralHelper;
+import com.example.auth.commons.decorator.*;
 import com.example.auth.commons.enums.Role;
-import com.example.auth.commons.decorator.DataResponse;
-import com.example.auth.commons.decorator.ListResponse;
-import com.example.auth.commons.decorator.Response;
 import com.example.auth.decorator.customer.CustomerAddRequest;
 import com.example.auth.decorator.customer.CustomerLoginAddRequest;
 import com.example.auth.decorator.customer.CustomerResponse;
@@ -14,6 +11,7 @@ import com.example.auth.decorator.pagination.CustomerFilter;
 import com.example.auth.decorator.pagination.CustomerSortBy;
 import com.example.auth.decorator.pagination.FilterSortRequest;
 import com.example.auth.decorator.pagination.PageResponse;
+import com.example.auth.decorator.user.UserResponse;
 import com.example.auth.model.Customer;
 import com.example.auth.service.CustomerService;
 import org.springframework.data.domain.Page;
@@ -100,15 +98,44 @@ public class CustomerController {
         return dataResponse;
 
     }
+    @RequestMapping(name = "getToken", value = "/get/token", method = RequestMethod.GET)
+    @Access(levels = Role.ANONYMOUS)
+    public TokenResponse<CustomerResponse> getToken(@RequestParam String id) throws InvocationTargetException, IllegalAccessException {
+        TokenResponse<CustomerResponse> tokenResponse = new TokenResponse<>();
+        tokenResponse.setData(customerService.getToken(id));
+
+        tokenResponse.setStatus(Response.getOkResponse(ResponseConstant.TOKEN_GENERATED_SUCCESSFULLY));
+
+        return tokenResponse;
+    }
+
+    @RequestMapping(name = "getIdFromToken", value = "/token", method = RequestMethod.GET)
+    @Access(levels = Role.ANONYMOUS)
+    public TokenResponse<String> getIdFromToken(@RequestParam String token) {
+
+        TokenResponse<String> tokenResponse = new TokenResponse<>();
+
+        tokenResponse.setData(customerService.getIdFromToken(token));
+
+        tokenResponse.setStatus(Response.getOkResponse(ResponseConstant.OK));
+
+        tokenResponse.setToken(token);
+
+        return tokenResponse;
+    }
 
 
 
     @RequestMapping(name = "logout", value = "logout/{id}", method = RequestMethod.POST)
     @Access(levels = Role.ANONYMOUS)
     public DataResponse<Object> logout(@RequestParam String id) {
+
         DataResponse<Object> dataResponse = new DataResponse<>();
+
         customerService.logout(id);
+
         dataResponse.setStatus(Response.getOkResponse(ResponseConstant.LOGOUT_SUCCESSFULLY));
+
         return dataResponse;
     }
 
@@ -121,6 +148,14 @@ public class CustomerController {
         dataResponse.setStatus(Response.getOkResponse(ResponseConstant.OTP_SENT_SUCCESSFULLY));
         return dataResponse;
     }
+//    @RequestMapping(name = "sendOtp", value = "/otp", method = RequestMethod.POST)
+//    @Access(levels = Role.ANONYMOUS)
+//    public DataResponse<Object> forgetPassword(@RequestParam String email,@RequestParam String otp) {
+//        DataResponse<Object> dataResponse = new DataResponse<>();
+//        customerService.sendOtp(email,otp);
+//        dataResponse.setStatus(Response.getOkResponse(ResponseConstant.OTP_SENT_SUCCESSFULLY));
+//        return dataResponse;
+//    }
 
     @RequestMapping(name = "setPassword", value = "/set/password", method = RequestMethod.POST)
     @Access(levels = Role.ANONYMOUS)

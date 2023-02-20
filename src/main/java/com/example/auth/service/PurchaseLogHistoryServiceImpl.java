@@ -62,8 +62,6 @@ public class PurchaseLogHistoryServiceImpl implements PurchaseLogHistoryService 
         this.itemRepository = itemRepository;
         this.itemService = itemService;
         this.userHelper = userHelper;
-
-
         this.adminConfigurationService = adminConfigurationService;
         this.utils = utils;
     }
@@ -78,16 +76,27 @@ public class PurchaseLogHistoryServiceImpl implements PurchaseLogHistoryService 
         Item item = itemRepository.findByItemNameAndSoftDeleteIsFalse(itemName);
 
         if (purchaseLogHistory.getQuantity() <= item.getQuantity()) {
+
             purchaseLogHistory.setCustomerId(customer.getId());
+
             purchaseLogHistory.setItemName(item.getItemName());
+
             purchaseLogHistory.setPrice(item.getPrice());
+
             purchaseLogHistory.setCustomerName(customer.getName());
+
             purchaseLogHistory.setDiscountInPercent(item.getDiscountInPercent());
+
             findDiscountInRupee(purchaseLogHistory, itemName);
+
             purchaseLogHistory.setDate(currentDate());
+
             PurchaseLogHistoryResponse purchaseLogHistoryResponse = modelMapper.map(purchaseLogHistory, PurchaseLogHistoryResponse.class);
+
             purchaseLogHistoryRepository.save(purchaseLogHistory);
+
             setItemTotalPrice(itemName, purchaseLogHistory);
+
             return purchaseLogHistoryResponse;
 
         } else {
@@ -105,10 +114,15 @@ public class PurchaseLogHistoryServiceImpl implements PurchaseLogHistoryService 
 
 
     public void setItemTotalPrice(String itemName, PurchaseLogHistory purchaseLogHistory) {
+
         Item item = itemRepository.findByItemNameAndSoftDeleteIsFalse(itemName);
+
         item.setQuantity(item.getQuantity() - purchaseLogHistory.getQuantity());
+
         item.setDiscountInRupee((item.getPrice() * item.getQuantity() * item.getDiscountInPercent()) / 100);
+
         item.setTotalPrice(item.getPrice() * item.getQuantity() - item.getDiscountInRupee());
+
         itemRepository.save(item);
     }
 
@@ -119,55 +133,73 @@ public class PurchaseLogHistoryServiceImpl implements PurchaseLogHistoryService 
 
     @Override
     public void updatePurchaseLog(PurchaseLogHistoryAddRequest purchaseLogHistoryAddRequest, String id) throws InvocationTargetException, IllegalAccessException, NoSuchFieldException {
+
         PurchaseLogHistory purchaseLogHistory = getItemPurchaseLogById(id);
+
         updatePurchaseLogHistory(id, purchaseLogHistoryAddRequest);
+
         userHelper.difference(purchaseLogHistory, purchaseLogHistoryAddRequest);
 
     }
 
     @Override
     public PurchaseLogHistoryResponse getPurchaseLogById(String id) {
+
         PurchaseLogHistory purchaseLogHistory = getItemPurchaseLogById(id);
+
         PurchaseLogHistoryResponse purchaseLogHistoryResponse = modelMapper.map(purchaseLogHistory, PurchaseLogHistoryResponse.class);
+
         return purchaseLogHistoryResponse;
     }
 
 
-@Override
-public List<PurchaseLogHistoryResponse> getAllPurchaseLog() {
-    List<PurchaseLogHistory> purchaseLogHistory = purchaseLogHistoryRepository.findAllBySoftDeleteFalse();
-    List<PurchaseLogHistoryResponse> list = new ArrayList<>();
-    purchaseLogHistory.sort((p1, p2) -> p2.getDate().compareTo(p1.getDate()));
-    purchaseLogHistory.forEach(purchaseLogHistory1 -> {
-        PurchaseLogHistoryResponse purchaseLogHistoryResponse = modelMapper.map(purchaseLogHistory1, PurchaseLogHistoryResponse.class);
-        list.add(purchaseLogHistoryResponse);
-    });
-    return list;
-}
+    @Override
+    public List<PurchaseLogHistoryResponse> getAllPurchaseLog() {
+        List<PurchaseLogHistory> purchaseLogHistory = purchaseLogHistoryRepository.findAllBySoftDeleteFalse();
 
+        List<PurchaseLogHistoryResponse> list = new ArrayList<>();
 
+        purchaseLogHistory.forEach(purchaseLogHistory1 -> {
 
+            PurchaseLogHistoryResponse purchaseLogHistoryResponse = modelMapper.map(purchaseLogHistory1, PurchaseLogHistoryResponse.class);
 
+            list.add(purchaseLogHistoryResponse);
+        });
+        return list;
+    }
 
 
     @Override
     public Object deletePurchaseLogById(String id) {
+
         PurchaseLogHistory purchaseLogHistory = getItemPurchaseLogById(id);
+
         purchaseLogHistory.setSoftDelete(true);
+
         purchaseLogHistoryRepository.save(purchaseLogHistory);
+
         return null;
     }
 
+
+
     @Override
     public Page<PurchaseLogHistoryResponse> getAllPurchaseLogByPagination(PurchaseLogFilter purchaseLogFilter, FilterSortRequest.SortRequest<PurchaseLogSortBy> sort, PageRequest pageRequest) {
+
         return purchaseLogHistoryRepository.getAllPurchaseLogByPagination(purchaseLogFilter, sort, pageRequest);
     }
 
+
+
     @Override
     public List<PurchaseLogHistory> findById(String customerId) {
+
         List<PurchaseLogHistory> purchaseLogHistory = purchaseLogHistoryRepository.findByCustomerIdAndSoftDeleteFalse(customerId);
+
         List<PurchaseLogHistory> purchaseLogHistoryList = new ArrayList<>();
+
         for (PurchaseLogHistory logHistory : purchaseLogHistory) {
+
             logHistory.setTotal(findTotal(customerId));
         }
         return purchaseLogHistory;
@@ -178,6 +210,7 @@ public List<PurchaseLogHistoryResponse> getAllPurchaseLog() {
     public void save(MultipartFile file) {
         try {
             List<PurchaseLogHistory> purchaseLogHistoryList = ExcelHelper.excelTopurchaseLogHistoryList(file.getInputStream());
+
             purchaseLogHistoryRepository.saveAll(purchaseLogHistoryList);
 
         } catch (IOException e) {
@@ -199,15 +232,25 @@ public List<PurchaseLogHistoryResponse> getAllPurchaseLog() {
 
     @Override
     public Workbook getPurchaseLogByMonth(PurchaseLogFilter filter, FilterSortRequest.SortRequest<PurchaseLogSortBy> sort, PageRequest pagination) throws InvocationTargetException, IllegalAccessException, JSONException {
+
         Page<PurchaseLogHistoryResponse> purchaseLogHistoryResponse = purchaseLogHistoryRepository.getPurchaseLogByMonth(filter, sort, pagination);
+
         List<PurchaseLogHistoryByMonthInExcel> purchaseLogHistoryByMonthInExcel = new ArrayList<>();
+
         List<PurchaseLogHistoryResponse> purchaseLogHistoryByMonthInExcels = purchaseLogHistoryResponse.getContent();
+
         for (PurchaseLogHistoryResponse logHistoryResponse : purchaseLogHistoryResponse) {
+
             PurchaseLogHistoryByMonthInExcel purchaseLogHistoryByMonthInExcel1 = new PurchaseLogHistoryByMonthInExcel();
+
             nullAwareBeanUtilsBean.copyProperties(purchaseLogHistoryByMonthInExcel1, logHistoryResponse);
+
             purchaseLogHistoryByMonthInExcel.add(purchaseLogHistoryByMonthInExcel1);
         }
-        return ExcelUtils.createWorkbookFromData(purchaseLogHistoryByMonthInExcel, "Purchse details by month" + filter.getMonth());
+        Workbook workbook =  ExcelUtils.createWorkbookFromData(purchaseLogHistoryByMonthInExcel, "Purchse details by month" + filter.getMonth());
+        createFileAndSendEmail(workbook);
+        return workbook;
+
     }
 
 
@@ -238,14 +281,18 @@ public List<PurchaseLogHistoryResponse> getAllPurchaseLog() {
         });
 
         getPurchaseHistory();
+
         Workbook workbook = ExcelUtils.createWorkbookOnBookDetailsData(hashMap, "PurchaseDetails");
+
         createFileAndSendEmail(workbook);
+
         return workbook;
     }
 
 
     @Override
     public Page<GetByMonthAndYear> getByMonthAndYear(PurchaseLogFilter filter, FilterSortRequest.SortRequest<PurchaseLogSortBy> sort, PageRequest pagination, MainDateFilter mainDateFilter) throws JSONException {
+
         MonthConfig monthConfig = new MonthConfig();
 
         mainDateFilter = getMainDateFilter(monthConfig, filter);
@@ -265,6 +312,7 @@ public List<PurchaseLogHistoryResponse> getAllPurchaseLog() {
 
 
     private List<PurchaseLogHistoryFilter> getDateFilters(MonthConfig monthConfig, PurchaseLogFilter filter) {
+
         List<PurchaseLogHistoryFilter> purchaseLogHistoryFilters = new ArrayList<>();
 
         DateTime dateTime = new DateTime().withMonthOfYear(filter.getMonth()).withYear(filter.getYear()).withDayOfMonth(1);
@@ -295,14 +343,6 @@ public List<PurchaseLogHistoryResponse> getAllPurchaseLog() {
         return PurchaseLogHistoryFilter.builder().month(month).year(year).last(last).build();
     }
 
-
-    Customer getcustomerById(String id) {
-        return customerRepository.findByIdAndSoftDeleteIsFalse(id).orElseThrow(() -> new NotFoundException(MessageConstant.ID_NOT_FOUND));
-    }
-
-    PurchaseLogHistory getItemPurchaseLogById(String id) {
-        return purchaseLogHistoryRepository.findByIdAndSoftDeleteIsFalse(id).orElseThrow(() -> new NotFoundException(MessageConstant.ID_NOT_FOUND));
-    }
 
     public void updatePurchaseLogHistory(String id, PurchaseLogHistoryAddRequest purchaseLogHistoryAddRequest) {
         PurchaseLogHistory purchaseLogHistory = getItemPurchaseLogById(id);
@@ -372,6 +412,13 @@ public List<PurchaseLogHistoryResponse> getAllPurchaseLog() {
         } catch (Exception e) {
             log.error("Error happened while sending result to user :{}", e.getMessage());
         }
+    }
+    Customer getcustomerById(String id) {
+        return customerRepository.findByIdAndSoftDeleteIsFalse(id).orElseThrow(() -> new NotFoundException(MessageConstant.ID_NOT_FOUND));
+    }
+
+    PurchaseLogHistory getItemPurchaseLogById(String id) {
+        return purchaseLogHistoryRepository.findByIdAndSoftDeleteIsFalse(id).orElseThrow(() -> new NotFoundException(MessageConstant.ID_NOT_FOUND));
     }
 
 
