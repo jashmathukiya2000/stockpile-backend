@@ -10,7 +10,8 @@ import java.util.Map;
 @Getter
 @NoArgsConstructor
 public enum UserSortBy {
-    AGE("Age"),
+    DATE("date"),
+    AGE("age"),
     FIRST_NAME("firstName"),
     LAST_NAME("lastName"),
     EMAIL("email"),

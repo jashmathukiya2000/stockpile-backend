@@ -111,6 +111,7 @@ public class UserCustomRepositoryImpl implements UserCustomRepository {
         //Created Aggregation operation
         Aggregation aggregation = newAggregation(operations);
 
+
         List<UserResponse> users = mongoTemplate.aggregate(aggregation, "auth", UserResponse.class).getMappedResults();
 
 

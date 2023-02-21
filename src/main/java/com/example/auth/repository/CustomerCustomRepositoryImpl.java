@@ -27,6 +27,7 @@ import java.util.List;
 import static org.springframework.data.mongodb.core.aggregation.Aggregation.*;
 
 public class CustomerCustomRepositoryImpl implements CustomerCustomRepository {
+
     private final MongoTemplate mongoTemplate;
 
     public CustomerCustomRepositoryImpl(MongoTemplate mongoTemplate) {
