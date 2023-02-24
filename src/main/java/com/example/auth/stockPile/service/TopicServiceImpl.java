@@ -94,6 +94,7 @@ public class TopicServiceImpl implements TopicService{
 
     @Override
     public void deleteTopicById(String id) {
+        log.info("deleteToicById:{}");
         Topic topic=topicById(id);
         topic.setSoftDelete(true);
         topicRepository.save(topic);
