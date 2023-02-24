@@ -39,7 +39,7 @@ public class ResultServiceImpl implements ResultService {
     }
 
     @Override
-    public UserResponse addResult(String id, Result result) throws InvocationTargetException, IllegalAccessException {
+    public UserResponse addResult(String id, Result result) {
 
         List<Result> results = new ArrayList<>();
 
@@ -99,7 +99,7 @@ public class ResultServiceImpl implements ResultService {
         return userRepository.findByIdAndSoftDeleteIsFalse(id).orElseThrow(() -> new NotFoundException(MessageConstant.USER_ID_NOT_FOUND));
     }
 
-    public void checkResultValidation(Result result) throws InvocationTargetException, IllegalAccessException {
+    public void checkResultValidation(Result result) {
 
         AdminConfiguration adminConfiguration = adminConfigurationService.getConfiguration();
 

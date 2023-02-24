@@ -16,8 +16,6 @@ import com.example.auth.service.ItemService;
 import org.springframework.data.domain.Page;
 import org.springframework.web.bind.annotation.*;
 
-import java.lang.reflect.InvocationTargetException;
-
 @RestController
 @RequestMapping("items")
 public class ItemController {
@@ -31,7 +29,7 @@ public class ItemController {
 
     @RequestMapping(name = "addItem", value = "/add", method = RequestMethod.POST)
     @Access(levels = Role.ANONYMOUS)
-    public DataResponse<ItemResponse> addItem(@RequestParam(required = false) String categoryId, @RequestBody ItemAddRequest itemAddRequest) throws InvocationTargetException, IllegalAccessException {
+    public DataResponse<ItemResponse> addItem(@RequestParam(required = false) String categoryId, @RequestBody ItemAddRequest itemAddRequest) {
         DataResponse<ItemResponse> dataResponse = new DataResponse<>();
         dataResponse.setData(itemService.addItem(categoryId, itemAddRequest));
         dataResponse.setStatus(Response.getOkResponse(ResponseConstant.SAVED_SUCCESSFULLY));
@@ -40,7 +38,7 @@ public class ItemController {
 
     @RequestMapping(name = "updateItem", value = "/update", method = RequestMethod.POST)
     @Access(levels = Role.ANONYMOUS)
-    public DataResponse<ItemResponse> updateItem(@RequestParam String id, @RequestBody ItemAddRequest itemAddRequest) throws InvocationTargetException, IllegalAccessException, NoSuchFieldException {
+    public DataResponse<ItemResponse> updateItem(@RequestParam String id, @RequestBody ItemAddRequest itemAddRequest) {
         DataResponse<ItemResponse> dataResponse = new DataResponse<>();
         dataResponse.setData(itemService.updateItem(id, itemAddRequest));
         dataResponse.setStatus(Response.getOkResponse(ResponseConstant.UPDATED_SUCCESSFULLY));

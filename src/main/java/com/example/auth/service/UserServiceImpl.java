@@ -71,14 +71,17 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public void updateUser(String id, UserAddRequest userAddRequest) throws InvocationTargetException, IllegalAccessException, NoSuchFieldException {
+    public void updateUser(String id, UserAddRequest userAddRequest) {
 
         User user1 = getUserModel(id);
 
         update(id, userAddRequest);
 
-        userHelper.difference(userAddRequest, user1);
-
+        try {
+            userHelper.difference(userAddRequest, user1);
+        } catch (NoSuchFieldException | IllegalAccessException e) {
+            log.error("error occured when finding difference  : {}",e.getMessage(), e);
+        }
 
 
     }
@@ -159,7 +162,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public UserResponse getUser(String id) throws InvocationTargetException, IllegalAccessException {
+    public UserResponse getUser(String id){
         User user = getUserModel(id);
         return modelMapper.map(user, UserResponse.class);
     }
@@ -172,7 +175,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public UserResponse getToken(String id) throws InvocationTargetException, IllegalAccessException {
+    public UserResponse getToken(String id)  {
 
         User user = getUserModel(id);
 
@@ -184,7 +187,11 @@ public class UserServiceImpl implements UserService {
 
         String token = jwtTokenUtil.generateToken(jwtUser);
 
-        nullAwareBeanUtilsBean.copyProperties(userResponse, user);
+        try {
+            nullAwareBeanUtilsBean.copyProperties(userResponse, user);
+        }  catch (InvocationTargetException | IllegalAccessException e) {
+            log.error("error occured when mapping model to dto : {}",e.getMessage(), e);
+        }
 
         userResponse.setToken(token);
 
@@ -226,14 +233,18 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public Workbook getAllUserInExcel() throws InvocationTargetException, IllegalAccessException {
+    public Workbook getAllUserInExcel()  {
         List<UserResponse> userResponses = getAllUser();
         List<UserExcelResponse> list = new ArrayList<>();
         //list add excel class object
         for (UserResponse response : userResponses) {
             UserExcelResponse userExcelResponse = new UserExcelResponse();
             //excel class obj
-            nullAwareBeanUtilsBean.copyProperties(userExcelResponse, response);
+            try {
+                nullAwareBeanUtilsBean.copyProperties(userExcelResponse, response);
+            } catch (InvocationTargetException | IllegalAccessException e) {
+                log.error("error occured when mapping model to dto : {}",e.getMessage(), e);
+            }
             //add excel class list
             list.add(userExcelResponse);
         }
@@ -245,9 +256,14 @@ public class UserServiceImpl implements UserService {
 
 
     @Override
-    public Workbook getUserDetailsByResultSpi(UserFilterData filter, FilterSortRequest.SortRequest<UserSortBy> sort, PageRequest pageRequest) throws InvocationTargetException, IllegalAccessException, JSONException {
+    public Workbook getUserDetailsByResultSpi(UserFilterData filter, FilterSortRequest.SortRequest<UserSortBy> sort, PageRequest pageRequest) {
         HashMap<String, List<UserSpiDataInExcel>> hashMap = new LinkedHashMap<>();
-        Page<UserSpiResponse> page = userRepository.getUserDetailsByResultSpi(filter, sort, pageRequest);
+        Page<UserSpiResponse> page = null;
+        try {
+            page = userRepository.getUserDetailsByResultSpi(filter, sort, pageRequest);
+        } catch (JSONException e) {
+            log.error("error occured during getUserDetails: {}",e.getMessage(), e);
+        }
         List<UserSpiResponse> list = page.getContent();
         list.forEach(userSpiResponse -> {
             List<UserSpiDataInExcel> userSpiDataInExcels = new ArrayList<>();
@@ -281,10 +297,9 @@ public class UserServiceImpl implements UserService {
         }
     }
 
-    private void sendmail(File file) throws InvocationTargetException, IllegalAccessException {
-
-        AdminConfiguration adminConfiguration = adminConfigurationService.getConfiguration();
+    private void sendmail(File file)  {
         try {
+            AdminConfiguration adminConfiguration = adminConfigurationService.getConfiguration();
             EmailModel emailModel = new EmailModel();
             emailModel.setTo("sanskriti.s@techroversolutions.com");
             System.out.println(emailModel.getTo());
@@ -332,7 +347,6 @@ public class UserServiceImpl implements UserService {
 
 
     public User getUserModel(String id) {
-
         return userRepository.findByIdAndSoftDeleteIsFalse(id).orElseThrow(() -> new NotFoundException(MessageConstant.USER_ID_NOT_FOUND));
     }
 

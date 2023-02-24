@@ -70,6 +70,9 @@ public class ApplicationStartUpEventListener {
             saveIfNotExits(Utils.getAllMethodNames(ItemController.class));
             saveIfNotExits(Utils.getAllMethodNames(CustomerController.class));
             saveIfNotExits(Utils.getAllMethodNames(AdminController.class));
+            saveIfNotExits(Utils.getAllMethodNames(StockController.class));
+            saveIfNotExits(Utils.getAllMethodNames(TopicController.class));
+            saveIfNotExits(Utils.getAllMethodNames(UserDataController.class));
         }
 
         Date currentDate = new Date();

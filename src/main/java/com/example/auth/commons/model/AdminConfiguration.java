@@ -72,7 +72,6 @@ public class AdminConfiguration {
         userImportMappingFields.put("MobileNo", "mobileNo");
 
     }
-
     private Set<String> getRequiredItems() {
         Set<String> requiredEmailItems = new HashSet<>();
         requiredEmailItems.add("@");
@@ -89,9 +88,6 @@ public class AdminConfiguration {
     private Set<String> getTechAdminEmails() {
         Set<String> emails = new HashSet<>();
         emails.add("sanskriti.s@techroversolutions.com");
-
         return emails;
     }
-
-
 }

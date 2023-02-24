@@ -23,7 +23,7 @@ public class AdminController {
 
     @RequestMapping(name = "addConfiguration", value = "/add", method = RequestMethod.POST)
     @Access(levels = Role.ADMIN)
-    public DataResponse<AdminResponse> addConfiguration() throws InvocationTargetException, IllegalAccessException {
+    public DataResponse<AdminResponse> addConfiguration()  {
         DataResponse<AdminResponse> dataResponse = new DataResponse<>();
         dataResponse.setData(adminConfigurationService.addConfiguration());
         dataResponse.setStatus(Response.getOkResponse(ResponseConstant.SAVED_SUCCESSFULLY));
@@ -32,7 +32,7 @@ public class AdminController {
 
     @RequestMapping(name = "getConfigurationDetails", value = "/getDetails", method = RequestMethod.GET)
     @Access(levels = Role.ADMIN)
-    public DataResponse<AdminConfiguration> getConfigurationDetails() throws InvocationTargetException, IllegalAccessException {
+    public DataResponse<AdminConfiguration> getConfigurationDetails()  {
         DataResponse<AdminConfiguration> dataResponse = new DataResponse<>();
         dataResponse.setData(adminConfigurationService.getConfiguration());
         dataResponse.setStatus(Response.getOkResponse(ResponseConstant.OK));

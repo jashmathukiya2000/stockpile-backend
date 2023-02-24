@@ -40,7 +40,7 @@ public class CategoryServiceImpl implements CategoryService {
         this.adminConfigurationService = adminConfigurationService;
     }
 
-    public CategoryResponse addCategory(CategoryAddRequest categoryAddRequest) throws InvocationTargetException, IllegalAccessException {
+    public CategoryResponse addCategory(CategoryAddRequest categoryAddRequest) {
 
         Category category = modelMapper.map(categoryAddRequest, Category.class);
 
@@ -110,10 +110,9 @@ public class CategoryServiceImpl implements CategoryService {
     }
 
 
-    public void checkValidation(CategoryAddRequest categoryAddRequest) throws InvocationTargetException, IllegalAccessException {
-
+    public void checkValidation(CategoryAddRequest categoryAddRequest)  {
+        
         AdminConfiguration adminConfiguration = adminConfigurationService.getConfiguration();
-
 
         if (categoryRepository.existsBycategoryNameAndSoftDeleteIsFalse(categoryAddRequest.getCategoryName())) {
             throw new InvalidRequestException(MessageConstant.ALREADY_EXIST);

@@ -7,20 +7,18 @@ import com.example.auth.decorator.customer.CustomerResponse;
 import com.example.auth.decorator.pagination.CustomerFilter;
 import com.example.auth.decorator.pagination.CustomerSortBy;
 import com.example.auth.decorator.pagination.FilterSortRequest;
-import com.example.auth.decorator.user.UserResponse;
 import com.example.auth.model.Customer;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 
 import java.lang.reflect.InvocationTargetException;
-import java.security.NoSuchAlgorithmException;
 import java.util.List;
 
 public interface CustomerService {
 
-    CustomerResponse addCustomer(CustomerAddRequest signUpAddRequest, Role role) throws InvocationTargetException, IllegalAccessException;
+    CustomerResponse addCustomer(CustomerAddRequest signUpAddRequest, Role role) ;
 
-    CustomerResponse login(CustomerLoginAddRequest customerLoginAddRequest) throws InvocationTargetException, IllegalAccessException, NoSuchAlgorithmException;
+    CustomerResponse login(CustomerLoginAddRequest customerLoginAddRequest) ;
 
     Page<Customer> getAllCustomerByPagination(CustomerFilter filter, FilterSortRequest.SortRequest<CustomerSortBy> sort, PageRequest pagination);
 

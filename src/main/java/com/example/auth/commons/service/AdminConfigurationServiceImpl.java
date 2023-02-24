@@ -4,6 +4,7 @@ import com.example.auth.commons.advice.NullAwareBeanUtilsBean;
 import com.example.auth.commons.decorator.AdminResponse;
 import com.example.auth.commons.model.AdminConfiguration;
 import com.example.auth.commons.repository.AdminRepository;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
@@ -12,6 +13,7 @@ import java.lang.reflect.InvocationTargetException;
 
 
 @Service
+@Slf4j
 public class AdminConfigurationServiceImpl implements AdminConfigurationService {
     @Autowired
     AdminRepository adminRepository;
@@ -20,7 +22,7 @@ public class AdminConfigurationServiceImpl implements AdminConfigurationService 
     NullAwareBeanUtilsBean nullAwareBeanUtilsBean;
 
     @Override
-    public AdminResponse addConfiguration() throws InvocationTargetException, IllegalAccessException {
+    public AdminResponse addConfiguration()  {
         AdminConfiguration adminConfiguration = new AdminConfiguration();
         if (!CollectionUtils.isEmpty(adminRepository.findAll())) {
             adminConfiguration = adminRepository.findAll().get(0);
@@ -28,18 +30,26 @@ public class AdminConfigurationServiceImpl implements AdminConfigurationService 
             adminConfiguration = adminRepository.save(adminConfiguration);
         }
         AdminResponse adminResponse = new AdminResponse();
-        nullAwareBeanUtilsBean.copyProperties(adminResponse, adminConfiguration);
+        try {
+            nullAwareBeanUtilsBean.copyProperties(adminResponse, adminConfiguration);
+        } catch (InvocationTargetException | IllegalAccessException  e) {
+            log.error("error occured when mapping model to dto : {}",e.getMessage(), e);
+        }
         return adminResponse;
     }
 
     @Override
-    public AdminConfiguration getConfiguration() throws InvocationTargetException, IllegalAccessException {
+    public AdminConfiguration getConfiguration()  {
         AdminConfiguration adminConfiguration = new AdminConfiguration();
         if (adminRepository.findAll().isEmpty()) {
             adminRepository.save(adminConfiguration);
         } else {
             AdminConfiguration adminConfiguration1 = adminRepository.findAll().get(0);
-            nullAwareBeanUtilsBean.copyProperties(adminConfiguration1, adminConfiguration);
+            try {
+                nullAwareBeanUtilsBean.copyProperties(adminConfiguration1, adminConfiguration);
+            }  catch (InvocationTargetException | IllegalAccessException e) {
+                log.error("error occured when mapping model to dto : {}",e.getMessage(), e);
+            }
             adminRepository.save(adminConfiguration1);
         }
         return adminConfiguration;

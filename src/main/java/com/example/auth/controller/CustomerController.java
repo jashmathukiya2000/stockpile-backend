@@ -11,14 +11,12 @@ import com.example.auth.decorator.pagination.CustomerFilter;
 import com.example.auth.decorator.pagination.CustomerSortBy;
 import com.example.auth.decorator.pagination.FilterSortRequest;
 import com.example.auth.decorator.pagination.PageResponse;
-import com.example.auth.decorator.user.UserResponse;
 import com.example.auth.model.Customer;
 import com.example.auth.service.CustomerService;
 import org.springframework.data.domain.Page;
 import org.springframework.web.bind.annotation.*;
 
 import java.lang.reflect.InvocationTargetException;
-import java.security.NoSuchAlgorithmException;
 
 @RestController("login")
 public class CustomerController {
@@ -31,9 +29,10 @@ public class CustomerController {
         this.generalHelper = generalHelper;
     }
 
+    //handle exception using try catch
     @RequestMapping(name = "addCustomer", value = "/addCustomer", method = RequestMethod.POST)
     @Access(levels = Role.ANONYMOUS)
-    public DataResponse<CustomerResponse> addCustomer(@RequestBody CustomerAddRequest customerAddRequest, @RequestParam Role role) throws InvocationTargetException, IllegalAccessException {
+    public DataResponse<CustomerResponse> addCustomer(@RequestBody CustomerAddRequest customerAddRequest, @RequestParam Role role) {
         DataResponse<CustomerResponse> dataResponse = new DataResponse<>();
         dataResponse.setData(customerService.addCustomer(customerAddRequest, role));
         dataResponse.setStatus(Response.getOkResponse());
@@ -41,15 +40,16 @@ public class CustomerController {
 
     }
 
-    @RequestMapping(name = "login", value = "/login/email", method = RequestMethod.POST)
+    //change api endpoint name
+    @RequestMapping(name = "login", value = "/login", method = RequestMethod.POST)
     @Access(levels = Role.ANONYMOUS)
-    public DataResponse<CustomerResponse> login(@RequestBody CustomerLoginAddRequest customerLoginAddRequest)
-            throws IllegalAccessException, NoSuchAlgorithmException, InvocationTargetException {
+    public DataResponse<CustomerResponse> login(@RequestBody CustomerLoginAddRequest customerLoginAddRequest) {
         DataResponse<CustomerResponse> dataResponse = new DataResponse<>();
         dataResponse.setData(customerService.login(customerLoginAddRequest));
         dataResponse.setStatus(Response.getOkResponse(ResponseConstant.LOGIN_SUCCESSFULL));
         return dataResponse;
     }
+
 
     @RequestMapping(name = "getCustomerById", value = "/id", method = RequestMethod.GET)
     @Access(levels = Role.ADMIN)
@@ -60,7 +60,8 @@ public class CustomerController {
         return dataResponse;
     }
 
-    @RequestMapping(name = "getAllCustomer", value = "get/All/Customer", method = RequestMethod.GET)
+    //removed capital letter
+    @RequestMapping(name = "getAllCustomer", value = "get/all/customer", method = RequestMethod.GET)
     @Access(levels = Role.ADMIN)
     public ListResponse<CustomerResponse> getAllCustomer() {
         ListResponse<CustomerResponse> listResponse = new ListResponse<>();
@@ -69,7 +70,7 @@ public class CustomerController {
         return listResponse;
     }
 
-    @RequestMapping(name = "deleteCustomer", value = "/delete/By/Id", method = RequestMethod.DELETE)
+    @RequestMapping(name = "deleteCustomer", value = "/delete/by/id", method = RequestMethod.DELETE)
     @Access(levels = Role.ADMIN)
     public DataResponse<Object> deleteCustomer(@RequestParam String id) {
         DataResponse<Object> dataResponse = new DataResponse<>();
@@ -100,10 +101,13 @@ public class CustomerController {
     }
     @RequestMapping(name = "getToken", value = "/get/token", method = RequestMethod.GET)
     @Access(levels = Role.ANONYMOUS)
-    public TokenResponse<CustomerResponse> getToken(@RequestParam String id) throws InvocationTargetException, IllegalAccessException {
+    public TokenResponse<CustomerResponse> getToken(@RequestParam String id)  {
         TokenResponse<CustomerResponse> tokenResponse = new TokenResponse<>();
-        tokenResponse.setData(customerService.getToken(id));
-
+        try {
+            tokenResponse.setData(customerService.getToken(id));
+        } catch (IllegalAccessException | InvocationTargetException e) {
+            e.printStackTrace();
+        }
         tokenResponse.setStatus(Response.getOkResponse(ResponseConstant.TOKEN_GENERATED_SUCCESSFULLY));
 
         return tokenResponse;
@@ -163,7 +167,6 @@ public class CustomerController {
         DataResponse<Object> dataResponse = new DataResponse<>();
         customerService.setPassword(newPassword, confirmPassword, id);
         dataResponse.setStatus(Response.getOkResponse(ResponseConstant.PASSWORD_UPDATED_SUCCESSFULLY));
-
         return dataResponse;
     }
 

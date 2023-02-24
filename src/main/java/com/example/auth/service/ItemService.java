@@ -9,11 +9,10 @@ import com.example.auth.decorator.pagination.ItemSortBy;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 
-import java.lang.reflect.InvocationTargetException;
 import java.util.List;
 
 public interface ItemService {
-    ItemResponse addItem(String categoryId, ItemAddRequest itemAddRequest) throws InvocationTargetException, IllegalAccessException;
+    ItemResponse addItem(String categoryId, ItemAddRequest itemAddRequest) ;
 
     ItemResponse getItemById(String id);
 
@@ -25,7 +24,7 @@ public interface ItemService {
 
     void removeItems(String id);
 
-    ItemResponse updateItem(String id, ItemAddRequest itemAddRequest) throws InvocationTargetException, IllegalAccessException, NoSuchFieldException;
+    ItemResponse updateItem(String id, ItemAddRequest itemAddRequest) ;
 
     List<ItemAggregationResponse> getItemByAggregation();
 }

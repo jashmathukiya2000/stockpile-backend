@@ -70,7 +70,7 @@ public class PurchaseLogHistoryController {
         return dataResponse;
     }
 
-    @RequestMapping(name = "getAllPurchaseLog", value = "/get/All", method = RequestMethod.GET)
+    @RequestMapping(name = "getAllPurchaseLog", value = "/get/all", method = RequestMethod.GET)
     @Access (levels = Role.ADMIN)
     public ListResponse<PurchaseLogHistoryResponse> getAllPurchaseLog() {
         ListResponse<PurchaseLogHistoryResponse> listResponse = new ListResponse<>();
@@ -103,7 +103,7 @@ public class PurchaseLogHistoryController {
 
     @RequestMapping(name = "generatePdfFile", value = "/export-to-pdf", method = RequestMethod.POST)
     @Access (levels = Role.ADMIN)
-    public void generatePdfFile(HttpServletResponse response, @RequestParam String customerId) throws DocumentException, IOException {
+    public void generatePdfFile(HttpServletResponse response, @RequestParam String customerId) throws IOException {
         response.setContentType("application/pdf");
         DateFormat dateFormat = new SimpleDateFormat("YYYY-MM-DD:HH:MM:SS");
         String currentDateTime = dateFormat.format(new Date());
@@ -132,7 +132,7 @@ public class PurchaseLogHistoryController {
 
     @RequestMapping(name = "getPurchaseLogByMonth", value = "/month", method = RequestMethod.POST)
     @Access (levels = Role.ANONYMOUS)
-    public ResponseEntity<Resource> getPurchaseLogByMonth(@RequestBody  FilterSortRequest<PurchaseLogFilter, PurchaseLogSortBy> filterSortRequest) throws IOException, InvocationTargetException, IllegalAccessException, JSONException {
+    public ResponseEntity<Resource> getPurchaseLogByMonth(@RequestBody  FilterSortRequest<PurchaseLogFilter, PurchaseLogSortBy> filterSortRequest) {
         PurchaseLogFilter  filter = filterSortRequest.getFilter();
         FilterSortRequest.SortRequest<PurchaseLogSortBy> sort = filterSortRequest.getSort();
         Pagination pagination = filterSortRequest.getPagination();
@@ -170,7 +170,7 @@ public class PurchaseLogHistoryController {
     }
   @RequestMapping(name = "getPurchaseDetailsByCustomer",value = "/getByCustomerName",method = RequestMethod.POST)
     @Access (levels = Role.ANONYMOUS)
-   public ResponseEntity<Resource> getPurchaseDetailsByCustomerName(@RequestBody  FilterSortRequest<PurchaseLogFilter, PurchaseLogSortBy> filterSortRequest) throws IOException, IllegalAccessException, JSONException, InvocationTargetException {
+   public ResponseEntity<Resource> getPurchaseDetailsByCustomerName(@RequestBody  FilterSortRequest<PurchaseLogFilter, PurchaseLogSortBy> filterSortRequest)  {
       PurchaseLogFilter  filter = filterSortRequest.getFilter();
       FilterSortRequest.SortRequest<PurchaseLogSortBy> sort = filterSortRequest.getSort();
       Pagination pagination = filterSortRequest.getPagination();

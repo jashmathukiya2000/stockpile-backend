@@ -19,6 +19,7 @@ public class MessageConstant {
     public static final String DISCOUNT_MUST_NOT_BE_NULL = "Discount Must not be empty";
     public static final String PRICE_MUST_NOT_BE_NULL = "Price Must not be empty";
     public static final String ALREADY_EXIST ="Item categoryName already exist" ;
+    public static final String SYMBOL_ALREADY_EXIST ="Symbol already exist" ;
     public static final String NAME_MUST_NOT_BE_NULL ="Name must not be null" ;
     public static final String ITEM_NAME_MUST_NOT_BE_NULL ="ItemName must not be empty" ;
     public static final String ITEM_ALREADY_EXIST ="Item categoryName already exist try new one" ;

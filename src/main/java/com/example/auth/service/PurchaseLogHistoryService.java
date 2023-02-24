@@ -15,9 +15,10 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.List;
 
 public interface PurchaseLogHistoryService {
+
     PurchaseLogHistoryResponse addPurchaseLog(PurchaseLogHistoryAddRequest purchaseLogHistoryAddRequest, String customerId,String itemName);
 
-    void updatePurchaseLog(PurchaseLogHistoryAddRequest purchaseLogHistoryAddRequest, String id) throws InvocationTargetException, IllegalAccessException, NoSuchFieldException;
+    void updatePurchaseLog(PurchaseLogHistoryAddRequest purchaseLogHistoryAddRequest, String id) ;
 
     PurchaseLogHistoryResponse getPurchaseLogById(String id);
 
@@ -35,16 +36,15 @@ public interface PurchaseLogHistoryService {
     void save(MultipartFile file);
 
 
-
     List<PurchaseAggregationResponse> getItemPurchaseDetailsByMonthYear() throws JSONException;
 
     List<ItemPurchaseAggregationResponse> getPurchaseDetailsByCustomerName();
 
 
-    Workbook getPurchaseLogByMonth(PurchaseLogFilter filter, FilterSortRequest.SortRequest<PurchaseLogSortBy> sort, PageRequest pagination) throws InvocationTargetException, IllegalAccessException, JSONException;
+    Workbook getPurchaseLogByMonth(PurchaseLogFilter filter, FilterSortRequest.SortRequest<PurchaseLogSortBy> sort, PageRequest pagination) ;
 
 
-    Workbook getPurchaseDetailsByCustomer(PurchaseLogFilter filter, FilterSortRequest.SortRequest<PurchaseLogSortBy> sort, PageRequest pageRequest) throws InvocationTargetException, IllegalAccessException, JSONException;
+    Workbook getPurchaseDetailsByCustomer(PurchaseLogFilter filter, FilterSortRequest.SortRequest<PurchaseLogSortBy> sort, PageRequest pageRequest);
 
     Page<GetByMonthAndYear> getByMonthAndYear(PurchaseLogFilter filter, FilterSortRequest.SortRequest<PurchaseLogSortBy> sort, PageRequest pagination,MainDateFilter mainDateFilter) throws JSONException;
 }

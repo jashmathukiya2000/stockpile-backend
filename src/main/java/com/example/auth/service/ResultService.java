@@ -9,7 +9,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.List;
 
 public interface ResultService {
-    UserResponse addResult(String id, Result result) throws InvocationTargetException, IllegalAccessException, EmptyException;
+    UserResponse addResult(String id, Result result) ;
 
     List<UserSpiResponse> getBySpi(double spi);
 }

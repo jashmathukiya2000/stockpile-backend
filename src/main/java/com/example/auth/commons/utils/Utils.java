@@ -131,6 +131,7 @@ public class Utils {
         try {
 
             if (StringUtils.isEmpty(emailModel.getSubject())) {
+
                 emailModel.setSubject(emailModel.getSubject());
             }
             // Recipient's email ID needs to be mentioned.

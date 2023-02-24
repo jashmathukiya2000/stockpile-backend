@@ -113,9 +113,13 @@ public class ExcelUtils {
         return methods;
     }
 
-    public static ByteArrayResource getBiteResourceFromWorkbook(Workbook workbook) throws IOException {
+    public static ByteArrayResource getBiteResourceFromWorkbook(Workbook workbook) {
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-        workbook.write(outputStream);
+        try {
+            workbook.write(outputStream);
+        } catch (IOException e) {
+            log.error("error occured while writing in workbook : {}",e.getMessage(), e);
+        }
         return new ByteArrayResource(outputStream.toByteArray());
     }
 

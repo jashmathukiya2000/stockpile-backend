@@ -112,7 +112,6 @@ public class PurchaseLogHistoryServiceImpl implements PurchaseLogHistoryService 
         return item;
     }
 
-
     public void setItemTotalPrice(String itemName, PurchaseLogHistory purchaseLogHistory) {
 
         Item item = itemRepository.findByItemNameAndSoftDeleteIsFalse(itemName);
@@ -132,13 +131,16 @@ public class PurchaseLogHistoryServiceImpl implements PurchaseLogHistoryService 
     }
 
     @Override
-    public void updatePurchaseLog(PurchaseLogHistoryAddRequest purchaseLogHistoryAddRequest, String id) throws InvocationTargetException, IllegalAccessException, NoSuchFieldException {
+    public void updatePurchaseLog(PurchaseLogHistoryAddRequest purchaseLogHistoryAddRequest, String id) {
 
         PurchaseLogHistory purchaseLogHistory = getItemPurchaseLogById(id);
 
         updatePurchaseLogHistory(id, purchaseLogHistoryAddRequest);
-
-        userHelper.difference(purchaseLogHistory, purchaseLogHistoryAddRequest);
+        try {
+            userHelper.difference(purchaseLogHistory, purchaseLogHistoryAddRequest);
+        }  catch (NoSuchFieldException |IllegalAccessException e) {
+            log.error("error occured : {}",e.getMessage(), e);
+        }
 
     }
 
@@ -231,9 +233,14 @@ public class PurchaseLogHistoryServiceImpl implements PurchaseLogHistoryService 
     }
 
     @Override
-    public Workbook getPurchaseLogByMonth(PurchaseLogFilter filter, FilterSortRequest.SortRequest<PurchaseLogSortBy> sort, PageRequest pagination) throws InvocationTargetException, IllegalAccessException, JSONException {
+    public Workbook getPurchaseLogByMonth(PurchaseLogFilter filter, FilterSortRequest.SortRequest<PurchaseLogSortBy> sort, PageRequest pagination)  {
 
-        Page<PurchaseLogHistoryResponse> purchaseLogHistoryResponse = purchaseLogHistoryRepository.getPurchaseLogByMonth(filter, sort, pagination);
+        Page<PurchaseLogHistoryResponse> purchaseLogHistoryResponse = null;
+        try {
+            purchaseLogHistoryResponse = purchaseLogHistoryRepository.getPurchaseLogByMonth(filter, sort, pagination);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
 
         List<PurchaseLogHistoryByMonthInExcel> purchaseLogHistoryByMonthInExcel = new ArrayList<>();
 
@@ -243,7 +250,11 @@ public class PurchaseLogHistoryServiceImpl implements PurchaseLogHistoryService 
 
             PurchaseLogHistoryByMonthInExcel purchaseLogHistoryByMonthInExcel1 = new PurchaseLogHistoryByMonthInExcel();
 
-            nullAwareBeanUtilsBean.copyProperties(purchaseLogHistoryByMonthInExcel1, logHistoryResponse);
+            try {
+                nullAwareBeanUtilsBean.copyProperties(purchaseLogHistoryByMonthInExcel1, logHistoryResponse);
+            }  catch (InvocationTargetException | IllegalAccessException e) {
+                log.error("error occured when mapping model to dto : {}",e.getMessage(), e);
+            }
 
             purchaseLogHistoryByMonthInExcel.add(purchaseLogHistoryByMonthInExcel1);
         }
@@ -255,11 +266,16 @@ public class PurchaseLogHistoryServiceImpl implements PurchaseLogHistoryService 
 
 
     @Override
-    public Workbook getPurchaseDetailsByCustomer(PurchaseLogFilter filter, FilterSortRequest.SortRequest<PurchaseLogSortBy> sort, PageRequest pageRequest) throws InvocationTargetException, IllegalAccessException, JSONException {
+    public Workbook getPurchaseDetailsByCustomer(PurchaseLogFilter filter, FilterSortRequest.SortRequest<PurchaseLogSortBy> sort, PageRequest pageRequest)  {
 
         HashMap<String, List<PurchaseLogExcelGenerator>> hashMap = new LinkedHashMap<>();
 
-        Page<ItemPurchaseAggregationResponse> itemPurchaseAggregationResponse = purchaseLogHistoryRepository.getPurchaseDetailsByCustomer(filter, sort, pageRequest);
+        Page<ItemPurchaseAggregationResponse> itemPurchaseAggregationResponse = null;
+        try {
+            itemPurchaseAggregationResponse = purchaseLogHistoryRepository.getPurchaseDetailsByCustomer(filter, sort, pageRequest);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
 
         List<ItemPurchaseAggregationResponse> list = itemPurchaseAggregationResponse.getContent();
 

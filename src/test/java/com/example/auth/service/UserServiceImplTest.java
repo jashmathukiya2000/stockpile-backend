@@ -17,8 +17,6 @@ import com.example.auth.decorator.user.UserSpiDataInExcel;
 import com.example.auth.decorator.user.UserSpiResponse;
 import com.example.auth.helper.UserServiceImplTestGenerator;
 import com.example.auth.repository.UserRepository;
-import org.apache.poi.ss.usermodel.Sheet;
-import org.apache.poi.ss.usermodel.Workbook;
 import org.json.JSONException;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -30,11 +28,8 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.util.*;
-import java.util.logging.Handler;
 
 import static org.mockito.Mockito.*;
 

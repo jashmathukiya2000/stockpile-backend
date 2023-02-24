@@ -4,7 +4,6 @@ import com.example.auth.commons.FileLoader;
 import com.example.auth.commons.JWTUser;
 import com.example.auth.commons.advice.NullAwareBeanUtilsBean;
 import com.example.auth.commons.constant.MessageConstant;
-import com.example.auth.commons.decorator.TemplateModel;
 import com.example.auth.commons.decorator.TemplateParser;
 import com.example.auth.commons.enums.PasswordEncryptionType;
 import com.example.auth.commons.enums.Role;
@@ -16,16 +15,13 @@ import com.example.auth.commons.service.AdminConfigurationService;
 import com.example.auth.commons.utils.JwtTokenUtil;
 import com.example.auth.commons.utils.PasswordUtils;
 import com.example.auth.commons.utils.Utils;
-import com.example.auth.decorator.PurchaseLogHistoryAddRequest;
 import com.example.auth.decorator.customer.CustomerAddRequest;
 import com.example.auth.decorator.customer.CustomerLoginAddRequest;
 import com.example.auth.decorator.customer.CustomerResponse;
 import com.example.auth.decorator.pagination.CustomerFilter;
 import com.example.auth.decorator.pagination.CustomerSortBy;
 import com.example.auth.decorator.pagination.FilterSortRequest;
-import com.example.auth.decorator.user.UserResponse;
 import com.example.auth.model.Customer;
-import com.example.auth.model.User;
 import com.example.auth.repository.CustomerRepository;
 import com.google.common.annotations.VisibleForTesting;
 import lombok.extern.slf4j.Slf4j;
@@ -62,7 +58,7 @@ public class CustomerServiceImpl implements CustomerService {
 
 
     @Override
-    public CustomerResponse addCustomer(CustomerAddRequest customerAddRequest, Role role) throws InvocationTargetException, IllegalAccessException {
+    public CustomerResponse addCustomer(CustomerAddRequest customerAddRequest, Role role) {
         AdminConfiguration adminConfiguration = adminConfigurationService.getConfiguration();
         Customer signUpUser1 = modelMapper.map(customerAddRequest, Customer.class);
         CustomerResponse userResponse1 = modelMapper.map(customerAddRequest, CustomerResponse.class);
@@ -89,7 +85,7 @@ public class CustomerServiceImpl implements CustomerService {
 
 
     @Override
-    public CustomerResponse login(CustomerLoginAddRequest customerLoginAddRequest) throws InvocationTargetException, IllegalAccessException, NoSuchAlgorithmException {
+    public CustomerResponse login(CustomerLoginAddRequest customerLoginAddRequest) {
 
         AdminConfiguration adminConfiguration = adminConfigurationService.getConfiguration();
 
@@ -99,7 +95,12 @@ public class CustomerServiceImpl implements CustomerService {
 
         CustomerResponse customerResponse = modelMapper.map(customer, CustomerResponse.class);
 
-        boolean passwords = passwordUtils.isPasswordAuthenticated(customerLoginAddRequest.getPassword(), userPassworod, PasswordEncryptionType.BCRYPT);
+        boolean passwords = false;
+        try {
+            passwords = passwordUtils.isPasswordAuthenticated(customerLoginAddRequest.getPassword(), userPassworod, PasswordEncryptionType.BCRYPT);
+        } catch (NoSuchAlgorithmException e) {
+            log.error("error occured during passwordAuthentication : {}", e.getMessage(), e);
+        }
 
         if (passwords) {
 
@@ -117,7 +118,11 @@ public class CustomerServiceImpl implements CustomerService {
 
         String token = jwtTokenUtil.generateToken(jwtUser);
 
-        nullAwareBeanUtilsBean.copyProperties(customerResponse, customer);
+        try {
+            nullAwareBeanUtilsBean.copyProperties(customerResponse, customer);
+        } catch (InvocationTargetException | IllegalAccessException e) {
+            log.error("error occured when mapping model to dto : {}", e.getMessage(), e);
+        }
 
         customerResponse.setToken(token);
 
@@ -129,7 +134,7 @@ public class CustomerServiceImpl implements CustomerService {
 
         String otp = generateOtp();
 
-        sendMail();
+//        sendMail();
 
         customer.setOtp(otp);
 
@@ -158,7 +163,6 @@ public class CustomerServiceImpl implements CustomerService {
 
     @Override
     public Page<Customer> getAllCustomerByPagination(CustomerFilter filter, FilterSortRequest.SortRequest<CustomerSortBy> sort, PageRequest pagination) {
-
         return customerRepository.getAllCustomerByPagination(filter, sort, pagination);
     }
 
@@ -174,17 +178,13 @@ public class CustomerServiceImpl implements CustomerService {
 
     @Override
     public List<CustomerResponse> getAllCustomer() {
-
         List<Customer> customerResponses = customerRepository.findAllBySoftDeleteFalse();
 
         List<CustomerResponse> list = new ArrayList<>();
 
         customerResponses.forEach(customer -> {
-
             CustomerResponse customerResponse = modelMapper.map(customer, CustomerResponse.class);
-
             list.add(customerResponse);
-
         });
 
         return list;
@@ -259,8 +259,7 @@ public class CustomerServiceImpl implements CustomerService {
 
     }
 
-    public void sendMail() throws InvocationTargetException, IllegalAccessException {
-
+    public void sendMail() {
         AdminConfiguration adminConfiguration = adminConfigurationService.getConfiguration();
 
         String otp = generateOtp();
@@ -325,7 +324,7 @@ public class CustomerServiceImpl implements CustomerService {
     }
 
     @Override
-    public CustomerResponse getToken(String id) throws InvocationTargetException, IllegalAccessException {
+    public CustomerResponse getToken(String id) {
         Customer customer = getById(id);
 
         CustomerResponse customerResponse = new CustomerResponse();
@@ -337,9 +336,11 @@ public class CustomerServiceImpl implements CustomerService {
 
         String token = jwtTokenUtil.generateToken(jwtUser);
 
-
-        nullAwareBeanUtilsBean.copyProperties(customerResponse, customer);
-
+        try {
+            nullAwareBeanUtilsBean.copyProperties(customerResponse, customer);
+        } catch (InvocationTargetException | IllegalAccessException e) {
+            e.printStackTrace();
+        }
         customerResponse.setToken(token);
 
 
@@ -356,10 +357,11 @@ public class CustomerServiceImpl implements CustomerService {
     }
 
 
-    public void checkValidation(CustomerAddRequest customerAddRequest) throws InvocationTargetException, IllegalAccessException {
+    public void checkValidation(CustomerAddRequest customerAddRequest) {
 
 
         AdminConfiguration adminConfiguration = adminConfigurationService.getConfiguration();
+
 
         if (!customerAddRequest.getPassword().equals(customerAddRequest.getConfirmPassword())) {
             throw new InvalidRequestException(MessageConstant.INCORRECT_PASSWORD);

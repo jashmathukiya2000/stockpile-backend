@@ -20,8 +20,6 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.io.IOException;
-import java.lang.reflect.InvocationTargetException;
 import java.util.Date;
 
 @RestController
@@ -39,8 +37,8 @@ public class UserController {
     }
 
     @RequestMapping(name = "addUser", value = "/add", method = RequestMethod.POST)
-    @Access(levels = Role.ADMIN)
-    public DataResponse<UserResponse> addUser(@RequestBody UserAddRequest userAddRequest) throws InvocationTargetException, IllegalAccessException {
+    @Access(levels = Role.ANONYMOUS)
+    public DataResponse<UserResponse> addUser(@RequestBody UserAddRequest userAddRequest) {
         DataResponse<UserResponse> dataResponse = new DataResponse<>();
         dataResponse.setData(userService.addUser(userAddRequest));
         dataResponse.setStatus(Response.getOkResponse(ResponseConstant.SAVED_SUCCESSFULLY));
@@ -50,7 +48,7 @@ public class UserController {
 
     @RequestMapping(name = "updateUser", value = "/update", method = RequestMethod.POST)
     @Access(levels = Role.ADMIN)
-    public DataResponse<UserResponse> updateUser(@RequestParam String id, @RequestBody UserAddRequest userAddRequest) throws InvocationTargetException, IllegalAccessException, NoSuchFieldException {
+    public DataResponse<UserResponse> updateUser(@RequestParam String id, @RequestBody UserAddRequest userAddRequest)  {
         DataResponse<UserResponse> dataResponse = new DataResponse<>();
         userService.updateUser(id, userAddRequest);
         dataResponse.setStatus(Response.getOkResponse(ResponseConstant.UPDATED_SUCCESSFULLY));
@@ -70,7 +68,7 @@ public class UserController {
 
     @RequestMapping(name = "getUserById", value = "/user/{id}", method = RequestMethod.POST)
     @Access(levels = {Role.ADMIN})
-    public DataResponse<UserResponse> getUserById(@PathVariable String id) throws InvocationTargetException, IllegalAccessException {
+    public DataResponse<UserResponse> getUserById(@PathVariable String id)  {
         DataResponse<UserResponse> dataResponse = new DataResponse<>();
         dataResponse.setData(userService.getUser(id));
         dataResponse.setStatus(Response.getOkResponse(ResponseConstant.OK));
@@ -107,7 +105,7 @@ public class UserController {
 
     @RequestMapping(name = "addResult", value = "/addResult/{id}", method = RequestMethod.POST)
     @Access(levels = {Role.ADMIN})
-    public DataResponse<UserResponse> addResult(@PathVariable String id, @RequestBody Result result) throws InvocationTargetException, IllegalAccessException {
+    public DataResponse<UserResponse> addResult(@PathVariable String id, @RequestBody Result result)  {
         DataResponse<UserResponse> dataResponse = new DataResponse<>();
         dataResponse.setData(resultService.addResult(id, result));
         dataResponse.setStatus(Response.getOkResponse());
@@ -143,7 +141,7 @@ public class UserController {
 
     @RequestMapping(name = "getToken", value = "/get/token", method = RequestMethod.GET)
     @Access(levels = Role.ANONYMOUS)
-    public TokenResponse<UserResponse> getToken(@RequestParam String id) throws InvocationTargetException, IllegalAccessException {
+    public TokenResponse<UserResponse> getToken(@RequestParam String id) {
         TokenResponse<UserResponse> tokenResponse = new TokenResponse<>();
         tokenResponse.setData(userService.getToken(id));
         tokenResponse.setStatus(Response.getOkResponse(ResponseConstant.TOKEN_GENERATED_SUCCESSFULLY));
@@ -205,7 +203,7 @@ public class UserController {
 
     @Access(levels = Role.ANONYMOUS)
 
-    public ResponseEntity<Resource> getAllUserInExcel() throws IOException, InvocationTargetException, IllegalAccessException {
+    public ResponseEntity<Resource> getAllUserInExcel()  {
 
         Workbook workbook = userService.getAllUserInExcel();
 
@@ -229,7 +227,7 @@ public class UserController {
 
     @Access(levels = Role.ANONYMOUS)
 
-    public ResponseEntity<Resource> getUserDetailsByResultSpi(@RequestBody FilterSortRequest<UserFilterData, UserSortBy> filterSortRequest) throws IOException, IllegalAccessException, JSONException, InvocationTargetException {
+    public ResponseEntity<Resource> getUserDetailsByResultSpi(@RequestBody FilterSortRequest<UserFilterData, UserSortBy> filterSortRequest)  {
 
         UserFilterData filter = filterSortRequest.getFilter();
 
@@ -257,10 +255,10 @@ public class UserController {
     }
 
 
-    @RequestMapping(name = "getUserEligibilityByAge", value = "/user/Age", method = RequestMethod.POST)
+    @RequestMapping(name = "getUserEligibilityByAge", value = "/user/age", method = RequestMethod.POST)
     @Access(levels = Role.ANONYMOUS)
 
-    public PageResponse<UserEligibilityAggregation> getUserEligibilityByAge(@RequestBody FilterSortRequest<UserFilterData, UserSortBy> filterSortRequest) throws IOException, IllegalAccessException, JSONException, InvocationTargetException {
+    public PageResponse<UserEligibilityAggregation> getUserEligibilityByAge(@RequestBody FilterSortRequest<UserFilterData, UserSortBy> filterSortRequest) throws JSONException {
 
         PageResponse<UserEligibilityAggregation> pageResponse = new PageResponse<>();
 

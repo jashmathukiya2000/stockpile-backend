@@ -11,16 +11,15 @@ import org.json.JSONException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 
-import java.lang.reflect.InvocationTargetException;
 import java.util.Date;
 import java.util.List;
 
 public interface UserService {
-    UserResponse addUser(UserAddRequest userAddRequest) throws InvocationTargetException, IllegalAccessException;
+    UserResponse addUser(UserAddRequest userAddRequest);
 
     List<UserResponse> getAllUser();
 
-    UserResponse getUser(String id) throws InvocationTargetException, IllegalAccessException;
+    UserResponse getUser(String id) ;
 
     void deleteUser(String id);
 
@@ -32,7 +31,7 @@ public interface UserService {
 
     List<MaxSpiResponse> getUserByMaxSpi(String id);
 
-    UserResponse getToken(String id) throws InvocationTargetException, IllegalAccessException;
+    UserResponse getToken(String id) ;
 
     String getIdFromToken(String token);
 
@@ -40,14 +39,14 @@ public interface UserService {
 
     boolean isTokenExpired(String token);
 
-    Workbook getAllUserInExcel() throws InvocationTargetException, IllegalAccessException;
+    Workbook getAllUserInExcel();
 
-    Workbook getUserDetailsByResultSpi(UserFilterData filter, FilterSortRequest.SortRequest<UserSortBy> sort, PageRequest pageRequest) throws InvocationTargetException, IllegalAccessException, JSONException;
+    Workbook getUserDetailsByResultSpi(UserFilterData filter, FilterSortRequest.SortRequest<UserSortBy> sort, PageRequest pageRequest) ;
 
 
     Page<UserEligibilityAggregation> getUserEligibilityByAge(UserFilterData filter, FilterSortRequest.SortRequest<UserSortBy> sort, PageRequest pagination) throws JSONException;
 
-    void updateUser(String id, UserAddRequest userAddRequest) throws InvocationTargetException, IllegalAccessException, NoSuchFieldException;
+    void updateUser(String id, UserAddRequest userAddRequest);
 
 
     MonthAndYear userChartApi(int year);

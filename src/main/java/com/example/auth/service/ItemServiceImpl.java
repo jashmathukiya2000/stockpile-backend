@@ -15,18 +15,19 @@ import com.example.auth.model.Item;
 import com.example.auth.repository.CategoryRepository;
 import com.example.auth.repository.ItemRepository;
 import com.google.api.client.repackaged.com.google.common.annotations.VisibleForTesting;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections.CollectionUtils;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
-import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.text.DecimalFormat;
 import java.util.*;
 
 @Service
+@Slf4j
 public class ItemServiceImpl implements ItemService {
     private final CategoryRepository categoryRepository;
     private final ItemRepository itemRepository;
@@ -45,7 +46,7 @@ public class ItemServiceImpl implements ItemService {
 
 
     @Override
-    public ItemResponse addItem(String categoryId, ItemAddRequest itemAddRequest) throws InvocationTargetException, IllegalAccessException {
+    public ItemResponse addItem(String categoryId, ItemAddRequest itemAddRequest) {
 
         checkValidation(itemAddRequest);
 
@@ -72,7 +73,7 @@ public class ItemServiceImpl implements ItemService {
     }
 
     @Override
-    public ItemResponse updateItem(String id, ItemAddRequest itemAddRequest) throws InvocationTargetException, IllegalAccessException, NoSuchFieldException {
+    public ItemResponse updateItem(String id, ItemAddRequest itemAddRequest) {
 
         Item item = getById(id);
 
@@ -80,7 +81,11 @@ public class ItemServiceImpl implements ItemService {
 
         updateItemData(id, itemAddRequest);
 
-        userHelper.difference(item, itemAddRequest);
+        try {
+            userHelper.difference(item, itemAddRequest);
+        }  catch (NoSuchFieldException| IllegalAccessException  e) {
+            log.error("error occured : {}",e.getMessage(), e);
+        }
 
         return itemResponse;
     }
@@ -193,7 +198,7 @@ public class ItemServiceImpl implements ItemService {
     }
 
 
-    public void updateItemData(String id, ItemAddRequest itemAddRequest) throws InvocationTargetException, IllegalAccessException {
+    public void updateItemData(String id, ItemAddRequest itemAddRequest)  {
 
         Item item = getById(id);
         if (item != null) {

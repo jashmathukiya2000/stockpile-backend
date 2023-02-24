@@ -6,8 +6,8 @@ import com.example.auth.commons.model.AdminConfiguration;
 import java.lang.reflect.InvocationTargetException;
 
 public interface AdminConfigurationService {
-    AdminResponse addConfiguration() throws InvocationTargetException, IllegalAccessException;
+    AdminResponse addConfiguration();
 
-    AdminConfiguration getConfiguration() throws InvocationTargetException, IllegalAccessException;
+    AdminConfiguration getConfiguration() ;
 
 }
