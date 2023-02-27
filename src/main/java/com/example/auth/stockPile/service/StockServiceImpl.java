@@ -46,6 +46,7 @@ public class StockServiceImpl implements StockService {
         }
         stockRepository.save(stock);
 
+
         StockResponse stockResponse = modelMapper.map(stock, StockResponse.class);
 
         return stockResponse;

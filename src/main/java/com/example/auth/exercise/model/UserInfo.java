@@ -1,10 +1,11 @@
-package com.example.auth.stockPile.model;
+package com.example.auth.exercise.model;
 
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.util.Date;
@@ -12,29 +13,28 @@ import java.util.Date;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-
-@Document(collection = "topics")
-
-public class Topic {
+@Document(collection = "userInfo")
+public class UserInfo {
+    @Id
 
     String id;
 
-    String title;
+    String firstName;
 
-    String description;
+    String lastName;
 
-    String stockId;
+    Date birthDate;
 
-    String stockSymbol;
+    String email;
 
-    String stockName;
+    String city;
 
-    UserData createdBy;
+    String state;
 
-    Date createdOn;
+    String country;
 
     @JsonIgnore
-
     boolean softDelete;
+
 
 }

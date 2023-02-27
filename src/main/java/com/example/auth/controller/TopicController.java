@@ -41,16 +41,16 @@ public class TopicController {
         return dataResponse;
     }
 
-    @RequestMapping(name = "getTopicById", value = "/{id}", method = RequestMethod.POST)
+    @RequestMapping(name = "getTopicById", value = "/{id}", method = RequestMethod.GET)
     @Access(levels = Role.ANONYMOUS)
-    public DataResponse<TopicResponse> addTopic(@RequestParam String id) {
+    public DataResponse<TopicResponse> getTopicById(@RequestParam String id) {
         DataResponse<TopicResponse> dataResponse = new DataResponse<>();
         dataResponse.setData(topicService.getTopicById(id));
         dataResponse.setStatus(Response.getOkResponse(ResponseConstant.OK));
         return dataResponse;
     }
 
-    @RequestMapping(name = "getAllTopic", value = "/get/all/topic", method = RequestMethod.POST)
+    @RequestMapping(name = "getAllTopic", value = "/get/all/topic", method = RequestMethod.GET)
     @Access(levels = Role.ANONYMOUS)
     public ListResponse<TopicResponse> getAllTopic() {
         ListResponse<TopicResponse> listResponse = new ListResponse<>();
@@ -67,6 +67,5 @@ public class TopicController {
         dataResponse.setStatus(Response.getOkResponse(ResponseConstant.DELETED_SUCCESSFULLY));
         return dataResponse;
     }
-
 
 }

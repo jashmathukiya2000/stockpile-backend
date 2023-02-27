@@ -1,6 +1,7 @@
 package com.example.auth.stockPile.decorator;
 
 
+import com.example.auth.stockPile.model.Stock;
 import com.example.auth.stockPile.model.UserData;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -16,7 +17,12 @@ public class TopicResponse {
 
     String description;
 
-    String stocks;
+    String stockId;
+
+    String stockSymbol;
+
+    String stockName;
+
 
     UserData createdBy;
 

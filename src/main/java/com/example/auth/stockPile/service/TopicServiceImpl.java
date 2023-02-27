@@ -20,7 +20,7 @@ import java.util.List;
 
 @Service
 @Slf4j
-public class TopicServiceImpl implements TopicService{
+public class TopicServiceImpl implements TopicService {
     private final TopicRepository topicRepository;
     private final ModelMapper modelMapper;
     private final StockServiceImpl stockService;
@@ -38,35 +38,28 @@ public class TopicServiceImpl implements TopicService{
 
     @Override
     public TopicResponse addTopic(String stockId, String userId, TopicAddRequest topicAddRequest) {
-
         Stock stock = stockService.stockById(stockId);
-
-        UserData userData= userDataService.userById(userId);
+        log.info("stockData:{}",stock);
+        UserData userData = userDataService.userById(userId);
 
         Topic topic = modelMapper.map(topicAddRequest, Topic.class);
-
-        topic.setStocks(stock.getId());
-
+        topic.setStockId(stock.getId());
+        topic.setStockSymbol(stock.getSymbol());
+        topic.setStockName(stock.getName());
         topic.setCreatedOn(new Date());
-
-        topic.setCreatedBy(userData.getId());
-
+        topic.setCreatedBy(userData);
         TopicResponse topicResponse = modelMapper.map(topic, TopicResponse.class);
-
         topicResponse.setCreatedBy(userData);
-
         topicRepository.save(topic);
-
         return topicResponse;
 
     }
 
     @Override
     public void updateTopic(String id, TopicAddRequest topicAddRequest) throws NoSuchFieldException, IllegalAccessException {
-        Topic topic=topicById(id);
-        update(id,topicAddRequest);
-        userHelper.difference(topic,topicAddRequest);
-
+        Topic topic = topicById(id);
+        update(id, topicAddRequest);
+        userHelper.difference(topic, topicAddRequest);
 
 
     }
@@ -74,18 +67,20 @@ public class TopicServiceImpl implements TopicService{
 
     @Override
     public TopicResponse getTopicById(String id) {
-        Topic topic=topicById(id);
-        TopicResponse topicResponse= modelMapper.map(topic,TopicResponse.class);
+        Topic topic = topicById(id);
+        TopicResponse topicResponse = modelMapper.map(topic, TopicResponse.class);
         return topicResponse;
     }
 
     @Override
     public List<TopicResponse> getAllTopic() {
-        List<Topic> topics= topicRepository.findAllBySoftDeleteFalse();
-        List<TopicResponse> list=new ArrayList<>();
+        List<Topic> topics = topicRepository.findAllBySoftDeleteFalse();
+        List<TopicResponse> list = new ArrayList<>();
+
         topics.forEach(topic -> {
-            TopicResponse topicResponse= modelMapper.map(topic,TopicResponse.class);
+            TopicResponse topicResponse = modelMapper.map(topic, TopicResponse.class);
             list.add(topicResponse);
+
         });
 
         return list;
@@ -94,29 +89,27 @@ public class TopicServiceImpl implements TopicService{
 
     @Override
     public void deleteTopicById(String id) {
-        log.info("deleteToicById:{}");
-        Topic topic=topicById(id);
+        Topic topic = topicById(id);
         topic.setSoftDelete(true);
         topicRepository.save(topic);
 
     }
 
     private void update(String id, TopicAddRequest topicAddRequest) {
-        Topic topic=topicById(id);
-       if (topicAddRequest.getDescription()!=null){
-           topic.setDescription(topicAddRequest.getDescription());
+        Topic topic = topicById(id);
+        if (topicAddRequest.getDescription() != null) {
+            topic.setDescription(topicAddRequest.getDescription());
 
-       }
-       if (topicAddRequest.getTitle()!=null){
-           topic.setTitle(topicAddRequest.getTitle());
-       }
+        }
+        if (topicAddRequest.getTitle() != null) {
+            topic.setTitle(topicAddRequest.getTitle());
+        }
 
     }
 
 
-
-    public Topic topicById(String id){
-        return topicRepository.getTopicByIdAndSoftDeleteIsFalse(id).orElseThrow(()-> new NotFoundException(MessageConstant.ID_NOT_FOUND));
+    public Topic topicById(String id) {
+        return topicRepository.getTopicByIdAndSoftDeleteIsFalse(id).orElseThrow(() -> new NotFoundException(MessageConstant.ID_NOT_FOUND));
     }
 
 }
