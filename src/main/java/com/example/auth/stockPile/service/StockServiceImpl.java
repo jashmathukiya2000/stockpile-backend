@@ -5,13 +5,18 @@ import com.example.auth.commons.advice.NullAwareBeanUtilsBean;
 import com.example.auth.commons.constant.MessageConstant;
 import com.example.auth.commons.exception.NotFoundException;
 import com.example.auth.commons.helper.UserHelper;
+import com.example.auth.decorator.pagination.FilterSortRequest;
 import com.example.auth.stockPile.decorator.StockAddRequest;
+import com.example.auth.stockPile.decorator.StockFilter;
 import com.example.auth.stockPile.decorator.StockResponse;
+import com.example.auth.stockPile.decorator.StockSortBy;
 import com.example.auth.stockPile.model.Stock;
 import com.example.auth.stockPile.repository.StockRepository;
 import lombok.extern.slf4j.Slf4j;
 
 import org.modelmapper.ModelMapper;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -87,11 +92,15 @@ public class StockServiceImpl implements StockService {
         return stockResponses;
     }
 
+    @Override
+    public Page<StockResponse> getAllStockByPagination(StockFilter filter, FilterSortRequest.SortRequest<StockSortBy> sort, PageRequest pagination) {
+        return stockRepository.getAllStockByPagination(filter,sort,pagination);
+    }
+
 
     Stock stockById(String id) {
         return stockRepository.findByIdAndSoftDeleteIsFalse(id).orElseThrow(() -> new NotFoundException(MessageConstant.ID_NOT_FOUND));
     }
-
 
     private void update(String id, StockAddRequest stockAddRequest) {
         Stock stock = stockById(id);

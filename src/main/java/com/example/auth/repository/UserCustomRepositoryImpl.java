@@ -37,9 +37,9 @@ import static org.springframework.data.mongodb.core.aggregation.Aggregation.*;
 
 @Repository
 public class UserCustomRepositoryImpl implements UserCustomRepository {
+
     @Autowired
     MongoTemplate mongoTemplate;
-
     @Override
     public List<UserResponse> getByFilterAndSoftDeleteFalse(UserFilter userFilter) {
         Query query = new Query();

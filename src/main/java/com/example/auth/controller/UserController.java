@@ -48,7 +48,7 @@ public class UserController {
 
     @RequestMapping(name = "updateUser", value = "/update", method = RequestMethod.POST)
     @Access(levels = Role.ADMIN)
-    public DataResponse<UserResponse> updateUser(@RequestParam String id, @RequestBody UserAddRequest userAddRequest)  {
+    public DataResponse<UserResponse> updateUser(@RequestParam String id, @RequestBody UserAddRequest userAddRequest) {
         DataResponse<UserResponse> dataResponse = new DataResponse<>();
         userService.updateUser(id, userAddRequest);
         dataResponse.setStatus(Response.getOkResponse(ResponseConstant.UPDATED_SUCCESSFULLY));
@@ -68,7 +68,7 @@ public class UserController {
 
     @RequestMapping(name = "getUserById", value = "/user/{id}", method = RequestMethod.POST)
     @Access(levels = {Role.ADMIN})
-    public DataResponse<UserResponse> getUserById(@PathVariable String id)  {
+    public DataResponse<UserResponse> getUserById(@PathVariable String id) {
         DataResponse<UserResponse> dataResponse = new DataResponse<>();
         dataResponse.setData(userService.getUser(id));
         dataResponse.setStatus(Response.getOkResponse(ResponseConstant.OK));
@@ -105,7 +105,7 @@ public class UserController {
 
     @RequestMapping(name = "addResult", value = "/addResult/{id}", method = RequestMethod.POST)
     @Access(levels = {Role.ADMIN})
-    public DataResponse<UserResponse> addResult(@PathVariable String id, @RequestBody Result result)  {
+    public DataResponse<UserResponse> addResult(@PathVariable String id, @RequestBody Result result) {
         DataResponse<UserResponse> dataResponse = new DataResponse<>();
         dataResponse.setData(resultService.addResult(id, result));
         dataResponse.setStatus(Response.getOkResponse());
@@ -203,7 +203,7 @@ public class UserController {
 
     @Access(levels = Role.ANONYMOUS)
 
-    public ResponseEntity<Resource> getAllUserInExcel()  {
+    public ResponseEntity<Resource> getAllUserInExcel() {
 
         Workbook workbook = userService.getAllUserInExcel();
 
@@ -227,7 +227,7 @@ public class UserController {
 
     @Access(levels = Role.ANONYMOUS)
 
-    public ResponseEntity<Resource> getUserDetailsByResultSpi(@RequestBody FilterSortRequest<UserFilterData, UserSortBy> filterSortRequest)  {
+    public ResponseEntity<Resource> getUserDetailsByResultSpi(@RequestBody FilterSortRequest<UserFilterData, UserSortBy> filterSortRequest) {
 
         UserFilterData filter = filterSortRequest.getFilter();
 
@@ -283,7 +283,6 @@ public class UserController {
 
         return dataResponse;
     }
-
 
 
 }

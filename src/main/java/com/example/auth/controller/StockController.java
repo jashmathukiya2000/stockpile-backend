@@ -1,16 +1,21 @@
 package com.example.auth.controller;
 
 
-import com.amazonaws.services.dynamodbv2.xspec.L;
 import com.example.auth.commons.Access;
 import com.example.auth.commons.constant.ResponseConstant;
 import com.example.auth.commons.decorator.DataResponse;
+import com.example.auth.commons.decorator.GeneralHelper;
 import com.example.auth.commons.decorator.ListResponse;
 import com.example.auth.commons.decorator.Response;
 import com.example.auth.commons.enums.Role;
+import com.example.auth.decorator.pagination.FilterSortRequest;
+import com.example.auth.decorator.pagination.PageResponse;
 import com.example.auth.stockPile.decorator.StockAddRequest;
+import com.example.auth.stockPile.decorator.StockFilter;
 import com.example.auth.stockPile.decorator.StockResponse;
+import com.example.auth.stockPile.decorator.StockSortBy;
 import com.example.auth.stockPile.service.StockService;
+import org.springframework.data.domain.Page;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -18,9 +23,11 @@ import org.springframework.web.bind.annotation.*;
 public class StockController {
 
     private final StockService stockService;
+    private final GeneralHelper generalHelper;
 
-    public StockController(StockService stockService) {
+    public StockController(StockService stockService, GeneralHelper generalHelper) {
         this.stockService = stockService;
+        this.generalHelper = generalHelper;
     }
 
     @RequestMapping(name = "addStock",value = "/add", method = RequestMethod.POST)
@@ -71,6 +78,17 @@ public class StockController {
         return dataResponse;
     }
 
+    @RequestMapping(name = "getAllStockByPagination", value = "get/all/pagination",method = RequestMethod.POST)
+    @Access(levels = Role.ANONYMOUS)
+public PageResponse<StockResponse> getAllStockByPagination(@RequestBody FilterSortRequest<StockFilter, StockSortBy> filterSortRequest){
+        PageResponse<StockResponse> pageResponse= new PageResponse<>();
+        Page<StockResponse> page = stockService.getAllStockByPagination(filterSortRequest.getFilter(),filterSortRequest.getSort(),
+                generalHelper.getPagination(filterSortRequest.getPagination().getPage(),filterSortRequest.getPagination().getLimit()));
+        pageResponse.setData(page);
+        pageResponse.setStatus(Response.getOkResponse(ResponseConstant.OK));
+        return pageResponse;
+
+    }
 
 
 

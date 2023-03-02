@@ -36,46 +36,7 @@ public class UserInfoController {
         return dataResponse;
 
     }
-       @RequestMapping(name = "updateUser",value = "/update/user", method = RequestMethod.POST)
-       @Access(levels = Role.ANONYMOUS)
 
-       public DataResponse<Object> updateUser(@RequestParam String id,@RequestBody UserInfoAddRequest userAddRequest) throws NoSuchFieldException, IllegalAccessException {
-        DataResponse<Object> dataResponse= new DataResponse<>();
-        userService.updateUser(id,userAddRequest);
-        dataResponse.setStatus(Response.getOkResponse(ResponseConstant.UPDATED_SUCCESSFULLY));
-
-        return dataResponse;
-
-    }
-       @RequestMapping(name = "getUserById",value = "/{id}", method = RequestMethod.GET)
-       @Access(levels = Role.ANONYMOUS)
-       public DataResponse<UserInfoResponse> getUserById(@PathVariable String id){
-        DataResponse<UserInfoResponse> dataResponse= new DataResponse<>();
-        dataResponse.setData(userService.getUserById(id));
-        dataResponse.setStatus(Response.getOkResponse(ResponseConstant.OK));
-
-        return dataResponse;
-
-    }
-       @RequestMapping(name = "getAllUser",value = "/get/all/user", method = RequestMethod.POST)
-       @Access(levels = Role.ANONYMOUS)
-       public ListResponse<UserInfoResponse> getAllUser(){
-        ListResponse<UserInfoResponse> listResponse= new ListResponse<>();
-        listResponse.setData(userService.getAllUser());
-        listResponse.setStatus(Response.getOkResponse(ResponseConstant.OK));
-
-        return listResponse;
-
-    }
-    @RequestMapping(name = "deleteUser",value = "/delete/user/{id}", method = RequestMethod.POST)
-    @Access(levels = Role.ANONYMOUS)
-
-    public DataResponse<Object> deleteUser( @PathVariable String id)  {
-        DataResponse<Object> dataResponse = new DataResponse<>();
-        userService.deleteUser(id);
-        dataResponse.setStatus(Response.getOkResponse(ResponseConstant.DELETED_SUCCESSFULLY));
-        return dataResponse;
-    }
 
     @RequestMapping(name = "getUsersByCity",value = "/get/users/city", method = RequestMethod.GET)
     @Access(levels = Role.ANONYMOUS)
@@ -121,6 +82,29 @@ public class UserInfoController {
         dataResponse.setStatus(Response.getOkResponse(ResponseConstant.OK));
         return dataResponse;
     }
+
+// @RequestMapping(name = "getUserByEmail",value = "/get/user/email", method = RequestMethod.GET)
+//    @Access(levels = Role.ANONYMOUS)
+//    public DataResponse<Map<String, UserInfo>>  sortByBirthAndFirstName()  {
+//        DataResponse<Map<String, UserInfo>>  dataResponse = new DataResponse<>();
+//      dataResponse.setData(userService.getUserByEmail());
+//        dataResponse.setStatus(Response.getOkResponse(ResponseConstant.OK));
+//        return dataResponse;
+//    }
+//
+
+    @RequestMapping(name = "getUserByAge",value = "/get/user/age", method = RequestMethod.GET)
+    @Access(levels = Role.ANONYMOUS)
+    public DataResponse<List<UserInfo>>  getUserByAge()  {
+        DataResponse<List< UserInfo>>  dataResponse = new DataResponse<>();
+      dataResponse.setData(userService.getUserByAge());
+        dataResponse.setStatus(Response.getOkResponse(ResponseConstant.OK));
+        return dataResponse;
+    }
+
+
+
+
 
 
 

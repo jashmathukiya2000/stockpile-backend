@@ -10,7 +10,7 @@ import java.util.Optional;
 
 
 @Repository
-public interface StockRepository extends MongoRepository<Stock, String> {
+public interface StockRepository extends MongoRepository<Stock, String> ,StockCustomRepository {
 
     Optional<Stock> findByIdAndSoftDeleteIsFalse(String id);
 

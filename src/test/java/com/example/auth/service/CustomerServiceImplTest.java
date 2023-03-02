@@ -239,7 +239,7 @@ public class CustomerServiceImplTest {
         //given
         CustomerFilter customerFilter = new CustomerFilter();
 
-        customerFilter.setIds(customerFilter.getIds());
+        customerFilter.setId(customerFilter.getId());
 
         FilterSortRequest.SortRequest<CustomerSortBy> sort = new FilterSortRequest.SortRequest<>();
 

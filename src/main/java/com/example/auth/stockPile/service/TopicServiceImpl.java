@@ -4,17 +4,22 @@ package com.example.auth.stockPile.service;
 import com.example.auth.commons.constant.MessageConstant;
 import com.example.auth.commons.exception.NotFoundException;
 import com.example.auth.commons.helper.UserHelper;
-import com.example.auth.stockPile.decorator.TopicAddRequest;
-import com.example.auth.stockPile.decorator.TopicResponse;
+import com.example.auth.decorator.pagination.FilterSortRequest;
+import com.example.auth.stockPile.decorator.*;
 import com.example.auth.stockPile.model.Stock;
 import com.example.auth.stockPile.model.Topic;
 import com.example.auth.stockPile.model.UserData;
 import com.example.auth.stockPile.repository.TopicRepository;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.collections.CollectionUtils;
+import org.json.JSONException;
 import org.modelmapper.ModelMapper;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 
@@ -64,6 +69,25 @@ public class TopicServiceImpl implements TopicService {
 
     }
 
+    @Override
+    public List<TitleResponse> getTopicIdByTitleAndDate(String createdOn, String title) throws JSONException {
+        log.info("this is inside serviceImp:{}");
+        return topicRepository.getTopicIdByTitleAndDate(createdOn,title);
+//           Topic topic= topicRepository.getIdByTitleAndCreatedOnAndSoftDeleteFalse(createdOn,topicTitle);
+//        log.info("topicinfo:{}",topic);
+//        if (topic!=null){
+//            return topic.getId();
+//        }
+//        else {
+//            throw new InvalidRequestException(MessageConstant.TITLE_NOT_FOUND);
+//        }
+    }
+
+    @Override
+    public Page<TopicResponse> getAllTopicByPagination(TopicFilter filter, FilterSortRequest.SortRequest<TopicSortBy> sort, PageRequest pagination) {
+        return topicRepository.getAllTopicByPagination(filter,sort,pagination);
+    }
+
 
     @Override
     public TopicResponse getTopicById(String id) {
@@ -77,6 +101,9 @@ public class TopicServiceImpl implements TopicService {
         List<Topic> topics = topicRepository.findAllBySoftDeleteFalse();
         List<TopicResponse> list = new ArrayList<>();
 
+        if (!CollectionUtils.isEmpty(topics)){
+            topics.sort(Comparator.comparing(Topic::getCreatedOn).reversed());
+        }
         topics.forEach(topic -> {
             TopicResponse topicResponse = modelMapper.map(topic, TopicResponse.class);
             list.add(topicResponse);
@@ -111,5 +138,13 @@ public class TopicServiceImpl implements TopicService {
     public Topic topicById(String id) {
         return topicRepository.getTopicByIdAndSoftDeleteIsFalse(id).orElseThrow(() -> new NotFoundException(MessageConstant.ID_NOT_FOUND));
     }
+
+//
+//      public Topic topicIdByTitleAndCreatedOn(String createdOn,String topicTitle) {
+//        return topicRepository.getTopicIdByTitleAndCreatedOnAndSoftDeleteIsFalse(createdOn,topicTitle).orElseThrow(() -> new NotFoundException(MessageConstant.TITLE_NOT_FOUND));
+//    }
+//
+//
+
 
 }

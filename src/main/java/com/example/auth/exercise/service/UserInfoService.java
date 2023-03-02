@@ -16,15 +16,6 @@ public interface UserInfoService {
     
     UserInfoResponse addUser(UserInfoAddRequest userAddRequest);
 
-    void updateUser(String id, UserInfoAddRequest userAddRequest) throws NoSuchFieldException, IllegalAccessException;
-
-    List<UserInfoResponse> getAllUser();
-
-    UserInfoResponse getUserById(String id);
-
-    void deleteUser(String id);
-
-
     Map<String, List<UserInfo>> getUsersByCity();
 
 
@@ -35,5 +26,9 @@ public interface UserInfoService {
     Set<String> getAllCity();
 
     List<UserInfo> sortByBirthAndFirstName();
+
+    Map<String, UserInfo> getUserByEmail();
+
+    List<UserInfo> getUserByAge();
 
 }

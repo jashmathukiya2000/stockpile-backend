@@ -1,14 +1,18 @@
-package com.example.auth.repository;
+package com.example.auth.stockPile.repository;
 
 import com.example.auth.commons.decorator.CustomAggregationOperation;
 import com.example.auth.decorator.pagination.CountQueryResult;
-import com.example.auth.decorator.pagination.CustomerFilter;
-import com.example.auth.decorator.pagination.CustomerSortBy;
 import com.example.auth.decorator.pagination.FilterSortRequest;
-import com.example.auth.model.Customer;
+
+import com.example.auth.decorator.user.UserResponse;
+import com.example.auth.stockPile.decorator.StockFilter;
+import com.example.auth.stockPile.decorator.StockResponse;
+import com.example.auth.stockPile.decorator.StockSortBy;
+
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.bson.Document;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
@@ -19,67 +23,70 @@ import org.springframework.data.mongodb.core.aggregation.AggregationResults;
 import org.springframework.data.mongodb.core.aggregation.SortOperation;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.support.PageableExecutionUtils;
-
+import org.springframework.stereotype.Repository;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
 import static org.springframework.data.mongodb.core.aggregation.Aggregation.*;
 
-public class CustomerCustomRepositoryImpl implements CustomerCustomRepository {
 
-    private final MongoTemplate mongoTemplate;
+public class StockCustomRepositoryImpl implements StockCustomRepository{
 
-    public CustomerCustomRepositoryImpl(MongoTemplate mongoTemplate) {
-        this.mongoTemplate = mongoTemplate;
-    }
+        @Autowired
+       MongoTemplate mongoTemplate;
+
 
     @Override
-    public Page<Customer> getAllCustomerByPagination(CustomerFilter filter, FilterSortRequest.SortRequest<CustomerSortBy> sort, PageRequest pagination) {
-        List<AggregationOperation> operations = filterAggregation(filter, sort, pagination, true);
+    public Page<StockResponse> getAllStockByPagination(StockFilter filter, FilterSortRequest.SortRequest<StockSortBy> sort, PageRequest pagination) {
+        List<AggregationOperation> operations = userFilterAggregation(filter, sort, pagination, true);
+
+        //Created Aggregation operation
         Aggregation aggregation = newAggregation(operations);
 
-        List<Customer> customers = mongoTemplate.aggregate(aggregation, "customer", Customer.class).getMappedResults();
+
+        List<StockResponse> users = mongoTemplate.aggregate(aggregation, "stock_Info", StockResponse.class).getMappedResults();
 
 
         // Find Count
-        List<AggregationOperation> operationForCount = filterAggregation(filter, sort, pagination, false);
+        List<AggregationOperation> operationForCount = userFilterAggregation(filter, sort, pagination, false);
+
         operationForCount.add(group().count().as("count"));
         operationForCount.add(project("count"));
-        Aggregation aggregationCount = newAggregation(Customer.class, operationForCount);
-        AggregationResults<CountQueryResult> countQueryResults = mongoTemplate.aggregate(aggregationCount, "customer", CountQueryResult.class);
+        Aggregation aggregationCount = newAggregation(StockResponse.class, operationForCount);
+        AggregationResults<CountQueryResult> countQueryResults = mongoTemplate.aggregate(aggregationCount, "stock_Info", CountQueryResult.class);
         long count = countQueryResults.getMappedResults().size() == 0 ? 0 : countQueryResults.getMappedResults().get(0).getCount();
         return PageableExecutionUtils.getPage(
-                customers,
+                users,
                 pagination,
                 () -> count);
 
     }
 
 
-    Criteria getCriteria(CustomerFilter filter, List<AggregationOperation> operations) {
+    Criteria getCriteria(StockFilter stockFilter, List<AggregationOperation> operations) {
         Criteria criteria = new Criteria();
         operations.add(new CustomAggregationOperation(new Document("$addFields", new Document("search",
-                new Document("$concat", Arrays.asList(new Document("$ifNull", Arrays.asList("$name", "")),
-                        "|@|", new Document("$ifNull", Arrays.asList("$userName", ""))
+                new Document("$concat", Arrays.asList(new Document("$ifNull", Arrays.asList("$symbol", "")),
+                        "|@|", new Document("$ifNull", Arrays.asList("$name", ""))
+
 
                 ))))));
-
-        if (!StringUtils.isEmpty(filter.getSearch())) {
-            filter.setSearch(filter.getSearch().replaceAll("\\|@\\|", ""));
-            filter.setSearch(filter.getSearch().replaceAll("\\|@@\\|", ""));
+        if (!StringUtils.isEmpty(stockFilter.getSearch())) {
+            stockFilter.setSearch(stockFilter.getSearch().replaceAll("\\|@\\|", ""));
+            stockFilter.setSearch(stockFilter.getSearch().replaceAll("\\|@@\\|", ""));
             criteria = criteria.orOperator(
-                    Criteria.where("search").regex(".*" + filter.getSearch() + ".*", "i")
+                    Criteria.where("search").regex(".*" + stockFilter.getSearch() + ".*", "i")
             );
         }
-        if (!CollectionUtils.isEmpty(filter.getId())) {
-            criteria = criteria.and("id").is(filter.getId());
+        if (!CollectionUtils.isEmpty(stockFilter.getId())) {
+            criteria = criteria.and("_id").is(stockFilter.getId());
         }
         criteria = criteria.and("softDelete").is(false);
         return criteria;
     }
 
-    private List<AggregationOperation> filterAggregation(CustomerFilter filter, FilterSortRequest.SortRequest<CustomerSortBy> sort, PageRequest pagination, boolean addPage) {
+    private List<AggregationOperation> userFilterAggregation(StockFilter filter, FilterSortRequest.SortRequest<StockSortBy> sort, PageRequest pagination, boolean addPage) {
         List<AggregationOperation> operations = new ArrayList<>();
 
         operations.add(match(getCriteria(filter, operations)));
@@ -95,9 +102,4 @@ public class CustomerCustomRepositoryImpl implements CustomerCustomRepository {
             }
         }
         return operations;
-    }
-
-
-}
-
-
+    }}

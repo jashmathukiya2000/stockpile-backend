@@ -1,4 +1,4 @@
-package com.example.auth.decorator.pagination;
+package com.example.auth.stockPile.decorator;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AllArgsConstructor;
@@ -10,14 +10,14 @@ import java.util.Set;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class CustomerFilter {
+public class StockFilter {
     String search;
     Set<String> id;
     @JsonIgnore
     boolean softDelete;
 
-    public String getSearch() {
-        if (search != null) {
+    public String getSearch(){
+        if (search!=null){
             return search.trim();
         }
         return search;
