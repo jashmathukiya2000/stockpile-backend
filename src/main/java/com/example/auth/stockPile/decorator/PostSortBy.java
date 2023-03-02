@@ -9,7 +9,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public enum PostSortBy {
     DATE("createdOn"),
-  CONTENT("content");
+  CONTENT("templateContent");
 
     @JsonIgnore
     private String value;

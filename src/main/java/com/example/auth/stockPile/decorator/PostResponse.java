@@ -14,7 +14,9 @@ public class PostResponse {
 
     String id;
 
-    String content;
+    String title;
+
+    String templateContent;
 
     UserData postBy;
 

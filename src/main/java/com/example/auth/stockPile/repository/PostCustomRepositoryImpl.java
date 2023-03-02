@@ -55,7 +55,7 @@ public class PostCustomRepositoryImpl implements  PostCustomRepository{
     Criteria getCriteria(PostFilter postFilter, List<AggregationOperation> operations) {
         Criteria criteria = new Criteria();
         operations.add(new CustomAggregationOperation(new Document("$addFields", new Document("search",
-                new Document("$concat", Arrays.asList(new Document("$ifNull", Arrays.asList("$content", ""))
+                new Document("$concat", Arrays.asList(new Document("$ifNull", Arrays.asList("$templateContent", ""))
 
 
                 ))))));

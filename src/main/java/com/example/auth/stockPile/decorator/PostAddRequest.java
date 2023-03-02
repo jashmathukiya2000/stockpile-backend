@@ -9,5 +9,9 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class PostAddRequest {
-    String content;
+
+    String title;
+
+    String templateContent;
+
 }
