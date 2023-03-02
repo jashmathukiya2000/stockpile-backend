@@ -33,7 +33,7 @@ public class PostServiceImpl implements PostService {
     private final StockServiceImpl stockService;
     private final TopicServiceImpl topicService;
     private final TopicRepository topicRepository;
-    private  final UserDataServiceImpl userDataService;
+    private final UserDataServiceImpl userDataService;
     private final ModelMapper modelMapper;
     private final UserHelper userHelper;
 
@@ -50,42 +50,42 @@ public class PostServiceImpl implements PostService {
 
     @Override
     public PostResponse addPost(String stockId, String userId, String topicId, PostAddRequest postAddRequest) {
-        Stock stock= stockService.stockById(stockId);
-        UserData userData= userDataService.userById(userId);
-        Topic topic= topicService.topicById(topicId);
-        Post post= modelMapper.map(postAddRequest,Post.class);
+        Stock stock = stockService.stockById(stockId);
+        UserData userData = userDataService.userById(userId);
+        Topic topic = topicService.topicById(topicId);
+        Post post = modelMapper.map(postAddRequest, Post.class);
         post.setPostBy(userData);
         post.setCreatedOn(new Date());
         post.setStockInfo(stock.getId());
         post.setTopicInfo(topic.getId());
         postRepository.save(post);
-        PostResponse postResponse= modelMapper.map(post,PostResponse.class);
+        PostResponse postResponse = modelMapper.map(post, PostResponse.class);
         return postResponse;
     }
 
     @Override
     public void updatePost(String id, PostAddRequest postAddRequest) throws NoSuchFieldException, IllegalAccessException {
-        Post post= getById(id);
-        update(postAddRequest,id);
-        userHelper.difference(postAddRequest,post);
+        Post post = getById(id);
+        update(postAddRequest, id);
+        userHelper.difference(postAddRequest, post);
 
     }
 
 
     @Override
     public PostResponse getPostById(String id) {
-        Post post= getById(id);
-        PostResponse postResponse= modelMapper.map(post,PostResponse.class);
+        Post post = getById(id);
+        PostResponse postResponse = modelMapper.map(post, PostResponse.class);
 
         return postResponse;
     }
 
     @Override
     public List<PostResponse> getAllPost() {
-        List<Post> posts =postRepository.findAllBySoftDeleteFalse();
-        List<PostResponse> postResponses= new ArrayList<>();
+        List<Post> posts = postRepository.findAllBySoftDeleteFalse();
+        List<PostResponse> postResponses = new ArrayList<>();
         posts.forEach(post -> {
-            PostResponse postResponse= modelMapper.map(post,PostResponse.class);
+            PostResponse postResponse = modelMapper.map(post, PostResponse.class);
             postResponses.add(postResponse);
         });
 
@@ -94,7 +94,7 @@ public class PostServiceImpl implements PostService {
 
     @Override
     public void deletePostById(String id) {
-        Post post= getById(id);
+        Post post = getById(id);
         post.setSoftDelete(true);
         postRepository.save(post);
 
@@ -102,39 +102,33 @@ public class PostServiceImpl implements PostService {
 
     @Override
     public Page<PostResponse> getAllPostByPagination(PostFilter filter, FilterSortRequest.SortRequest<PostSortBy> sort, PageRequest pagination) {
-        return postRepository.getAllPostByPagination(filter,sort,pagination);
+        return postRepository.getAllPostByPagination(filter, sort, pagination);
     }
 
-          @Override
-          public List<Post> getAllPostByTopicId(String topicId) {
-        List<PostResponse> postResponses= new ArrayList<>();
-         boolean exist= postRepository.existsByTopicInfoAndSoftDeleteFalse(topicId);
-         if (!exist){
-             throw  new NotFoundException(MessageConstant.ID_NOT_FOUND);
-
-         }
-         else {
-             List<Post> posts= postRepository.findByTopicInfoAndSoftDeleteIsFalse(topicId);
-             log.info("posts:{}",posts);
-//             PostResponse postResponse= modelMapper.map(posts ,PostResponse.class);
-//             postResponses.add(postResponse);
-//             log.info("postResponse:{}",postResponse);
-             return posts;
-         }
+    @Override
+    public List<Post> getAllPostByTopicId(String topicId) {
+        List<PostResponse> postResponses = new ArrayList<>();
+        boolean exist = postRepository.existsByTopicInfoAndSoftDeleteFalse(topicId);
+        if (!exist) {
+            throw new NotFoundException(MessageConstant.ID_NOT_FOUND);
+        } else {
+            List<Post> posts = postRepository.findByTopicInfoAndSoftDeleteIsFalse(topicId);
+            return posts;
+        }
 
     }
 
 
-    private void update(PostAddRequest postAddRequest,String id) {
-        Post post= getById(id);
-        if (postAddRequest.getContent()!=null){
+    private void update(PostAddRequest postAddRequest, String id) {
+        Post post = getById(id);
+        if (postAddRequest.getContent() != null) {
             post.setContent(postAddRequest.getContent());
+            log.info("post");
         }
         postRepository.save(post);
-
     }
 
-    public Post getById(String id){
-        return  postRepository.findByIdAndSoftDeleteIsFalse(id).orElseThrow(()-> new NotFoundException(MessageConstant.ID_NOT_FOUND));
+    public Post getById(String id) {
+        return postRepository.findByIdAndSoftDeleteIsFalse(id).orElseThrow(() -> new NotFoundException(MessageConstant.ID_NOT_FOUND));
     }
 }
