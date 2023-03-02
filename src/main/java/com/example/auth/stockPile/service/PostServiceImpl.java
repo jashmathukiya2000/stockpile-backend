@@ -121,8 +121,8 @@ public class PostServiceImpl implements PostService {
 
     private void update(PostAddRequest postAddRequest, String id) {
         Post post = getById(id);
-        if (postAddRequest.getContent() != null) {
-            post.setTemplateContent(postAddRequest.getContent());
+        if (postAddRequest.getTemplateContent() != null) {
+            post.setTemplateContent(postAddRequest.getTemplateContent());
 
         }
         postRepository.save(post);
