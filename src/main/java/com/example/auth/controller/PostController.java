@@ -9,6 +9,7 @@ import com.example.auth.commons.enums.Role;
 import com.example.auth.decorator.pagination.FilterSortRequest;
 import com.example.auth.decorator.pagination.PageResponse;
 import com.example.auth.stockPile.decorator.*;
+import com.example.auth.stockPile.model.Post;
 import com.example.auth.stockPile.service.PostService;
 import org.springframework.data.domain.Page;
 import org.springframework.web.bind.annotation.*;
@@ -80,6 +81,17 @@ public class PostController {
         pageResponse.setStatus(Response.getOkResponse(ResponseConstant.OK));
         return  pageResponse;
 
+    }
+
+
+
+    @RequestMapping(name = "getAllPostByTopicId",value = "/get/all/topicId",method = RequestMethod.GET)
+    @Access(levels = Role.ANONYMOUS)
+    public ListResponse<Post> getAllPostByTopicId(@RequestParam String topicId){
+        ListResponse<Post> listResponse= new ListResponse<>();
+        listResponse.setData(postService.getAllPostByTopicId(topicId));
+        listResponse.setStatus(Response.getOkResponse(ResponseConstant.OK));
+        return listResponse;
     }
 
 

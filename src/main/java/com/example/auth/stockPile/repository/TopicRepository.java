@@ -14,7 +14,7 @@ public interface TopicRepository extends MongoRepository<Topic,String> ,TopicCus
    Topic getIdByTitleAndCreatedOnAndSoftDeleteFalse(Date createdOn, String topicTitle );
 
 
-// boolean existsByTitleAndSoftDeleteFalse(String topicTitle);
+     boolean existsByIdAndSoftDeleteFalse(String id);
 
 
     List<Topic> findAllBySoftDeleteFalse();

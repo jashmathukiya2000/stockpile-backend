@@ -14,6 +14,8 @@ import com.example.auth.stockPile.model.Stock;
 import com.example.auth.stockPile.model.Topic;
 import com.example.auth.stockPile.model.UserData;
 import com.example.auth.stockPile.repository.PostRepository;
+import com.example.auth.stockPile.repository.TopicRepository;
+import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -24,19 +26,22 @@ import java.util.Date;
 import java.util.List;
 
 @Service
+@Slf4j
 public class PostServiceImpl implements PostService {
 
     private final PostRepository postRepository;
     private final StockServiceImpl stockService;
     private final TopicServiceImpl topicService;
+    private final TopicRepository topicRepository;
     private  final UserDataServiceImpl userDataService;
     private final ModelMapper modelMapper;
     private final UserHelper userHelper;
 
-    public PostServiceImpl(PostRepository postRepository, StockServiceImpl stockService, TopicServiceImpl topicService, UserDataServiceImpl userDataService, ModelMapper modelMapper, UserHelper userHelper) {
+    public PostServiceImpl(PostRepository postRepository, StockServiceImpl stockService, TopicServiceImpl topicService, TopicRepository topicRepository, UserDataServiceImpl userDataService, ModelMapper modelMapper, UserHelper userHelper) {
         this.postRepository = postRepository;
         this.stockService = stockService;
         this.topicService = topicService;
+        this.topicRepository = topicRepository;
         this.userDataService = userDataService;
         this.modelMapper = modelMapper;
         this.userHelper = userHelper;
@@ -98,6 +103,25 @@ public class PostServiceImpl implements PostService {
     @Override
     public Page<PostResponse> getAllPostByPagination(PostFilter filter, FilterSortRequest.SortRequest<PostSortBy> sort, PageRequest pagination) {
         return postRepository.getAllPostByPagination(filter,sort,pagination);
+    }
+
+          @Override
+          public List<Post> getAllPostByTopicId(String topicId) {
+        List<PostResponse> postResponses= new ArrayList<>();
+         boolean exist= postRepository.existsByTopicInfoAndSoftDeleteFalse(topicId);
+         if (!exist){
+             throw  new NotFoundException(MessageConstant.ID_NOT_FOUND);
+
+         }
+         else {
+             List<Post> posts= postRepository.findByTopicInfoAndSoftDeleteIsFalse(topicId);
+             log.info("posts:{}",posts);
+//             PostResponse postResponse= modelMapper.map(posts ,PostResponse.class);
+//             postResponses.add(postResponse);
+//             log.info("postResponse:{}",postResponse);
+             return posts;
+         }
+
     }
 
 

@@ -37,7 +37,6 @@ public class TopicServiceImpl implements TopicService {
         this.modelMapper = modelMapper;
         this.stockService = stockService;
         this.userDataService = userDataService;
-
         this.userHelper = userHelper;
     }
 
