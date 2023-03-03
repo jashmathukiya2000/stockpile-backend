@@ -6,6 +6,7 @@ import com.example.auth.stockPile.decorator.*;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 
+import java.text.ParseException;
 import java.util.List;
 
 public interface TopicService {
@@ -24,6 +25,6 @@ public interface TopicService {
 
     Page<TopicResponse> getAllTopicByPagination(TopicFilter filter, FilterSortRequest.SortRequest<TopicSortBy> sort, PageRequest pagination);
 
-//   String getTopicIdByTitleAndCreatedOn(String createdOn, String title);
+   String getTopicIdByTitleAndCreatedOn(String createdOn, String title) throws ParseException;
 
 }

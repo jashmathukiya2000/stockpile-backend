@@ -20,6 +20,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.web.bind.annotation.*;
 
+import java.text.ParseException;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
@@ -104,13 +105,13 @@ public class TopicController {
     }
 
 
-//    @RequestMapping(name = "getTopicIdByTitleAndDate", value = "/topicId/title/date", method = RequestMethod.GET)
-//    @Access(levels = Role.ANONYMOUS)
-//    public DataResponse<String> getTopicIdByTitleAndDate(@RequestParam String  createdOn, @RequestParam String title) throws JSONException {
-//        DataResponse<String> dataResponse = new DataResponse<>();
-//        topicService.getTopicIdByTitleAndCreatedOn(createdOn, title);
-//        dataResponse.setStatus(Response.getOkResponse(ResponseConstant.OK));
-//        return dataResponse;
-//    }
-
+    @RequestMapping(name = "getTopicIdByTitleAndDate", value = "/topicId/title/date", method = RequestMethod.GET)
+    @Access(levels = Role.ANONYMOUS)
+    public DataResponse<String> getTopicIdByTitleAndDate(@RequestParam String createdOn, @RequestParam String title) throws JSONException, ParseException {
+        DataResponse<String> dataResponse = new DataResponse<>();
+        String matchingTopic = topicService.getTopicIdByTitleAndCreatedOn(createdOn, title);
+        dataResponse.setData(matchingTopic);
+        dataResponse.setStatus(Response.getOkResponse(ResponseConstant.OK));
+        return dataResponse;
+    }
 }

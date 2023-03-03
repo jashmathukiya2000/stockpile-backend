@@ -17,6 +17,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.Date;
@@ -86,15 +88,19 @@ public class TopicServiceImpl implements TopicService {
         return topicRepository.getAllTopicByPagination(filter,sort,pagination);
     }
 
-//    @Override
-//    public String getTopicIdByTitleAndCreatedOn(String createdOn, String title) {
-//          Topic topic= getTopicIdByTitleAndCreatedOn(createdOn, title);
-//        String topics=topic.getId();
-//            return  topics;
-//
-//
-//
-//    }
+
+    @Override
+    public String getTopicIdByTitleAndCreatedOn(String createdOn, String title) throws ParseException {
+        List<Topic> topics = topicRepository.findAllBySoftDeleteFalse();
+        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSXXX");
+        Date parsedCreatedOn = formatter.parse(createdOn);
+        for (Topic topic : topics) {
+            if (topic.getCreatedOn().equals(parsedCreatedOn) && topic.getTitle().equals(title)) {
+                return topic.getId().toString();
+            }
+        }
+        throw new NotFoundException(MessageConstant.TOPIC_NOT_FOUND);
+    }
 
 
     @Override
