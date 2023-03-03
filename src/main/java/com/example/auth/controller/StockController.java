@@ -104,15 +104,14 @@ public PageResponse<StockResponse> getAllStockByPagination(@RequestBody FilterSo
 
 }
 
-//      @RequestMapping(name = "allSubscribers",value = "/all/subscribers",method = RequestMethod.POST)
-//      @Access(levels = Role.ANONYMOUS)
-//     public   DataResponse<Map<String, List<Stock>>> allSubscribers(){
-//          DataResponse<Map<String, List<Stock>>> dataResponse= new DataResponse<>();
-//          dataResponse.setData(stockService.allSubscribers());
-//          dataResponse.setStatus(Response.getOkResponse(ResponseConstant.OK));
-//
-//          return dataResponse;
-//      }
+      @RequestMapping(name = "allSubscribers",value = "/all/subscribers",method = RequestMethod.POST)
+      @Access(levels = Role.ANONYMOUS)
+     public   DataResponse<Map<String, List<Stock>>> allSubscribers(){
+          DataResponse<Map<String, List<Stock>>> dataResponse= new DataResponse<>();
+          dataResponse.setData(stockService.allSubscribers());
+          dataResponse.setStatus(Response.getOkResponse(ResponseConstant.OK));
+          return dataResponse;
+      }
 
 
 }

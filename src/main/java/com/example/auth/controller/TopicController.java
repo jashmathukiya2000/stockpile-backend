@@ -1,6 +1,4 @@
 package com.example.auth.controller;
-
-
 import com.example.auth.commons.Access;
 import com.example.auth.commons.constant.ResponseConstant;
 import com.example.auth.commons.decorator.DataResponse;
@@ -96,11 +94,12 @@ public class TopicController {
     }
 
 
-    @RequestMapping(name = "getTopicIdByTitleAndDate", value = "/topicId/title/date", method = RequestMethod.GET)
+    @RequestMapping(name = "getTopicIdByTitleAndDate", value = "/topicId/title/date", method = RequestMethod.POST
+    )
     @Access(levels = Role.ANONYMOUS)
-    public DataResponse<String> getTopicIdByTitleAndDate(@RequestParam String createdOn, @RequestParam String title) throws JSONException, ParseException {
+    public DataResponse<String> getTopicIdByTitleAndDate(@RequestBody Title title) throws JSONException, ParseException {
         DataResponse<String> dataResponse = new DataResponse<>();
-        String matchingTopic = topicService.getTopicIdByTitleAndCreatedOn(createdOn, title);
+        String matchingTopic = topicService.getTopicIdByTitleAndCreatedOn(title);
         dataResponse.setData(matchingTopic);
         dataResponse.setStatus(Response.getOkResponse(ResponseConstant.OK));
         return dataResponse;

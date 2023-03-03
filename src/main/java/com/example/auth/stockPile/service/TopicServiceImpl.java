@@ -74,12 +74,12 @@ public class TopicServiceImpl implements TopicService {
 
 
     @Override
-    public String getTopicIdByTitleAndCreatedOn(String createdOn, String title) throws ParseException {
+    public String getTopicIdByTitleAndCreatedOn(Title title) throws ParseException {
         List<Topic> topics = topicRepository.findAllBySoftDeleteFalse();
         SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSXXX");
-        Date parsedCreatedOn = formatter.parse(createdOn);
+        Date parsedCreatedOn = formatter.parse(title.getCreatedOn());
         for (Topic topic : topics) {
-            if (topic.getCreatedOn().equals(parsedCreatedOn) && topic.getTitle().equals(title)) {
+            if (topic.getCreatedOn().equals(parsedCreatedOn) && topic.getTitle().equals(title.getTitle())) {
                 return topic.getId().toString();
             }
         }
@@ -106,7 +106,6 @@ public class TopicServiceImpl implements TopicService {
             list.add(topicResponse);
 
         });
-
         return list;
 
     }
@@ -128,7 +127,6 @@ public class TopicServiceImpl implements TopicService {
         if (topicAddRequest.getTitle() != null) {
             topic.setTitle(topicAddRequest.getTitle());
         }
-
     }
 
 
@@ -136,12 +134,7 @@ public class TopicServiceImpl implements TopicService {
         return topicRepository.getTopicByIdAndSoftDeleteIsFalse(id).orElseThrow(() -> new NotFoundException(MessageConstant.ID_NOT_FOUND));
     }
 
-//
-//      public Topic topicIdByTitleAndCreatedOn(String createdOn,String topicTitle) {
-//        return topicRepository.getTopicIdByTitleAndCreatedOnAndSoftDeleteIsFalse(createdOn,topicTitle).orElseThrow(() -> new NotFoundException(MessageConstant.TITLE_NOT_FOUND));
-//    }
-//
-//
+
 
 
 }

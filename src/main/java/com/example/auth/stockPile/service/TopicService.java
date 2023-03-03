@@ -23,6 +23,6 @@ public interface TopicService {
 
     Page<TopicResponse> getAllTopicByPagination(TopicFilter filter, FilterSortRequest.SortRequest<TopicSortBy> sort, PageRequest pagination);
 
-   String getTopicIdByTitleAndCreatedOn(String createdOn, String title) throws ParseException;
+   String getTopicIdByTitleAndCreatedOn(Title title) throws ParseException;
 
 }

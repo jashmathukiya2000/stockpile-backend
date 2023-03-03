@@ -21,11 +21,11 @@ import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.util.Pair;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 @Slf4j
@@ -133,12 +133,16 @@ public class StockServiceImpl implements StockService {
 
         return subscribesId;
     }
-//
-//    @Override
-//    public Map<String, List<Stock>> allSubscribers() {
-//        return getAllStock().stream().filter(Objects::nonNull)
-//                .collect(Collectors.groupingBy(stockResponse -> new Pair()))
-//    }
+
+        @Override
+        public Map<String, List<Stock>> allSubscribers() {
+            return stockRepository.findAllBySoftDeleteFalse().stream()
+                    .filter(Objects::nonNull)
+                    .collect(Collectors.groupingBy(stock ->
+                        stock.getSymbol()));
+                    }
+
+
 
 
     Stock stockById(String id) {
