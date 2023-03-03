@@ -11,7 +11,9 @@ import com.example.auth.commons.enums.Role;
 import com.example.auth.decorator.pagination.FilterSortRequest;
 import com.example.auth.decorator.pagination.PageResponse;
 import com.example.auth.stockPile.decorator.*;
+import com.example.auth.stockPile.model.Topic;
 import com.example.auth.stockPile.service.TopicService;
+import com.google.api.client.util.DateTime;
 import lombok.extern.slf4j.Slf4j;
 import org.json.JSONException;
 import org.springframework.data.domain.Page;
@@ -80,15 +82,15 @@ public class TopicController {
         return dataResponse;
     }
 
-    @RequestMapping(name = "getTopicIdByTitleAndDate", value = "/topicId/title/date", method = RequestMethod.GET)
-    @Access(levels = Role.ANONYMOUS)
-    public ListResponse<TitleResponse> getTopicIdByTitleAndDate(@RequestParam String createdOn, @RequestParam String title) throws JSONException {
-        ListResponse<TitleResponse> dataResponse = new ListResponse<>();
-        List<TitleResponse> titleResponses = topicService.getTopicIdByTitleAndDate(createdOn, title);
-        dataResponse.setData(titleResponses);
-        dataResponse.setStatus(Response.getOkResponse(ResponseConstant.OK));
-        return dataResponse;
-    }
+//    @RequestMapping(name = "getTopicIdByTitleAndDate", value = "/topicId/title/date", method = RequestMethod.GET)
+//    @Access(levels = Role.ANONYMOUS)
+//    public ListResponse<TitleResponse> getTopicIdByTitleAndDate(@RequestParam String  createdOn, @RequestParam String title) throws JSONException {
+//        ListResponse<TitleResponse> dataResponse = new ListResponse<>();
+//        List<TitleResponse> titleResponses = topicService.getTopicIdByTitleAndDate(createdOn, title);
+//        dataResponse.setData(titleResponses);
+//        dataResponse.setStatus(Response.getOkResponse(ResponseConstant.OK));
+//        return dataResponse;
+//    }
 
     @RequestMapping(name = "getAllTopicByPagination", value = "/get/all/pagination",method = RequestMethod.POST)
     @Access(levels = Role.ANONYMOUS)
@@ -100,5 +102,15 @@ public class TopicController {
         pageResponse.setStatus(Response.getOkResponse(ResponseConstant.OK));
         return pageResponse;
     }
+
+
+//    @RequestMapping(name = "getTopicIdByTitleAndDate", value = "/topicId/title/date", method = RequestMethod.GET)
+//    @Access(levels = Role.ANONYMOUS)
+//    public DataResponse<String> getTopicIdByTitleAndDate(@RequestParam String  createdOn, @RequestParam String title) throws JSONException {
+//        DataResponse<String> dataResponse = new DataResponse<>();
+//        topicService.getTopicIdByTitleAndCreatedOn(createdOn, title);
+//        dataResponse.setStatus(Response.getOkResponse(ResponseConstant.OK));
+//        return dataResponse;
+//    }
 
 }

@@ -45,4 +45,5 @@ public class MessageConstant {
     public static final String ITEM_QUANITY_OUT_OF_STOCK = "Item quantity out of stock";
     public static final String NO_DIFFERENCE_FOUND = "No diffrence found";
     public static final String TITLE_NOT_FOUND = "Title not found";
+    public static final String SYMBOL_NOT_FOUND ="Symbol not found";
 }

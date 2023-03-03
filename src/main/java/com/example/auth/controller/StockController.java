@@ -14,9 +14,13 @@ import com.example.auth.stockPile.decorator.StockAddRequest;
 import com.example.auth.stockPile.decorator.StockFilter;
 import com.example.auth.stockPile.decorator.StockResponse;
 import com.example.auth.stockPile.decorator.StockSortBy;
+import com.example.auth.stockPile.model.Stock;
 import com.example.auth.stockPile.service.StockService;
 import org.springframework.data.domain.Page;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("stock_info")
@@ -90,8 +94,25 @@ public PageResponse<StockResponse> getAllStockByPagination(@RequestBody FilterSo
 
     }
 
+    @RequestMapping(name = "getStockSubscription",value = "get/stock/subscription",method = RequestMethod.GET)
+     @Access(levels = Role.ANONYMOUS)
+    public  DataResponse<StockResponse> getStockSubscription(@RequestParam String symbol ,@RequestParam String userId ){
+         DataResponse<StockResponse> dataResponse= new DataResponse<>();
+         dataResponse.setData(stockService.getStockSubscription(symbol,userId));
+         dataResponse.setStatus(Response.getOkResponse(ResponseConstant.SUBSCRIBED_SUCESSFULLY));
+         return dataResponse;
 
+}
 
+//      @RequestMapping(name = "allSubscribers",value = "/all/subscribers",method = RequestMethod.POST)
+//      @Access(levels = Role.ANONYMOUS)
+//     public   DataResponse<Map<String, List<Stock>>> allSubscribers(){
+//          DataResponse<Map<String, List<Stock>>> dataResponse= new DataResponse<>();
+//          dataResponse.setData(stockService.allSubscribers());
+//          dataResponse.setStatus(Response.getOkResponse(ResponseConstant.OK));
+//
+//          return dataResponse;
+//      }
 
 
 }

@@ -14,6 +14,9 @@ public interface UserDataRepository extends MongoRepository<UserData, String> {
 
     Optional<UserData> findByIdAndSoftDeleteIsFalse(String id);
 
+
+    List<UserData> findByIdAndSoftDeleteFalse(String id);
+
     List<UserData> findAllBySoftDeleteFalse();
 
     boolean existsByEmailAndSoftDeleteIsFalse(String email);

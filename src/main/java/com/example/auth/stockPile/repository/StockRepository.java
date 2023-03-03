@@ -16,8 +16,10 @@ public interface StockRepository extends MongoRepository<Stock, String> ,StockCu
 
     boolean existsBySymbolAndSoftDeleteIsFalse(String symbol);
 
+    Optional<Stock> findBySymbolAndSoftDeleteIsFalse(String symbol);
 
-    Stock findBySymbolAndSoftDeleteIsFalse(String symbol);
+
+//    List<Stock> findBySymbolAndSoftDeleteFalse(String symbol);
 
     List<Stock> findAllBySoftDeleteFalse();
 

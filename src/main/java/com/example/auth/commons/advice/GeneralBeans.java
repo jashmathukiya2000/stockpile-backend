@@ -7,6 +7,7 @@ import com.example.auth.commons.decorator.Response;
 import com.example.auth.decorator.MainDateFilter;
 import com.example.auth.model.CanvasjsChartData;
 import com.example.auth.model.PurchaseLogHistory;
+import com.example.auth.stockPile.model.UserData;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.convention.MatchingStrategies;
 import org.springframework.context.annotation.Bean;
@@ -38,6 +39,11 @@ import org.springframework.mail.javamail.JavaMailSenderImpl;
         @Bean
         public GeneralHelper getGeneralHelper(){
             return new GeneralHelper();
+        }
+
+        @Bean
+        public UserData  getUserData(){
+            return  new UserData();
         }
 
         @Bean

@@ -127,8 +127,8 @@ public class PostServiceImpl implements PostService {
         }
         postRepository.save(post);
     }
-
     public Post getById(String id) {
         return postRepository.findByIdAndSoftDeleteIsFalse(id).orElseThrow(() -> new NotFoundException(MessageConstant.ID_NOT_FOUND));
     }
+
 }

@@ -12,7 +12,6 @@ import com.example.auth.stockPile.model.UserData;
 import com.example.auth.stockPile.repository.TopicRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections.CollectionUtils;
-import org.json.JSONException;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -67,25 +66,35 @@ public class TopicServiceImpl implements TopicService {
 
 
     }
-
-    @Override
-    public List<TitleResponse> getTopicIdByTitleAndDate(String createdOn, String title) throws JSONException {
-        log.info("this is inside serviceImp:{}");
-        return topicRepository.getTopicIdByTitleAndDate(createdOn,title);
-//           Topic topic= topicRepository.getIdByTitleAndCreatedOnAndSoftDeleteFalse(createdOn,topicTitle);
-//        log.info("topicinfo:{}",topic);
-//        if (topic!=null){
-//            return topic.getId();
-//        }
-//        else {
-//            throw new InvalidRequestException(MessageConstant.TITLE_NOT_FOUND);
-//        }
-    }
+//
+//    @Override
+//    public List<TitleResponse> getTopicIdByTitleAndDate(String createdOn, String title) throws JSONException {
+//        log.info("this is inside serviceImp:{}");
+//        return topicRepository.getTopicIdByTitleAndDate(createdOn,title);
+////           Topic topic= topicRepository.getIdByTitleAndCreatedOnAndSoftDeleteFalse(createdOn,topicTitle);
+////        log.info("topicinfo:{}",topic);
+////        if (topic!=null){
+////            return topic.getId();
+////        }
+////        else {
+////            throw new InvalidRequestException(MessageConstant.TITLE_NOT_FOUND);
+////        }
+//    }
 
     @Override
     public Page<TopicResponse> getAllTopicByPagination(TopicFilter filter, FilterSortRequest.SortRequest<TopicSortBy> sort, PageRequest pagination) {
         return topicRepository.getAllTopicByPagination(filter,sort,pagination);
     }
+
+//    @Override
+//    public String getTopicIdByTitleAndCreatedOn(String createdOn, String title) {
+//          Topic topic= getTopicIdByTitleAndCreatedOn(createdOn, title);
+//        String topics=topic.getId();
+//            return  topics;
+//
+//
+//
+//    }
 
 
     @Override

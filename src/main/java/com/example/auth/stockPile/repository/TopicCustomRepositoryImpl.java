@@ -43,11 +43,13 @@ public class TopicCustomRepositoryImpl implements TopicCustomRepository{
         List<AggregationOperation> operations = new ArrayList<>();
         Criteria criteria = new Criteria();
         criteria = criteria.and("softDelete").is(false);
+        criteria = criteria.and("createdOn").is(createdOn);
+        criteria = criteria.and("title").is(title);
+        operations.add(Aggregation.match(criteria));
         operations.add(new CustomAggregationOperation(new Document("$group",
                 new Document("_id", new Document("title", title).append("createdOn", createdOn))
                         .append("idInfo", new Document("$push", new Document("_id", "$_id")))
         )));
-//        operations.add(new CustomAggregationOperation(new Document("$project", new Document("_id", 0))));
         operations.add(new CustomAggregationOperation(new Document("$limit", 1)));
         return operations;
     }
