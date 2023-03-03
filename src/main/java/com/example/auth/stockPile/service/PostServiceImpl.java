@@ -55,6 +55,7 @@ public class PostServiceImpl implements PostService {
         post.setCreatedOn(new Date());
         post.setStockInfo(stock.getId());
         post.setTopicInfo(topic.getId());
+        System.out.println(post);
         postRepository.save(post);
         PostResponse postResponse = modelMapper.map(post, PostResponse.class);
         return postResponse;
