@@ -65,23 +65,7 @@ public class TopicServiceImpl implements TopicService {
         Topic topic = topicById(id);
         update(id, topicAddRequest);
         userHelper.difference(topic, topicAddRequest);
-
-
     }
-//
-//    @Override
-//    public List<TitleResponse> getTopicIdByTitleAndDate(String createdOn, String title) throws JSONException {
-//        log.info("this is inside serviceImp:{}");
-//        return topicRepository.getTopicIdByTitleAndDate(createdOn,title);
-////           Topic topic= topicRepository.getIdByTitleAndCreatedOnAndSoftDeleteFalse(createdOn,topicTitle);
-////        log.info("topicinfo:{}",topic);
-////        if (topic!=null){
-////            return topic.getId();
-////        }
-////        else {
-////            throw new InvalidRequestException(MessageConstant.TITLE_NOT_FOUND);
-////        }
-//    }
 
     @Override
     public Page<TopicResponse> getAllTopicByPagination(TopicFilter filter, FilterSortRequest.SortRequest<TopicSortBy> sort, PageRequest pagination) {
@@ -101,7 +85,6 @@ public class TopicServiceImpl implements TopicService {
         }
         throw new NotFoundException(MessageConstant.TOPIC_NOT_FOUND);
     }
-
 
     @Override
     public TopicResponse getTopicById(String id) {

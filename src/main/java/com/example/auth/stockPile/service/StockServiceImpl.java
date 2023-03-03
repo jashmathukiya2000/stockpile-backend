@@ -11,22 +11,21 @@ import com.example.auth.stockPile.decorator.StockFilter;
 import com.example.auth.stockPile.decorator.StockResponse;
 import com.example.auth.stockPile.decorator.StockSortBy;
 import com.example.auth.stockPile.model.Stock;
+import com.example.auth.stockPile.model.Subscriber;
 import com.example.auth.stockPile.model.UserData;
 import com.example.auth.stockPile.repository.StockRepository;
+import com.example.auth.stockPile.repository.SubscriberRepository;
 import com.example.auth.stockPile.repository.UserDataRepository;
 import lombok.extern.slf4j.Slf4j;
 
-import org.apache.commons.math3.util.Pair;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.stream.Collectors;
 
 @Service
 @Slf4j
@@ -39,9 +38,11 @@ public class StockServiceImpl implements StockService {
     private final UserData userData;
     private final UserDataServiceImpl userDataService;
     private final UserDataRepository userDataRepository;
+    private final Subscriber subscriber;
+    private final SubscriberRepository subscriberRepository;
 
 
-    public StockServiceImpl(StockRepository stockRepository, NullAwareBeanUtilsBean nullAwareBeanUtilsBean, UserHelper userHelper, ModelMapper modelMapper, UserData userData, UserDataServiceImpl userDataService, UserDataRepository userDataRepository) {
+    public StockServiceImpl(StockRepository stockRepository, NullAwareBeanUtilsBean nullAwareBeanUtilsBean, UserHelper userHelper, ModelMapper modelMapper, UserData userData, UserDataServiceImpl userDataService, UserDataRepository userDataRepository, Subscriber subscriber, SubscriberRepository subscriberRepository) {
         this.stockRepository = stockRepository;
         this.nullAwareBeanUtilsBean = nullAwareBeanUtilsBean;
         this.userHelper = userHelper;
@@ -51,6 +52,8 @@ public class StockServiceImpl implements StockService {
 
 
         this.userDataRepository = userDataRepository;
+        this.subscriber = subscriber;
+        this.subscriberRepository = subscriberRepository;
     }
 
     @Override
@@ -111,7 +114,7 @@ public class StockServiceImpl implements StockService {
     }
 
     @Override
-    public StockResponse getStockSubscription(String symbol, String userId) {
+    public String getStockSubscription(String symbol, String userId) {
         Stock stock = getBySymbol(symbol);
         UserData user = userDataService.userById(userId);
         List<String> subscribers = stock.getSubscribers();
@@ -121,11 +124,14 @@ public class StockServiceImpl implements StockService {
             subscribers.add(subscribesId);
         }
         stock.setSubscribers(subscribers);
+        subscriber.setStockid(stock.getId());
+        subscriber.setCreatedOn(new Date());
+        subscriber.setUserId(subscribesId);
+        subscriberRepository.save(subscriber);
         stockRepository.save(stock);
         userDataRepository.save(user);
-        StockResponse stockResponse = modelMapper.map(stock, StockResponse.class);
-        return stockResponse;
 
+        return subscribesId;
     }
 //
 //    @Override

@@ -96,8 +96,8 @@ public PageResponse<StockResponse> getAllStockByPagination(@RequestBody FilterSo
 
     @RequestMapping(name = "getStockSubscription",value = "get/stock/subscription",method = RequestMethod.GET)
      @Access(levels = Role.ANONYMOUS)
-    public  DataResponse<StockResponse> getStockSubscription(@RequestParam String symbol ,@RequestParam String userId ){
-         DataResponse<StockResponse> dataResponse= new DataResponse<>();
+    public  DataResponse<String> getStockSubscription(@RequestParam String symbol ,@RequestParam String userId ){
+         DataResponse<String> dataResponse= new DataResponse<>();
          dataResponse.setData(stockService.getStockSubscription(symbol,userId));
          dataResponse.setStatus(Response.getOkResponse(ResponseConstant.SUBSCRIBED_SUCESSFULLY));
          return dataResponse;

@@ -21,8 +21,6 @@ public interface TopicService {
 
     void updateTopic(String id, TopicAddRequest topicAddRequest) throws NoSuchFieldException, IllegalAccessException;
 
-//    List<TitleResponse> getTopicIdByTitleAndDate(String createdOn, String title) throws JSONException;
-
     Page<TopicResponse> getAllTopicByPagination(TopicFilter filter, FilterSortRequest.SortRequest<TopicSortBy> sort, PageRequest pagination);
 
    String getTopicIdByTitleAndCreatedOn(String createdOn, String title) throws ParseException;

@@ -83,22 +83,13 @@ public class TopicController {
         return dataResponse;
     }
 
-//    @RequestMapping(name = "getTopicIdByTitleAndDate", value = "/topicId/title/date", method = RequestMethod.GET)
-//    @Access(levels = Role.ANONYMOUS)
-//    public ListResponse<TitleResponse> getTopicIdByTitleAndDate(@RequestParam String  createdOn, @RequestParam String title) throws JSONException {
-//        ListResponse<TitleResponse> dataResponse = new ListResponse<>();
-//        List<TitleResponse> titleResponses = topicService.getTopicIdByTitleAndDate(createdOn, title);
-//        dataResponse.setData(titleResponses);
-//        dataResponse.setStatus(Response.getOkResponse(ResponseConstant.OK));
-//        return dataResponse;
-//    }
 
-    @RequestMapping(name = "getAllTopicByPagination", value = "/get/all/pagination",method = RequestMethod.POST)
+    @RequestMapping(name = "getAllTopicByPagination", value = "/get/all/pagination", method = RequestMethod.POST)
     @Access(levels = Role.ANONYMOUS)
-    public PageResponse<TopicResponse> getAllTopicByPagination(@RequestBody FilterSortRequest<TopicFilter, TopicSortBy> filterSortRequest){
-        PageResponse<TopicResponse> pageResponse= new PageResponse<>();
-        Page<TopicResponse> page= topicService.getAllTopicByPagination(filterSortRequest.getFilter(),filterSortRequest.getSort()
-                ,generalHelper.getPagination(filterSortRequest.getPagination().getPage(),filterSortRequest.getPagination().getLimit()));
+    public PageResponse<TopicResponse> getAllTopicByPagination(@RequestBody FilterSortRequest<TopicFilter, TopicSortBy> filterSortRequest) {
+        PageResponse<TopicResponse> pageResponse = new PageResponse<>();
+        Page<TopicResponse> page = topicService.getAllTopicByPagination(filterSortRequest.getFilter(), filterSortRequest.getSort()
+                , generalHelper.getPagination(filterSortRequest.getPagination().getPage(), filterSortRequest.getPagination().getLimit()));
         pageResponse.setData(page);
         pageResponse.setStatus(Response.getOkResponse(ResponseConstant.OK));
         return pageResponse;
