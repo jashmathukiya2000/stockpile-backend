@@ -1,10 +1,7 @@
 package com.example.auth.stockPile.service;
 
 import com.example.auth.decorator.pagination.FilterSortRequest;
-import com.example.auth.stockPile.decorator.PostAddRequest;
-import com.example.auth.stockPile.decorator.PostFilter;
-import com.example.auth.stockPile.decorator.PostResponse;
-import com.example.auth.stockPile.decorator.PostSortBy;
+import com.example.auth.stockPile.decorator.*;
 import com.example.auth.stockPile.model.Post;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -13,7 +10,7 @@ import java.util.List;
 
 public interface PostService {
 
-    PostResponse addPost(String stockId, String userId, String topicId, PostAddRequest postAddRequest);
+    PostResponse addPost(PostAddParameter postAddParameter);
 
     void updatePost(String id, PostAddRequest postAddRequest) throws NoSuchFieldException, IllegalAccessException;
 

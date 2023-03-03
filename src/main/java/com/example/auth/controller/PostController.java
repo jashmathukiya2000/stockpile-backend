@@ -30,9 +30,9 @@ public class PostController {
 
     @RequestMapping(name = "addPost",value = "/add",method = RequestMethod.POST)
     @Access(levels = Role.ANONYMOUS)
-    public DataResponse<PostResponse> addPost(@RequestParam String topicId,@RequestParam  String stockId, @RequestParam  String userId, @RequestBody PostAddRequest postAddRequest){
+    public DataResponse<PostResponse> addPost(@RequestBody PostAddParameter postAddParameter){
         DataResponse<PostResponse> dataResponse= new DataResponse<>();
-        dataResponse.setData(postService.addPost(stockId,userId,topicId,postAddRequest));
+        dataResponse.setData(postService.addPost(postAddParameter));
         dataResponse.setStatus(Response.getOkResponse(ResponseConstant.SAVED_SUCCESSFULLY));
         return dataResponse;
     }

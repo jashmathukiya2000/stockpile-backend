@@ -5,10 +5,7 @@ import com.example.auth.commons.constant.MessageConstant;
 import com.example.auth.commons.exception.NotFoundException;
 import com.example.auth.commons.helper.UserHelper;
 import com.example.auth.decorator.pagination.FilterSortRequest;
-import com.example.auth.stockPile.decorator.PostAddRequest;
-import com.example.auth.stockPile.decorator.PostFilter;
-import com.example.auth.stockPile.decorator.PostResponse;
-import com.example.auth.stockPile.decorator.PostSortBy;
+import com.example.auth.stockPile.decorator.*;
 import com.example.auth.stockPile.model.Post;
 import com.example.auth.stockPile.model.Stock;
 import com.example.auth.stockPile.model.Topic;
@@ -49,11 +46,11 @@ public class PostServiceImpl implements PostService {
 
 
     @Override
-    public PostResponse addPost(String stockId, String userId, String topicId, PostAddRequest postAddRequest) {
-        Stock stock = stockService.stockById(stockId);
-        UserData userData = userDataService.userById(userId);
-        Topic topic = topicService.topicById(topicId);
-        Post post = modelMapper.map(postAddRequest, Post.class);
+    public PostResponse addPost(PostAddParameter postAddParameter) {
+        Stock stock = stockService.stockById(postAddParameter.getStockId());
+        UserData userData = userDataService.userById(postAddParameter.getUserId());
+        Topic topic = topicService.topicById(postAddParameter.getTopicId());
+        Post post = modelMapper.map(postAddParameter.getPostAddRequest(), Post.class);
         post.setPostBy(userData);
         post.setCreatedOn(new Date());
         post.setStockInfo(stock.getId());
