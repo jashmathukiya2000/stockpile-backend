@@ -25,6 +25,7 @@ public class UserData {
 
     boolean subscribe;
 
+
     @JsonIgnore
 
     boolean softDelete;

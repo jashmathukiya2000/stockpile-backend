@@ -118,8 +118,14 @@ public class UserDataServiceImpl implements UserDataService {
     public void checkValidation(UserAddRequest userAddRequest){
         AdminConfiguration adminConfiguration=adminConfigurationService.getConfiguration();
         if (userDataRepository.existsByEmailAndSoftDeleteIsFalse(userAddRequest.getEmail())){
+            throw  new InvalidRequestException(MessageConstant.EMAIL_ALREADY_EXIST);
 
         }
+        if (!userAddRequest.getEmail().matches(adminConfiguration.getEmailRegex())){
+            throw  new InvalidRequestException(MessageConstant.INVALID_EMAIL);
+        }
+
+
         if (!userAddRequest.getContact().matches(adminConfiguration.getMobileNoRegex())) {
             throw new InvalidRequestException(MessageConstant.INVALID_PHONE_NUMBER);
         }

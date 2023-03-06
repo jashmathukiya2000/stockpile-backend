@@ -16,15 +16,25 @@ import java.util.Date;
 @Builder
 public class CustomerResponse {
     String id;
-    Role role;
+
+     Role role;
+
     String name;
+
     String userName;
+
     String contact;
+
     String email;
+
     String password;
+
     Date date;
+
     String token;
+
     String otp;
+
     @JsonIgnore
     boolean login = false;
 

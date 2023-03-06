@@ -20,6 +20,7 @@ public class
 Customer {
     @Id
     String id;
+
     Role role;
 
     String name;

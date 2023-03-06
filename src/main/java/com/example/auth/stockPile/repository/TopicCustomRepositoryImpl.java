@@ -31,29 +31,6 @@ public class TopicCustomRepositoryImpl implements TopicCustomRepository{
 
     @Autowired
     MongoTemplate mongoTemplate;
-    @Override
-    public List<TitleResponse> getTopicIdByTitleAndDate(String createdOn, String title) throws JSONException {
-        List<AggregationOperation> operations=  getIdByTopic(createdOn,title);
-        Aggregation aggregation=Aggregation.newAggregation(operations);
-        return mongoTemplate.aggregate(aggregation,"topics",TitleResponse.class).getMappedResults();
-
-    }
-
-    private List<AggregationOperation> getIdByTopic(String createdOn, String title) throws JSONException {
-        List<AggregationOperation> operations = new ArrayList<>();
-        Criteria criteria = new Criteria();
-        criteria = criteria.and("softDelete").is(false);
-        criteria = criteria.and("createdOn").is(createdOn);
-        criteria = criteria.and("title").is(title);
-        operations.add(Aggregation.match(criteria));
-        operations.add(new CustomAggregationOperation(new Document("$group",
-                new Document("_id", new Document("title", title).append("createdOn", createdOn))
-                        .append("idInfo", new Document("$push", new Document("_id", "$_id")))
-        )));
-        operations.add(new CustomAggregationOperation(new Document("$limit", 1)));
-        return operations;
-    }
-
 
 
     @Override
