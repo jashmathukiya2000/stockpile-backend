@@ -1,4 +1,4 @@
-package com.example.auth.stockPile.decorator;
+package com.example.auth.stockPile.model;
 
 
 import lombok.Getter;
@@ -10,8 +10,7 @@ public enum ReactionType {
     UPVOTE("upVote"),
     DOWNVOTE("downVote");
 
-    private String value;
-
+      private String value;
     ReactionType(String value) {
         this.value = value;
     }

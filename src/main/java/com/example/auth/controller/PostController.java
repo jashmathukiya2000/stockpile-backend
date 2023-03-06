@@ -10,6 +10,7 @@ import com.example.auth.decorator.pagination.FilterSortRequest;
 import com.example.auth.decorator.pagination.PageResponse;
 import com.example.auth.stockPile.decorator.*;
 import com.example.auth.stockPile.model.Post;
+import com.example.auth.stockPile.model.ReactionType;
 import com.example.auth.stockPile.service.PostService;
 import org.springframework.data.domain.Page;
 import org.springframework.web.bind.annotation.*;
@@ -69,6 +70,23 @@ public class PostController {
         dataResponse.setStatus(Response.getOkResponse(ResponseConstant.DELETED_SUCCESSFULLY));
         return dataResponse;
     }
+
+
+   @RequestMapping(name = "addReaction",value = "/add/reaction",method = RequestMethod.POST)
+    @Access(levels = Role.ANONYMOUS)
+    public DataResponse<String> addReaction(@RequestParam ReactionType reactionType, @RequestBody  ReactionAddRequest reactionAddRequest){
+        DataResponse<String> dataResponse= new DataResponse<>();
+        dataResponse.setData(postService.addReaction(reactionType,reactionAddRequest));
+        dataResponse.setStatus(Response.getOkResponse(ResponseConstant.REACTION_ADDED_SUCCESSFULLY));
+        return dataResponse;
+    }
+
+
+
+
+
+
+
 
 
     @RequestMapping(name = "getAllPostByPagination",value = "/get/all/pagination",method = RequestMethod.POST)

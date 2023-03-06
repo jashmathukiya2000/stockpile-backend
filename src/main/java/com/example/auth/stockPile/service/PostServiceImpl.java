@@ -6,11 +6,9 @@ import com.example.auth.commons.exception.NotFoundException;
 import com.example.auth.commons.helper.UserHelper;
 import com.example.auth.decorator.pagination.FilterSortRequest;
 import com.example.auth.stockPile.decorator.*;
-import com.example.auth.stockPile.model.Post;
-import com.example.auth.stockPile.model.Stock;
-import com.example.auth.stockPile.model.Topic;
-import com.example.auth.stockPile.model.UserData;
+import com.example.auth.stockPile.model.*;
 import com.example.auth.stockPile.repository.PostRepository;
+import com.example.auth.stockPile.repository.ReactionRepository;
 import com.example.auth.stockPile.repository.TopicRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
@@ -33,8 +31,11 @@ public class PostServiceImpl implements PostService {
     private final UserDataServiceImpl userDataService;
     private final ModelMapper modelMapper;
     private final UserHelper userHelper;
+    private final Reaction reaction;
+    private  final ReactionRepository reactionRepository;
 
-    public PostServiceImpl(PostRepository postRepository, StockServiceImpl stockService, TopicServiceImpl topicService, TopicRepository topicRepository, UserDataServiceImpl userDataService, ModelMapper modelMapper, UserHelper userHelper) {
+
+    public PostServiceImpl(PostRepository postRepository, StockServiceImpl stockService, TopicServiceImpl topicService, TopicRepository topicRepository, UserDataServiceImpl userDataService, ModelMapper modelMapper, UserHelper userHelper, Reaction reaction, ReactionRepository reactionRepository) {
         this.postRepository = postRepository;
         this.stockService = stockService;
         this.topicService = topicService;
@@ -42,6 +43,9 @@ public class PostServiceImpl implements PostService {
         this.userDataService = userDataService;
         this.modelMapper = modelMapper;
         this.userHelper = userHelper;
+
+        this.reaction = reaction;
+        this.reactionRepository = reactionRepository;
     }
 
 
@@ -113,6 +117,17 @@ public class PostServiceImpl implements PostService {
             return posts;
         }
 
+    }
+
+    @Override
+    public String addReaction(ReactionType reactionType, ReactionAddRequest reactionAddRequest) {
+        Post post = getById(reactionAddRequest.getPostId());
+        UserData userData =userDataService.userById(reactionAddRequest.getUserId());
+        reaction.setPostId(post.getId());
+        reaction.setUserId(userData.getId());
+        reaction.setReactionType(reactionType);
+        reactionRepository.save(reaction);
+        return null;
     }
 
 

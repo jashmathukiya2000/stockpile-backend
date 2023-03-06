@@ -3,6 +3,7 @@ package com.example.auth.stockPile.service;
 import com.example.auth.decorator.pagination.FilterSortRequest;
 import com.example.auth.stockPile.decorator.*;
 import com.example.auth.stockPile.model.Post;
+import com.example.auth.stockPile.model.ReactionType;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 
@@ -23,4 +24,8 @@ public interface PostService {
     Page<PostResponse> getAllPostByPagination(PostFilter filter, FilterSortRequest.SortRequest<PostSortBy> sort, PageRequest pagination);
 
     List<Post> getAllPostByTopicId(String topicId);
+
+
+    String addReaction(ReactionType reactionType, ReactionAddRequest reactionAddRequest);
+
 }
