@@ -8,6 +8,8 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.util.Date;
+import java.util.List;
+import java.util.Map;
 
 @Data
 @AllArgsConstructor
@@ -28,6 +30,11 @@ public class Post {
     String stockInfo;
 
     String topicInfo;
+
+    int comments;
+
+
+    Map<ReactionType,Integer> reaction;
 
     @JsonIgnore
     boolean softDelete;

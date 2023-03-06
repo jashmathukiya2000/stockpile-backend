@@ -47,4 +47,5 @@ public class MessageConstant {
     public static final String TITLE_NOT_FOUND = "Title not found";
     public static final String SYMBOL_NOT_FOUND ="Symbol not found";
     public static final String TOPIC_NOT_FOUND = "Topic not found";
+    public static final String EMAIL_NOT_FOUND = "Email not found";
 }

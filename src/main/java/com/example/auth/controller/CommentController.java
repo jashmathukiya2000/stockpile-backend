@@ -22,6 +22,14 @@ public class CommentController {
         this.commentService = commentService;
     }
 
+//    @RequestMapping(name = "addComment", value = "/add", method = RequestMethod.POST)
+//    @Access(levels = Role.ADMIN)
+//    public DataResponse<CommentResponse> addComment(@RequestParam String userId, @RequestParam String postId,@RequestBody CommentAddRequest commentAddRequest) {
+//        DataResponse<CommentResponse> dataResponse = new DataResponse<>();
+//        dataResponse.setData(commentService.addComment(userId,postId,commentAddRequest));
+//        dataResponse.setStatus(Response.getOkResponse(ResponseConstant.SAVED_SUCCESSFULLY));
+//        return dataResponse;
+//    }
     @RequestMapping(name = "addComment", value = "/add", method = RequestMethod.POST)
     @Access(levels = Role.ANONYMOUS)
     public DataResponse<CommentResponse> addComment(@RequestParam String userId, @RequestParam String postId,@RequestBody CommentAddRequest commentAddRequest) {

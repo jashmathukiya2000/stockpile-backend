@@ -11,7 +11,15 @@ public enum ReactionType {
     DOWNVOTE("downVote");
 
       private String value;
+
+
+    private int count;
+
     ReactionType(String value) {
         this.value = value;
+        this.count = 0;
     }
-}
+
+    public void incrementCount() {
+        this.count++;
+    }}

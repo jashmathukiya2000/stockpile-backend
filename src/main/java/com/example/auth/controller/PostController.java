@@ -82,9 +82,14 @@ public class PostController {
     }
 
 
-
-
-
+//      @RequestMapping(name = "allReactionByPost",value = "/all/reaction",method = RequestMethod.POST)
+//    @Access(levels = Role.ANONYMOUS)
+//    public DataResponse<ReactionResponse> allReaction(@RequestParam String postId){
+//        DataResponse<ReactionResponse> dataResponse= new DataResponse<>();
+//        dataResponse.setData(postService.allReactionByPost(postId));
+//        dataResponse.setStatus(Response.getOkResponse(ResponseConstant.OK));
+//        return dataResponse;
+//    }
 
 
 

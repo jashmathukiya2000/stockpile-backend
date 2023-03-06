@@ -75,6 +75,7 @@ public class UserController {
         return dataResponse;
     }
 
+
     @RequestMapping(name = "deleteUser", value = "/delete/{id}", method = RequestMethod.DELETE)
     @Access(levels = Role.ADMIN)
     public DataResponse<Object> deleteUser(@PathVariable String id) {

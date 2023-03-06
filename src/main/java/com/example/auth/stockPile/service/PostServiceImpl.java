@@ -18,7 +18,9 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @Slf4j
@@ -122,13 +124,28 @@ public class PostServiceImpl implements PostService {
     @Override
     public String addReaction(ReactionType reactionType, ReactionAddRequest reactionAddRequest) {
         Post post = getById(reactionAddRequest.getPostId());
-        UserData userData =userDataService.userById(reactionAddRequest.getUserId());
+        UserData userData = userDataService.userById(reactionAddRequest.getUserId());
+
+        Reaction reaction = new Reaction(); // create a new reaction object
         reaction.setPostId(post.getId());
         reaction.setUserId(userData.getId());
         reaction.setReactionType(reactionType);
         reactionRepository.save(reaction);
+
+        int count = post.getReaction().getOrDefault(reactionType, 0);
+        count++;
+        post.getReaction().put(reactionType, count);
+        postRepository.save(post);
+
         return null;
     }
+
+//    @Override
+//    public ReactionResponse allReactionByPost(String postId) {
+//        Post post = getById(postId);
+//        ReactionResponse reactionResponse= new ReactionResponse();
+//
+//    }
 
 
     private void update(PostAddRequest postAddRequest, String id) {

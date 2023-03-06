@@ -10,6 +10,7 @@ import com.example.auth.stockPile.model.Comment;
 import com.example.auth.stockPile.model.Post;
 import com.example.auth.stockPile.model.UserData;
 import com.example.auth.stockPile.repository.CommentRepository;
+import com.example.auth.stockPile.repository.PostRepository;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 
@@ -24,13 +25,15 @@ public class CommentServiceImpl implements CommentService{
     private final ModelMapper modelMapper;
     private  final UserDataServiceImpl userDataService;
     private final PostServiceImpl postService;
+    private final PostRepository postRepository;
 
-    public CommentServiceImpl(CommentRepository commentRepository, UserHelper userHelper, ModelMapper modelMapper, UserDataServiceImpl userDataService, PostServiceImpl postService) {
+    public CommentServiceImpl(CommentRepository commentRepository, UserHelper userHelper, ModelMapper modelMapper, UserDataServiceImpl userDataService, PostServiceImpl postService, PostRepository postRepository) {
         this.commentRepository = commentRepository;
         this.userHelper = userHelper;
         this.modelMapper = modelMapper;
         this.userDataService = userDataService;
         this.postService = postService;
+        this.postRepository = postRepository;
     }
 
 
@@ -45,6 +48,9 @@ public class CommentServiceImpl implements CommentService{
          comment.setCreatedOn(new Date());
           comment.setPost(post.getId());
           commentRepository.save(comment);
+        int commentCount = post.getComments() == 0 ? 1 : post.getComments() + 1;
+        post.setComments(commentCount);
+        postRepository.save(post);
           CommentResponse commentResponse= modelMapper.map(comment,CommentResponse.class);
           return commentResponse;
 

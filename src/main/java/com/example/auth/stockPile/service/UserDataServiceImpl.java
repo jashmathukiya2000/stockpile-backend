@@ -11,6 +11,7 @@ import com.example.auth.stockPile.decorator.UserAddRequest;
 import com.example.auth.stockPile.decorator.UserDataResponse;
 import com.example.auth.stockPile.model.UserData;
 import com.example.auth.stockPile.repository.UserDataRepository;
+import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 
@@ -18,6 +19,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Service
+@Slf4j
 public class UserDataServiceImpl implements UserDataService {
 
     private final UserDataRepository userDataRepository;
@@ -36,7 +38,6 @@ public class UserDataServiceImpl implements UserDataService {
     public UserDataResponse addUser(UserAddRequest userAddRequest) {
 
         checkValidation(userAddRequest);
-
 
         UserData userData = modelMapper.map(userAddRequest, UserData.class);
 
@@ -87,6 +88,45 @@ public class UserDataServiceImpl implements UserDataService {
         return userDataResponses;
     }
 
+    @Override
+    public String userIdByEmail(String email) {
+        log.info("email:{}",email);
+        UserData userData = userByEmail(email);
+        System.out.println("userData"+userData.getId());
+
+        return userData.getId();
+
+    }
+    public UserData userByEmail(String email) {
+        return userDataRepository.findByEmailAndSoftDeleteIsFalse(email).orElseThrow(() ->
+                new NotFoundException(MessageConstant.EMAIL_NOT_FOUND));
+    }
+
+
+    public UserData userById(String id) {
+        return userDataRepository.findByIdAndSoftDeleteIsFalse(id).orElseThrow(() -> new NotFoundException(MessageConstant.USER_ID_NOT_FOUND));
+    }
+
+
+
+    public void checkValidation(UserAddRequest userAddRequest){
+        AdminConfiguration adminConfiguration=adminConfigurationService.getConfiguration();
+        if (userDataRepository.existsByEmailAndSoftDeleteIsFalse(userAddRequest.getEmail())){
+            throw  new InvalidRequestException(MessageConstant.EMAIL_ALREADY_EXIST);
+
+        }
+        if (!userAddRequest.getEmail().matches(adminConfiguration.getEmailRegex())){
+            throw  new InvalidRequestException(MessageConstant.INVALID_EMAIL);
+        }
+
+
+        if (!userAddRequest.getContact().matches(adminConfiguration.getMobileNoRegex())) {
+            throw new InvalidRequestException(MessageConstant.INVALID_PHONE_NUMBER);
+        }
+
+    }
+
+
     private void update(UserAddRequest userAddRequest, String id) {
 
         UserData userData = userById(id);
@@ -109,26 +149,4 @@ public class UserDataServiceImpl implements UserDataService {
 
     }
 
-
-    public UserData userById(String id) {
-        return userDataRepository.findByIdAndSoftDeleteIsFalse(id).orElseThrow(() -> new NotFoundException(MessageConstant.USER_ID_NOT_FOUND));
-    }
-
-
-    public void checkValidation(UserAddRequest userAddRequest){
-        AdminConfiguration adminConfiguration=adminConfigurationService.getConfiguration();
-        if (userDataRepository.existsByEmailAndSoftDeleteIsFalse(userAddRequest.getEmail())){
-            throw  new InvalidRequestException(MessageConstant.EMAIL_ALREADY_EXIST);
-
-        }
-        if (!userAddRequest.getEmail().matches(adminConfiguration.getEmailRegex())){
-            throw  new InvalidRequestException(MessageConstant.INVALID_EMAIL);
-        }
-
-
-        if (!userAddRequest.getContact().matches(adminConfiguration.getMobileNoRegex())) {
-            throw new InvalidRequestException(MessageConstant.INVALID_PHONE_NUMBER);
-        }
-
-    }
 }

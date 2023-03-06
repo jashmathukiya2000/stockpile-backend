@@ -5,13 +5,18 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.mapping.Document;
 
 @Data
 @AllArgsConstructor
 
 @NoArgsConstructor
 
+@Document(collection = "userData")
 public class UserData {
+
+    @Id
 
     String id;
 
@@ -24,7 +29,6 @@ public class UserData {
     String contact;
 
     boolean subscribe;
-
 
     @JsonIgnore
 
