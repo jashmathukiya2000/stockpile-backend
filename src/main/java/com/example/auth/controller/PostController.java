@@ -82,15 +82,31 @@ public class PostController {
     }
 
 
-//      @RequestMapping(name = "allReactionByPost",value = "/all/reaction",method = RequestMethod.POST)
-//    @Access(levels = Role.ANONYMOUS)
+//    @RequestMapping(name = "getAllReactionByPost",value = "/all/reaction",method = RequestMethod.POST)
+//    @Access(levels = Role.ADMIN)
 //    public DataResponse<ReactionResponse> allReaction(@RequestParam String postId){
 //        DataResponse<ReactionResponse> dataResponse= new DataResponse<>();
-//        dataResponse.setData(postService.allReactionByPost(postId));
+//        dataResponse.setData(postService.getAllReactionByPostId(postId));
+//        dataResponse.setStatus(Response.getOkResponse(ResponseConstant.OK));
+//        return dataResponse;
+//    }
+//    @RequestMapping(name = "getAllReactionByPost",value = "/all/reaction",method = RequestMethod.POST)
+//    @Access(levels = Role.ADMIN)
+//    public DataResponse<ReactionResponse> allReaction(@RequestParam String postId){
+//        DataResponse<ReactionResponse> dataResponse= new DataResponse<>();
+//        dataResponse.setData(postService.getAllReactionByPostId(postId));
 //        dataResponse.setStatus(Response.getOkResponse(ResponseConstant.OK));
 //        return dataResponse;
 //    }
 
+    @RequestMapping(name = "getAllReactionByPostId",value = "/all/reaction",method = RequestMethod.POST)
+    @Access(levels = Role.ANONYMOUS)
+    public DataResponse<ReactionResponse> getAllReactionByPostId(@RequestParam String postId){
+        DataResponse<ReactionResponse> dataResponse= new DataResponse<>();
+        dataResponse.setData(postService.getAllReactionByPostId(postId));
+        dataResponse.setStatus(Response.getOkResponse(ResponseConstant.OK));
+        return dataResponse;
+    }
 
 
 

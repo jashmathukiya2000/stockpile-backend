@@ -147,12 +147,14 @@ public class PostServiceImpl implements PostService {
         postRepository.save(post);
         return null;
     }
-//    @Override
-//    public ReactionResponse allReactionByPost(String postId) {
-//        Post post = getById(postId);
-//        ReactionResponse reactionResponse= new ReactionResponse();
-//
-//    }
+       @Override
+       public ReactionResponse getAllReactionByPostId(String postId) {
+        Post post = getById(postId);
+        ReactionResponse reactionResponse= new ReactionResponse();
+
+        return  reactionResponse;
+
+     }
 
 
     private void update(PostAddRequest postAddRequest, String id) {
