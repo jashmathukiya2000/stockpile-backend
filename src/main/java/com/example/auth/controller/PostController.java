@@ -15,6 +15,7 @@ import com.example.auth.stockPile.service.PostService;
 import org.springframework.data.domain.Page;
 import org.springframework.web.bind.annotation.*;
 import javax.mail.Multipart;
+import java.util.List;
 
 @RestController
 @RequestMapping("post")
@@ -27,7 +28,6 @@ public class PostController {
         this.postService = postService;
         this.generalHelper = generalHelper;
     }
-
 
     @RequestMapping(name = "addPost",value = "/add",method = RequestMethod.POST)
     @Access(levels = Role.ANONYMOUS)
@@ -82,27 +82,10 @@ public class PostController {
     }
 
 
-//    @RequestMapping(name = "getAllReactionByPost",value = "/all/reaction",method = RequestMethod.POST)
-//    @Access(levels = Role.ADMIN)
-//    public DataResponse<ReactionResponse> allReaction(@RequestParam String postId){
-//        DataResponse<ReactionResponse> dataResponse= new DataResponse<>();
-//        dataResponse.setData(postService.getAllReactionByPostId(postId));
-//        dataResponse.setStatus(Response.getOkResponse(ResponseConstant.OK));
-//        return dataResponse;
-//    }
-//    @RequestMapping(name = "getAllReactionByPost",value = "/all/reaction",method = RequestMethod.POST)
-//    @Access(levels = Role.ADMIN)
-//    public DataResponse<ReactionResponse> allReaction(@RequestParam String postId){
-//        DataResponse<ReactionResponse> dataResponse= new DataResponse<>();
-//        dataResponse.setData(postService.getAllReactionByPostId(postId));
-//        dataResponse.setStatus(Response.getOkResponse(ResponseConstant.OK));
-//        return dataResponse;
-//    }
-
     @RequestMapping(name = "getAllReactionByPostId",value = "/all/reaction",method = RequestMethod.POST)
     @Access(levels = Role.ANONYMOUS)
-    public DataResponse<ReactionResponse> getAllReactionByPostId(@RequestParam String postId){
-        DataResponse<ReactionResponse> dataResponse= new DataResponse<>();
+    public ListResponse<ReactionResponse> getAllReactionByPostId(@RequestParam String postId){
+        ListResponse<ReactionResponse> dataResponse= new ListResponse<>();
         dataResponse.setData(postService.getAllReactionByPostId(postId));
         dataResponse.setStatus(Response.getOkResponse(ResponseConstant.OK));
         return dataResponse;
@@ -110,7 +93,7 @@ public class PostController {
 
 
 
-    @RequestMapping(name = "getAllPostByPagination",value = "/get/all/pagination",method = RequestMethod.POST)
+    @RequestMapping(name = "getAllPostByPagination",value = "/all/pagination",method = RequestMethod.POST)
     @Access(levels = Role.ANONYMOUS)
     public PageResponse<PostResponse> getAllPostByPagination(@RequestBody FilterSortRequest<PostFilter, PostSortBy> filterSortRequest){
         PageResponse<PostResponse> pageResponse= new PageResponse<>();
@@ -124,7 +107,7 @@ public class PostController {
 
 
 
-    @RequestMapping(name = "getAllPostByTopicId",value = "/get/all/topicId",method = RequestMethod.GET)
+    @RequestMapping(name = "getAllPostByTopicId",value = "/all/topicId",method = RequestMethod.GET)
     @Access(levels = Role.ANONYMOUS)
     public ListResponse<Post> getAllPostByTopicId(@RequestParam String topicId){
         ListResponse<Post> listResponse= new ListResponse<>();

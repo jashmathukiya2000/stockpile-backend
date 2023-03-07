@@ -4,6 +4,8 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.Map;
+
 
 @Data
 @AllArgsConstructor
@@ -11,5 +13,5 @@ import lombok.NoArgsConstructor;
 public class ReactionResponse {
     String userId;
     String name;
-    ReactionType reactionType;
+   ReactionType reaction;
 }

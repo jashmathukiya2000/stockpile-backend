@@ -87,6 +87,12 @@ public class UserDataServiceImpl implements UserDataService {
         return userDataResponses;
     }
 
+    @Override
+    public String getUserIdByEmail(String email) {
+        UserData userData= userByEmail(email);
+        return userData.getId();
+
+    }
 
     public UserData userByEmail(String email) {
         return userDataRepository.findByEmailAndSoftDeleteIsFalse(email).orElseThrow(() ->

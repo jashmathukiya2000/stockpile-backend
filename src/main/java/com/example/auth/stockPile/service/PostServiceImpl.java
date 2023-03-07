@@ -10,17 +10,14 @@ import com.example.auth.stockPile.model.*;
 import com.example.auth.stockPile.repository.PostRepository;
 import com.example.auth.stockPile.repository.ReactionRepository;
 import com.example.auth.stockPile.repository.TopicRepository;
+import com.example.auth.stockPile.repository.UserDataRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.stream.Collectors;
+import java.util.*;
 
 @Service
 @Slf4j
@@ -34,10 +31,11 @@ public class PostServiceImpl implements PostService {
     private final ModelMapper modelMapper;
     private final UserHelper userHelper;
     private final Reaction reaction;
-    private  final ReactionRepository reactionRepository;
+    private final ReactionRepository reactionRepository;
+    private final UserDataRepository userDataRepository;
 
 
-    public PostServiceImpl(PostRepository postRepository, StockServiceImpl stockService, TopicServiceImpl topicService, TopicRepository topicRepository, UserDataServiceImpl userDataService, ModelMapper modelMapper, UserHelper userHelper, Reaction reaction, ReactionRepository reactionRepository) {
+    public PostServiceImpl(PostRepository postRepository, StockServiceImpl stockService, TopicServiceImpl topicService, TopicRepository topicRepository, UserDataServiceImpl userDataService, ModelMapper modelMapper, UserHelper userHelper, Reaction reaction, ReactionRepository reactionRepository, UserDataRepository userDataRepository) {
         this.postRepository = postRepository;
         this.stockService = stockService;
         this.topicService = topicService;
@@ -48,6 +46,7 @@ public class PostServiceImpl implements PostService {
 
         this.reaction = reaction;
         this.reactionRepository = reactionRepository;
+        this.userDataRepository = userDataRepository;
     }
 
 
@@ -120,6 +119,7 @@ public class PostServiceImpl implements PostService {
         }
 
     }
+
     @Override
     public String addReaction(ReactionType reactionType, ReactionAddRequest reactionAddRequest) {
         Post post = getById(reactionAddRequest.getPostId());
@@ -147,26 +147,37 @@ public class PostServiceImpl implements PostService {
         postRepository.save(post);
         return null;
     }
-       @Override
-       public ReactionResponse getAllReactionByPostId(String postId) {
+
+    @Override
+    public List<ReactionResponse> getAllReactionByPostId(String postId) {
         Post post = getById(postId);
-        ReactionResponse reactionResponse= new ReactionResponse();
-
-        return  reactionResponse;
-
-     }
+        List<Reaction> reactions = reactionRepository.findAllByPostIdAndSoftDeleteIsFalse(postId);
+        List<ReactionResponse> reactionResponses = new ArrayList<>();
+        for (Reaction reaction : reactions) {
+            ReactionResponse reactionResponse = new ReactionResponse();
+            UserData user =getUserById(reaction.getUserId());
+            reactionResponse.setUserId(user.getId());
+            reactionResponse.setName(user.getName());
+            reactionResponse.setReaction(reaction.getReactionType());
+            reactionResponses.add(reactionResponse);
+        }
+        return reactionResponses;
+    }
 
 
     private void update(PostAddRequest postAddRequest, String id) {
         Post post = getById(id);
         if (postAddRequest.getTemplateContent() != null) {
             post.setTemplateContent(postAddRequest.getTemplateContent());
-
         }
         postRepository.save(post);
     }
+
     public Post getById(String id) {
         return postRepository.findByIdAndSoftDeleteIsFalse(id).orElseThrow(() -> new NotFoundException(MessageConstant.ID_NOT_FOUND));
     }
+     public UserData getUserById(String userId){
+        return  userDataRepository.findById(userId).orElseThrow(() -> new NotFoundException(MessageConstant.USER_NOT_FOUND));
+     }
 
 }
