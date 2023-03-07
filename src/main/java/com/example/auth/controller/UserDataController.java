@@ -57,7 +57,7 @@ public class UserDataController {
     @Access(levels = Role.ANONYMOUS)
     public ListResponse<UserDataResponse> getAllUser() {
         ListResponse<UserDataResponse> listResponse = new ListResponse<>();
-        listResponse.setData(  userDataService.getAllUser());
+        listResponse.setData(userDataService.getAllUser());
         listResponse.setStatus(Response.getOkResponse(ResponseConstant.OK));
         return listResponse;
     }
@@ -73,15 +73,6 @@ public class UserDataController {
         return dataResponse;
     }
 
-
-     @RequestMapping(name = "userIdByEmail", value = "/id/email", method = RequestMethod.POST)
-    @Access(levels = Role.ANONYMOUS)
-    public DataResponse<String> userIdByEmail(@RequestBody String email) {
-        DataResponse<String> dataResponse = new DataResponse<>();
-        dataResponse.setData(userDataService.userIdByEmail(email));
-        dataResponse.setStatus(Response.getOkResponse(ResponseConstant.OK));
-        return dataResponse;
-    }
 
 
 

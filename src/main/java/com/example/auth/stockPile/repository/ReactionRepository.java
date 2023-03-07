@@ -4,4 +4,6 @@ import com.example.auth.stockPile.model.Reaction;
 import org.springframework.data.mongodb.repository.MongoRepository;
 
 public interface ReactionRepository extends MongoRepository<Reaction,String> {
+    Reaction findByPostIdAndUserId(String id, String id1);
+
 }

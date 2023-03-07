@@ -17,11 +17,11 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @Slf4j
 public class UserDataServiceImpl implements UserDataService {
-
     private final UserDataRepository userDataRepository;
     private final ModelMapper modelMapper;
     private final UserHelper userHelper;
@@ -70,7 +70,7 @@ public class UserDataServiceImpl implements UserDataService {
 
     @Override
     public UserDataResponse getUserById(String id) {
-        UserData userData= userById(id);
+        Optional<UserData> userData= userDataRepository.findByIdAndSoftDeleteIsFalse(id);
         UserDataResponse userDataResponse=modelMapper.map(userData,UserDataResponse.class);
          return  userDataResponse;
     }
@@ -84,19 +84,10 @@ public class UserDataServiceImpl implements UserDataService {
           userDataResponses.add(userDataResponse);
 
       });
-
         return userDataResponses;
     }
 
-    @Override
-    public String userIdByEmail(String email) {
-        log.info("email:{}",email);
-        UserData userData = userByEmail(email);
-        System.out.println("userData"+userData.getId());
 
-        return userData.getId();
-
-    }
     public UserData userByEmail(String email) {
         return userDataRepository.findByEmailAndSoftDeleteIsFalse(email).orElseThrow(() ->
                 new NotFoundException(MessageConstant.EMAIL_NOT_FOUND));

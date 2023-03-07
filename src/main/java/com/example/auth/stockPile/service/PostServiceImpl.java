@@ -120,26 +120,33 @@ public class PostServiceImpl implements PostService {
         }
 
     }
-
     @Override
     public String addReaction(ReactionType reactionType, ReactionAddRequest reactionAddRequest) {
         Post post = getById(reactionAddRequest.getPostId());
         UserData userData = userDataService.userById(reactionAddRequest.getUserId());
 
-        Reaction reaction = new Reaction(); // create a new reaction object
-        reaction.setPostId(post.getId());
-        reaction.setUserId(userData.getId());
-        reaction.setReactionType(reactionType);
-        reactionRepository.save(reaction);
+        // Check if the user has already reacted and update the post reaction count accordingly
+        Reaction existingReaction = reactionRepository.findByPostIdAndUserId(post.getId(), userData.getId());
+        if (existingReaction != null) {
+            ReactionType existingReactionType = existingReaction.getReactionType();
+            int existingCount = post.getReaction().getOrDefault(existingReactionType, 0);
+            existingCount--;
+            post.getReaction().put(existingReactionType, existingCount);
+            reactionRepository.delete(existingReaction);
+        }
+
+        Reaction newReaction = new Reaction();
+        newReaction.setPostId(post.getId());
+        newReaction.setUserId(userData.getId());
+        newReaction.setReactionType(reactionType);
+        reactionRepository.save(newReaction);
 
         int count = post.getReaction().getOrDefault(reactionType, 0);
         count++;
         post.getReaction().put(reactionType, count);
         postRepository.save(post);
-
         return null;
     }
-
 //    @Override
 //    public ReactionResponse allReactionByPost(String postId) {
 //        Post post = getById(postId);

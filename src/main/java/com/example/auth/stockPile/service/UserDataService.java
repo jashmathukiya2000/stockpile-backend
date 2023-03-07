@@ -20,6 +20,6 @@ public interface UserDataService {
     List<UserDataResponse> getAllUser();
 
 
-    String userIdByEmail(String email);
+
 
 }

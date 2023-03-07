@@ -53,7 +53,7 @@ public class PostController {
         dataResponse.setStatus(Response.getOkResponse(ResponseConstant.OK));
         return dataResponse;
     }
-    @RequestMapping(name = "getAllPost",value = "/get/all/post",method = RequestMethod.GET)
+    @RequestMapping(name = "getAllPost",value = "/all/post",method = RequestMethod.GET)
     @Access(levels = Role.ANONYMOUS)
     public ListResponse<PostResponse> getAllPost(){
         ListResponse<PostResponse> listResponse= new ListResponse<>();
