@@ -32,9 +32,10 @@ public class PostServiceImpl implements PostService {
     private final ReactionRepository reactionRepository;
     private final UserDataRepository userDataRepository;
     private final CommentRepository commentRepository;
+    private final CommentService commentService;
 
 
-    public PostServiceImpl(PostRepository postRepository, StockServiceImpl stockService, TopicServiceImpl topicService, TopicRepository topicRepository, UserDataServiceImpl userDataService, ModelMapper modelMapper, UserHelper userHelper, Reaction reaction, ReactionRepository reactionRepository, UserDataRepository userDataRepository, CommentRepository commentRepository) {
+    public PostServiceImpl(PostRepository postRepository, StockServiceImpl stockService, TopicServiceImpl topicService, TopicRepository topicRepository, UserDataServiceImpl userDataService, ModelMapper modelMapper, UserHelper userHelper, Reaction reaction, ReactionRepository reactionRepository, UserDataRepository userDataRepository, CommentRepository commentRepository, CommentService commentService) {
         this.postRepository = postRepository;
         this.stockService = stockService;
         this.topicService = topicService;
@@ -47,6 +48,7 @@ public class PostServiceImpl implements PostService {
         this.reactionRepository = reactionRepository;
         this.userDataRepository = userDataRepository;
         this.commentRepository = commentRepository;
+        this.commentService = commentService;
     }
 
 
@@ -97,6 +99,7 @@ public class PostServiceImpl implements PostService {
     @Override
     public void deletePostById(String id) {
         Post post = getById(id);
+        commentService.removeComments(id);
         post.setSoftDelete(true);
         postRepository.save(post);
 

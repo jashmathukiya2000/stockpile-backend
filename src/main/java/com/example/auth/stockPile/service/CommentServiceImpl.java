@@ -11,7 +11,9 @@ import com.example.auth.stockPile.model.Post;
 import com.example.auth.stockPile.model.UserData;
 import com.example.auth.stockPile.repository.CommentRepository;
 import com.example.auth.stockPile.repository.PostRepository;
+import org.apache.commons.collections.CollectionUtils;
 import org.modelmapper.ModelMapper;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -27,7 +29,7 @@ public class CommentServiceImpl implements CommentService{
     private final PostServiceImpl postService;
     private final PostRepository postRepository;
 
-    public CommentServiceImpl(CommentRepository commentRepository, UserHelper userHelper, ModelMapper modelMapper, UserDataServiceImpl userDataService, PostServiceImpl postService, PostRepository postRepository) {
+    public CommentServiceImpl(CommentRepository commentRepository, UserHelper userHelper, ModelMapper modelMapper, UserDataServiceImpl userDataService, @Lazy PostServiceImpl postService, PostRepository postRepository) {
         this.commentRepository = commentRepository;
         this.userHelper = userHelper;
         this.modelMapper = modelMapper;
@@ -102,6 +104,24 @@ public class CommentServiceImpl implements CommentService{
         }
         commentRepository.save(comment);
     }
+
+
+    @Override
+    public void removeComments(String id) {
+
+        List<Comment> comments = commentRepository.findAllByPostAndSoftDeleteIsFalse(id);
+
+        if (!CollectionUtils.isEmpty(comments)) {
+
+            comments.forEach(item -> {
+
+                item.setSoftDelete(true);
+            });
+            commentRepository.saveAll(comments);
+        }
+    }
+
+
 
 
 

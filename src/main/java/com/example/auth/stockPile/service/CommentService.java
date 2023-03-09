@@ -19,4 +19,6 @@ public interface CommentService {
 
     CommentResponse addComment(String userId, String postId, CommentAddRequest commentAddRequest);
 
+
+    void removeComments(String id);
 }
