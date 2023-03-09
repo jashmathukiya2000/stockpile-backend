@@ -1,5 +1,6 @@
 package com.example.auth.stockPile.service;
 
+import com.example.auth.decorator.CommentsResponse;
 import com.example.auth.decorator.pagination.FilterSortRequest;
 import com.example.auth.stockPile.decorator.*;
 import com.example.auth.stockPile.model.Post;
@@ -29,4 +30,6 @@ public interface PostService {
     String addReaction(ReactionType reactionType, ReactionAddRequest reactionAddRequest);
 
     List<ReactionResponse> getAllReactionByPostId(String postId);
+
+    List<CommentsResponse> getAllCommentByPostId(String postId);
 }

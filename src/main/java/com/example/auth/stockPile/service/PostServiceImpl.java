@@ -4,13 +4,11 @@ package com.example.auth.stockPile.service;
 import com.example.auth.commons.constant.MessageConstant;
 import com.example.auth.commons.exception.NotFoundException;
 import com.example.auth.commons.helper.UserHelper;
+import com.example.auth.decorator.CommentsResponse;
 import com.example.auth.decorator.pagination.FilterSortRequest;
 import com.example.auth.stockPile.decorator.*;
 import com.example.auth.stockPile.model.*;
-import com.example.auth.stockPile.repository.PostRepository;
-import com.example.auth.stockPile.repository.ReactionRepository;
-import com.example.auth.stockPile.repository.TopicRepository;
-import com.example.auth.stockPile.repository.UserDataRepository;
+import com.example.auth.stockPile.repository.*;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
@@ -33,9 +31,10 @@ public class PostServiceImpl implements PostService {
     private final Reaction reaction;
     private final ReactionRepository reactionRepository;
     private final UserDataRepository userDataRepository;
+    private final CommentRepository commentRepository;
 
 
-    public PostServiceImpl(PostRepository postRepository, StockServiceImpl stockService, TopicServiceImpl topicService, TopicRepository topicRepository, UserDataServiceImpl userDataService, ModelMapper modelMapper, UserHelper userHelper, Reaction reaction, ReactionRepository reactionRepository, UserDataRepository userDataRepository) {
+    public PostServiceImpl(PostRepository postRepository, StockServiceImpl stockService, TopicServiceImpl topicService, TopicRepository topicRepository, UserDataServiceImpl userDataService, ModelMapper modelMapper, UserHelper userHelper, Reaction reaction, ReactionRepository reactionRepository, UserDataRepository userDataRepository, CommentRepository commentRepository) {
         this.postRepository = postRepository;
         this.stockService = stockService;
         this.topicService = topicService;
@@ -47,6 +46,7 @@ public class PostServiceImpl implements PostService {
         this.reaction = reaction;
         this.reactionRepository = reactionRepository;
         this.userDataRepository = userDataRepository;
+        this.commentRepository = commentRepository;
     }
 
 
@@ -162,6 +162,23 @@ public class PostServiceImpl implements PostService {
             reactionResponses.add(reactionResponse);
         }
         return reactionResponses;
+    }
+
+    @Override
+    public List<CommentsResponse> getAllCommentByPostId(String postId) {
+        Post post = getById(postId);
+        List<Comment> comments =commentRepository .findAllByPostAndSoftDeleteIsFalse(postId);
+        List<CommentsResponse> commentsResponses = new ArrayList<>();
+        for (Comment comment : comments) {
+           CommentsResponse commentResponse= new CommentsResponse();
+            UserData user =getUserById(comment.getCommentId());
+            commentResponse.setUserId(user.getId());
+            commentResponse.setName(user.getName());
+            commentResponse.setComment(comment.getComment());
+            commentsResponses.add(commentResponse);
+
+        }
+        return commentsResponses;
     }
 
 

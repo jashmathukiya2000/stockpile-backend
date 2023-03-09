@@ -6,6 +6,7 @@ import com.example.auth.commons.decorator.GeneralHelper;
 import com.example.auth.commons.decorator.ListResponse;
 import com.example.auth.commons.decorator.Response;
 import com.example.auth.commons.enums.Role;
+import com.example.auth.decorator.CommentsResponse;
 import com.example.auth.decorator.pagination.FilterSortRequest;
 import com.example.auth.decorator.pagination.PageResponse;
 import com.example.auth.stockPile.decorator.*;
@@ -91,6 +92,15 @@ public class PostController {
         return dataResponse;
     }
 
+    @RequestMapping(name = "getAllCommentByPostId",value = "/all/comment",method = RequestMethod.POST)
+    @Access(levels = Role.ANONYMOUS)
+    public ListResponse<CommentsResponse> getAllCommentByPostId(@RequestParam String postId){
+        ListResponse<CommentsResponse> dataResponse= new ListResponse<>();
+        dataResponse.setData(postService.getAllCommentByPostId(postId));
+        dataResponse.setStatus(Response.getOkResponse(ResponseConstant.OK));
+        return dataResponse;
+    }
+
 
 
     @RequestMapping(name = "getAllPostByPagination",value = "/all/pagination",method = RequestMethod.POST)
@@ -115,6 +125,7 @@ public class PostController {
         listResponse.setStatus(Response.getOkResponse(ResponseConstant.OK));
         return listResponse;
     }
+
 
 
 }
