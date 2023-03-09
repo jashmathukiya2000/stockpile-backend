@@ -74,17 +74,14 @@ public class UserDataController {
     }
 
 
-    @RequestMapping(name = "getUserIdByEmail", value = "/Userid/email",method = RequestMethod.POST)
+    @RequestMapping(name = "getUserIdByEmail", value = "/userid/email",method = RequestMethod.GET)
     @Access(levels = Role.ANONYMOUS)
-    public DataResponse<String> getUserIdByEmail(@RequestBody String email){
+    public DataResponse<String> getUserIdByEmail(@RequestParam String email){
         DataResponse<String> dataResponse= new DataResponse<>();
         dataResponse.setData(userDataService.getUserIdByEmail(email));
         dataResponse.setStatus(Response.getOkResponse());
         return  dataResponse;
     }
-
-
-
 
 
 }

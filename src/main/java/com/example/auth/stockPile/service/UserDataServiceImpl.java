@@ -70,9 +70,9 @@ public class UserDataServiceImpl implements UserDataService {
 
     @Override
     public UserDataResponse getUserById(String id) {
-        Optional<UserData> userData= userDataRepository.findByIdAndSoftDeleteIsFalse(id);
-        UserDataResponse userDataResponse=modelMapper.map(userData,UserDataResponse.class);
-         return  userDataResponse;
+       UserData userData= userById(id);
+      return  modelMapper.map(userData,UserDataResponse.class);
+
     }
 
     @Override
@@ -89,20 +89,23 @@ public class UserDataServiceImpl implements UserDataService {
 
     @Override
     public String getUserIdByEmail(String email) {
-        UserData userData= userByEmail(email);
-        return userData.getId();
-
+        log.info("email:{}",email);
+        UserData userData = userByEmail(email);
+        return  userData.getId();
     }
 
-    public UserData userByEmail(String email) {
-        return userDataRepository.findByEmailAndSoftDeleteIsFalse(email).orElseThrow(() ->
-                new NotFoundException(MessageConstant.EMAIL_NOT_FOUND));
+
+
+    private UserData userByEmail(String email) {
+        return  userDataRepository.findByEmailAndSoftDeleteIsFalse(email).orElseThrow(()-> new NotFoundException(MessageConstant.EMAIL_NOT_FOUND));
     }
 
 
     public UserData userById(String id) {
         return userDataRepository.findByIdAndSoftDeleteIsFalse(id).orElseThrow(() -> new NotFoundException(MessageConstant.USER_ID_NOT_FOUND));
     }
+
+
 
 
 

@@ -15,12 +15,14 @@ public interface UserDataRepository extends MongoRepository<UserData, String> {
 
     Optional<UserData> findByEmailAndSoftDeleteIsFalse(String email);
 
-    List<UserData> findByIdAndSoftDeleteFalse(String id);
+     List<UserData> findByIdAndSoftDeleteFalse(String id);
 
-    List<UserData> findAllBySoftDeleteFalse();
+      List<UserData> findAllBySoftDeleteFalse();
 
-      boolean existsByEmailAndSoftDeleteIsFalse(String email);
+       boolean existsByEmailAndSoftDeleteIsFalse(String email);
 
-    boolean existsByEmailIgnoreCaseAndSoftDeleteIsFalse(String email);
-    UserData findByEmail(String email);
+
+       UserData findByEmail(String email);
+
+    Optional<UserData> findByNameAndSoftDeleteIsFalse(String name);
 }
