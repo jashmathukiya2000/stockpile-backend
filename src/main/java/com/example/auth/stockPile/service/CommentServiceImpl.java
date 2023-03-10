@@ -53,7 +53,7 @@ public class CommentServiceImpl implements CommentService{
           commentRepository.save(comment);
         int commentCount = post.getComments() == 0 ? 1 : post.getComments() + 1;
         post.setComments(commentCount);
-        postRepository.save(post);
+          postRepository.save(post);
           CommentResponse commentResponse= modelMapper.map(comment,CommentResponse.class);
           return commentResponse;
 
