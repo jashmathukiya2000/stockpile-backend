@@ -198,6 +198,8 @@ public class PostServiceImpl implements PostService {
                 post.getReaction().put(reactionType, currentCount - 1);
                 postRepository.save(post);
             }
+            existingReaction.setSoftDelete(true);
+            reactionRepository.save(existingReaction);
         }
     }
 
