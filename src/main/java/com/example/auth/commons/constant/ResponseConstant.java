@@ -23,5 +23,6 @@ public class ResponseConstant {
     public static final String PASSWORD_UPDATED_SUCCESSFULLY = "Password updated successfully";
     public static final String SUBSCRIBED_SUCESSFULLY = "Subscribed successfully";
     public static final String REACTION_ADDED_SUCCESSFULLY ="Reaction added successfully";
+    public static final String REACTION_DELETED_SUCCESSFULLY = "Reaction deleted successfully";
 }
 

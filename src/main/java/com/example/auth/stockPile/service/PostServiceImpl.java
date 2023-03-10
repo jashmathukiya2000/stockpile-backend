@@ -10,6 +10,7 @@ import com.example.auth.stockPile.decorator.*;
 import com.example.auth.stockPile.model.*;
 import com.example.auth.stockPile.repository.*;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.collections.CollectionUtils;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -99,6 +100,7 @@ public class PostServiceImpl implements PostService {
     @Override
     public void deletePostById(String id) {
         Post post = getById(id);
+        removeReaction(id);
         commentService.removeComments(id);
         post.setSoftDelete(true);
         postRepository.save(post);
@@ -184,6 +186,21 @@ public class PostServiceImpl implements PostService {
         return commentsResponses;
     }
 
+    @Override
+    public void deleteReaction(ReactionAddRequest reactionAddRequest) {
+        Post post = getById(reactionAddRequest.getPostId());
+        UserData userData = userDataService.userById(reactionAddRequest.getUserId());
+        Reaction existingReaction = reactionRepository.findByPostIdAndUserId(post.getId(), userData.getId());
+        if (existingReaction != null) {
+            ReactionType reactionType = existingReaction.getReactionType();
+            int currentCount = post.getReaction().getOrDefault(reactionType, 0);
+            if (currentCount > 0) {
+                post.getReaction().put(reactionType, currentCount - 1);
+                postRepository.save(post);
+            }
+        }
+    }
+
 
     private void update(PostAddRequest postAddRequest, String id) {
         Post post = getById(id);
@@ -199,5 +216,19 @@ public class PostServiceImpl implements PostService {
      public UserData getUserById(String userId){
         return  userDataRepository.findById(userId).orElseThrow(() -> new NotFoundException(MessageConstant.USER_NOT_FOUND));
      }
+
+    public void removeReaction(String id) {
+
+        List<Reaction> reactions = reactionRepository.findAllByPostIdAndSoftDeleteIsFalse(id);
+
+        if (!CollectionUtils.isEmpty(reactions)) {
+
+            reactions.forEach(item -> {
+
+                item.setSoftDelete(true);
+            });
+            reactionRepository.saveAll(reactions);
+        }
+    }
 
 }

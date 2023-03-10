@@ -32,4 +32,6 @@ public interface PostService {
     List<ReactionResponse> getAllReactionByPostId(String postId);
 
     List<CommentsResponse> getAllCommentByPostId(String postId);
+
+    void deleteReaction(ReactionAddRequest reactionAddRequest);
 }

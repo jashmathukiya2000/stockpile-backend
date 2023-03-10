@@ -126,6 +126,15 @@ public class PostController {
         return listResponse;
     }
 
+    @RequestMapping(name = "deleteReaction",value = "deleteReaction/id",method = RequestMethod.POST)
+    @Access(levels = Role.ANONYMOUS)
+    public DataResponse<Object> deleteReaction(@RequestBody ReactionAddRequest reactionAddRequest){
+        DataResponse<Object> dataResponse= new DataResponse<>();
+        postService.deleteReaction(reactionAddRequest);
+        dataResponse.setStatus(Response.getOkResponse(ResponseConstant.REACTION_DELETED_SUCCESSFULLY));
+        return dataResponse;
+    }
+
 
 
 }
