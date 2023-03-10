@@ -155,24 +155,7 @@ public class PostServiceImpl implements PostService {
 public void addReaction(ReactionType reactionType, ReactionAddRequest reactionAddRequest) {
     Post post = getById(reactionAddRequest.getPostId());
     UserData userData = userDataService.userById(reactionAddRequest.getUserId());
-
-    // Check if the user has already reacted and update the post reaction count accordingly
-    Reaction existingReaction = reactionRepository.findByPostIdAndUserId(post.getId(), userData.getId());
-    if (existingReaction != null) {
-        // Decrement the count of existing reaction type only if it is greater than 0
-        ReactionType existingReactionType = existingReaction.getReactionType();
-        int existingCount = post.getReaction().getOrDefault(existingReactionType, 0);
-        if (existingCount > 0) {
-            existingCount--;
-            post.getReaction().put(existingReactionType, existingCount);
-        }
-        // Set the count of other reaction type to 0
-        ReactionType otherReactionType = ReactionType.getOtherReactionType(existingReactionType);
-        post.getReaction().put(otherReactionType, 0);
-
-        // Delete the existing reaction
-        reactionRepository.delete(existingReaction);
-    }
+     checkReaction(reactionType,reactionAddRequest);
     // Add the new reaction
     Reaction newReaction = new Reaction();
     newReaction.setPostId(post.getId());
@@ -182,12 +165,31 @@ public void addReaction(ReactionType reactionType, ReactionAddRequest reactionAd
     reactionRepository.save(newReaction);
 
     // Increment the count of the new reaction type
-    int count = post.getReaction().getOrDefault(reactionType, 0);
-    count++;
-    post.getReaction().put(reactionType, count);
-    postRepository.save(post);
 
 }
+
+    public void checkReaction(ReactionType reactionType, ReactionAddRequest reactionAddRequest){
+        Post post = getById(reactionAddRequest.getPostId());
+        UserData userData = userDataService.userById(reactionAddRequest.getUserId());
+        Reaction existingReaction = reactionRepository.findByPostIdAndUserId(post.getId(), userData.getId());
+
+        if (existingReaction != null) {
+            ReactionType existingReactionType = existingReaction.getReactionType();
+            int existingCount = post.getReaction().getOrDefault(existingReactionType, 0);
+            if (existingCount > 0) {
+                existingCount--;
+                post.getReaction().put(existingReactionType, existingCount);
+            }
+            ReactionType otherReactionType = ReactionType.getOtherReactionType(existingReactionType);
+            post.getReaction().put(otherReactionType, 0);
+            reactionRepository.delete(existingReaction);
+        }
+        int count = post.getReaction().getOrDefault(reactionType, 0);
+        count++;
+        post.getReaction().put(reactionType, count);
+        postRepository.save(post);
+
+    }
     @Override
     public void deleteReaction(ReactionAddRequest reactionAddRequest) {
         Post post = getById(reactionAddRequest.getPostId());
@@ -232,5 +234,4 @@ public void addReaction(ReactionType reactionType, ReactionAddRequest reactionAd
             reactionRepository.saveAll(reactions);
         }
     }
-
 }

@@ -7,6 +7,7 @@ import com.example.auth.commons.decorator.DataResponse;
 import com.example.auth.commons.decorator.ListResponse;
 import com.example.auth.commons.decorator.Response;
 import com.example.auth.commons.enums.Role;
+import com.example.auth.stockPile.decorator.AddComment;
 import com.example.auth.stockPile.decorator.CommentAddRequest;
 import com.example.auth.stockPile.decorator.CommentResponse;
 import com.example.auth.stockPile.service.CommentService;
@@ -32,9 +33,9 @@ public class CommentController {
 //    }
     @RequestMapping(name = "addComment", value = "/add", method = RequestMethod.POST)
     @Access(levels = Role.ANONYMOUS)
-    public DataResponse<CommentResponse> addComment(@RequestParam String userId, @RequestParam String postId,@RequestBody CommentAddRequest commentAddRequest) {
+    public DataResponse<CommentResponse> addComment(@RequestBody AddComment addComment) {
         DataResponse<CommentResponse> dataResponse = new DataResponse<>();
-        dataResponse.setData(commentService.addComment(userId,postId,commentAddRequest));
+        dataResponse.setData(commentService.addComment(addComment));
         dataResponse.setStatus(Response.getOkResponse(ResponseConstant.SAVED_SUCCESSFULLY));
         return dataResponse;
     }
@@ -58,7 +59,7 @@ public class CommentController {
     }
 
 
-    @RequestMapping(name = "getAllComment", value = "/get/all/comment", method = RequestMethod.GET)
+    @RequestMapping(name = "getAllComment", value = "/all/comment", method = RequestMethod.GET)
     @Access(levels = Role.ANONYMOUS)
     public ListResponse<CommentResponse> getAllComment() {
         ListResponse<CommentResponse> listResponse = new ListResponse<>();

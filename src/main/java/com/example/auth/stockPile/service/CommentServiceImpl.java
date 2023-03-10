@@ -4,6 +4,7 @@ package com.example.auth.stockPile.service;
 import com.example.auth.commons.constant.MessageConstant;
 import com.example.auth.commons.exception.NotFoundException;
 import com.example.auth.commons.helper.UserHelper;
+import com.example.auth.stockPile.decorator.AddComment;
 import com.example.auth.stockPile.decorator.CommentAddRequest;
 import com.example.auth.stockPile.decorator.CommentResponse;
 import com.example.auth.stockPile.model.Comment;
@@ -41,10 +42,10 @@ public class CommentServiceImpl implements CommentService{
 
 
     @Override
-    public CommentResponse addComment(String userId, String postId, CommentAddRequest commentAddRequest) {
-        UserData userData=userDataService.userById(userId);
-        Post post= postService.getById(postId);
-         Comment comment= modelMapper.map(commentAddRequest,Comment.class);
+    public CommentResponse addComment(AddComment addComment) {
+        UserData userData=userDataService.userById(addComment.getUserId());
+        Post post= postService.getById(addComment.getPostId());
+         Comment comment= modelMapper.map(addComment,Comment.class);
          comment.setCommentId(userData.getId());
          comment.setCommentedBy(userData.getName());
          comment.setCreatedOn(new Date());
@@ -64,7 +65,6 @@ public class CommentServiceImpl implements CommentService{
         Comment comment= getById(id);
         update(commentAddRequest,id);
         userHelper.difference(commentAddRequest,comment);
-
     }
 
 
