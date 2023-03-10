@@ -1,6 +1,4 @@
 package com.example.auth.stockPile.service;
-
-
 import com.example.auth.commons.constant.MessageConstant;
 import com.example.auth.commons.exception.NotFoundException;
 import com.example.auth.commons.helper.UserHelper;
@@ -15,13 +13,11 @@ import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
-
 import java.util.*;
 
 @Service
 @Slf4j
 public class PostServiceImpl implements PostService {
-
     private final PostRepository postRepository;
     private final StockServiceImpl stockService;
     private final TopicServiceImpl topicService;
@@ -44,7 +40,6 @@ public class PostServiceImpl implements PostService {
         this.userDataService = userDataService;
         this.modelMapper = modelMapper;
         this.userHelper = userHelper;
-
         this.reaction = reaction;
         this.reactionRepository = reactionRepository;
         this.userDataRepository = userDataRepository;
@@ -73,7 +68,6 @@ public class PostServiceImpl implements PostService {
         Post post = getById(id);
         update(postAddRequest, id);
         userHelper.difference(postAddRequest, post);
-
     }
 
 
@@ -122,36 +116,8 @@ public class PostServiceImpl implements PostService {
             List<Post> posts = postRepository.findByTopicInfoAndSoftDeleteIsFalse(topicId);
             return posts;
         }
-
     }
 
-    @Override
-    public String addReaction(ReactionType reactionType, ReactionAddRequest reactionAddRequest) {
-        Post post = getById(reactionAddRequest.getPostId());
-        UserData userData = userDataService.userById(reactionAddRequest.getUserId());
-
-        // Check if the user has already reacted and update the post reaction count accordingly
-        Reaction existingReaction = reactionRepository.findByPostIdAndUserId(post.getId(), userData.getId());
-        if (existingReaction != null) {
-            ReactionType existingReactionType = existingReaction.getReactionType();
-            int existingCount = post.getReaction().getOrDefault(existingReactionType, 0);
-            existingCount--;
-            post.getReaction().put(existingReactionType, existingCount);
-            reactionRepository.delete(existingReaction);
-        }
-
-        Reaction newReaction = new Reaction();
-        newReaction.setPostId(post.getId());
-        newReaction.setUserId(userData.getId());
-        newReaction.setReactionType(reactionType);
-        reactionRepository.save(newReaction);
-
-        int count = post.getReaction().getOrDefault(reactionType, 0);
-        count++;
-        post.getReaction().put(reactionType, count);
-        postRepository.save(post);
-        return null;
-    }
 
     @Override
     public List<ReactionResponse> getAllReactionByPostId(String postId) {
@@ -185,7 +151,43 @@ public class PostServiceImpl implements PostService {
         }
         return commentsResponses;
     }
+@Override
+public void addReaction(ReactionType reactionType, ReactionAddRequest reactionAddRequest) {
+    Post post = getById(reactionAddRequest.getPostId());
+    UserData userData = userDataService.userById(reactionAddRequest.getUserId());
 
+    // Check if the user has already reacted and update the post reaction count accordingly
+    Reaction existingReaction = reactionRepository.findByPostIdAndUserId(post.getId(), userData.getId());
+    if (existingReaction != null) {
+        // Decrement the count of existing reaction type only if it is greater than 0
+        ReactionType existingReactionType = existingReaction.getReactionType();
+        int existingCount = post.getReaction().getOrDefault(existingReactionType, 0);
+        if (existingCount > 0) {
+            existingCount--;
+            post.getReaction().put(existingReactionType, existingCount);
+        }
+        // Set the count of other reaction type to 0
+        ReactionType otherReactionType = ReactionType.getOtherReactionType(existingReactionType);
+        post.getReaction().put(otherReactionType, 0);
+
+        // Delete the existing reaction
+        reactionRepository.delete(existingReaction);
+    }
+    // Add the new reaction
+    Reaction newReaction = new Reaction();
+    newReaction.setPostId(post.getId());
+    newReaction.setUserId(userData.getId());
+    newReaction.setReactionType(reactionType);
+    newReaction.setSoftDelete(false);
+    reactionRepository.save(newReaction);
+
+    // Increment the count of the new reaction type
+    int count = post.getReaction().getOrDefault(reactionType, 0);
+    count++;
+    post.getReaction().put(reactionType, count);
+    postRepository.save(post);
+
+}
     @Override
     public void deleteReaction(ReactionAddRequest reactionAddRequest) {
         Post post = getById(reactionAddRequest.getPostId());
@@ -203,7 +205,6 @@ public class PostServiceImpl implements PostService {
         }
     }
 
-
     private void update(PostAddRequest postAddRequest, String id) {
         Post post = getById(id);
         if (postAddRequest.getTemplateContent() != null) {
@@ -220,7 +221,6 @@ public class PostServiceImpl implements PostService {
      }
 
     public void removeReaction(String id) {
-
         List<Reaction> reactions = reactionRepository.findAllByPostIdAndSoftDeleteIsFalse(id);
 
         if (!CollectionUtils.isEmpty(reactions)) {

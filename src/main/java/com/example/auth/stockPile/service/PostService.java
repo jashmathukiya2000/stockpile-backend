@@ -27,7 +27,7 @@ public interface PostService {
     List<Post> getAllPostByTopicId(String topicId);
 
 
-    String addReaction(ReactionType reactionType, ReactionAddRequest reactionAddRequest);
+    void addReaction(ReactionType reactionType, ReactionAddRequest reactionAddRequest);
 
     List<ReactionResponse> getAllReactionByPostId(String postId);
 

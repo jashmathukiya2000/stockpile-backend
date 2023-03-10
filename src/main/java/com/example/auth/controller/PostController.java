@@ -75,9 +75,9 @@ public class PostController {
 
    @RequestMapping(name = "addReaction",value = "/add/reaction",method = RequestMethod.POST)
     @Access(levels = Role.ANONYMOUS)
-    public DataResponse<String> addReaction(@RequestParam ReactionType reactionType, @RequestBody  ReactionAddRequest reactionAddRequest){
-        DataResponse<String> dataResponse= new DataResponse<>();
-        dataResponse.setData(postService.addReaction(reactionType,reactionAddRequest));
+    public DataResponse<Object> addReaction(@RequestParam ReactionType reactionType, @RequestBody  ReactionAddRequest reactionAddRequest){
+        DataResponse<Object> dataResponse= new DataResponse<>();
+       postService.addReaction(reactionType,reactionAddRequest);
         dataResponse.setStatus(Response.getOkResponse(ResponseConstant.REACTION_ADDED_SUCCESSFULLY));
         return dataResponse;
     }

@@ -12,14 +12,18 @@ public enum ReactionType {
 
       private String value;
 
-
-    private int count;
-
     ReactionType(String value) {
         this.value = value;
-        this.count = 0;
     }
 
-    public void incrementCount() {
-        this.count++;
-    }}
+    public static ReactionType getOtherReactionType(ReactionType existingReactionType) {
+        if (existingReactionType == UPVOTE) {
+            return DOWNVOTE;
+        } else if (existingReactionType == DOWNVOTE) {
+            return UPVOTE;
+        } else {
+            throw new IllegalArgumentException("Invalid reaction type");
+        }
+    }
+
+    }
