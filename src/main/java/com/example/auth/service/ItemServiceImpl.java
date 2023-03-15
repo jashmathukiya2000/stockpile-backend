@@ -14,7 +14,7 @@ import com.example.auth.model.Category;
 import com.example.auth.model.Item;
 import com.example.auth.repository.CategoryRepository;
 import com.example.auth.repository.ItemRepository;
-import com.google.api.client.repackaged.com.google.common.annotations.VisibleForTesting;
+import com.google.common.annotations.VisibleForTesting;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections.CollectionUtils;
 import org.modelmapper.ModelMapper;

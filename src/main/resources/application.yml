@@ -5,9 +5,8 @@ spring:
     allow-circular-references: true
   data:
     mongodb:
-
-      uri: mongodb+srv://nilusroy0:gTKbIhWYQI2Vck80@cluster0.rihh4ek.mongodb.net/AuthModule?retryWrites=true&w=majority
-#      uri:  mongodb://localhost:27017/AuthModule
+   uri: mongodb+srv://nilusroy0:gTKbIhWYQI2Vck80@cluster0.rihh4ek.mongodb.net/AuthModule?retryWrites=true&w=majority
+#    uri:  mongodb://localhost:27017/AuthModule
   mvc:
     pathmatch:
       matching-strategy: ant_path_matcher

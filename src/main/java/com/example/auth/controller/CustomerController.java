@@ -29,7 +29,7 @@ public class CustomerController {
         this.generalHelper = generalHelper;
     }
 
-    //handle exception using try catch
+
     @RequestMapping(name = "addCustomer", value = "/addCustomer", method = RequestMethod.POST)
     @Access(levels = Role.ANONYMOUS)
     public DataResponse<CustomerResponse> addCustomer(@RequestBody CustomerAddRequest customerAddRequest, @RequestParam Role role) {
@@ -40,7 +40,6 @@ public class CustomerController {
 
     }
 
-    //change api endpoint name
     @RequestMapping(name = "login", value = "/login", method = RequestMethod.POST)
     @Access(levels = Role.ANONYMOUS)
     public DataResponse<CustomerResponse> login(@RequestBody CustomerLoginAddRequest customerLoginAddRequest) {
@@ -60,7 +59,6 @@ public class CustomerController {
         return dataResponse;
     }
 
-    //removed capital letter
     @RequestMapping(name = "getAllCustomer", value = "get/all/customer", method = RequestMethod.GET)
     @Access(levels = Role.ADMIN)
     public ListResponse<CustomerResponse> getAllCustomer() {
@@ -99,9 +97,10 @@ public class CustomerController {
         return dataResponse;
 
     }
+
     @RequestMapping(name = "getToken", value = "/get/token", method = RequestMethod.GET)
     @Access(levels = Role.ANONYMOUS)
-    public TokenResponse<CustomerResponse> getToken(@RequestParam String id)  {
+    public TokenResponse<CustomerResponse> getToken(@RequestParam String id) {
         TokenResponse<CustomerResponse> tokenResponse = new TokenResponse<>();
         try {
             tokenResponse.setData(customerService.getToken(id));
@@ -127,7 +126,6 @@ public class CustomerController {
 
         return tokenResponse;
     }
-
 
 
     @RequestMapping(name = "logout", value = "logout/{id}", method = RequestMethod.POST)

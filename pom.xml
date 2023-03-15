@@ -334,6 +334,11 @@
             <version>2.9.2</version>
         </dependency>
         <dependency>
+            <groupId>com.google.firebase</groupId>
+            <artifactId>firebase-admin</artifactId>
+            <version>9.0.0</version>
+        </dependency>
+        <dependency>
             <groupId>org.springframework.data</groupId>
             <artifactId>spring-data-mongodb</artifactId>
             <version>3.2.7</version>
@@ -347,7 +352,7 @@
                 <configuration>
                     <excludes>
                         <exclude>
-                            <groupId>org.project-lombok</groupId>
+                            <groupId>org.p roject-lombok</groupId>
                             <artifactId>lombok</artifactId>
                         </exclude>
                     </excludes>

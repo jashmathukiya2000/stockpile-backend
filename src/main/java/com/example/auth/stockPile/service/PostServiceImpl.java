@@ -147,6 +147,7 @@ public class PostServiceImpl implements PostService {
             commentResponse.setName(user.getName());
             commentResponse.setComment(comment.getComment());
             commentResponse.setCreatedOn(comment.getCreatedOn());
+            log.info("date:{}",commentResponse);
             commentsResponses.add(commentResponse);
 
         }

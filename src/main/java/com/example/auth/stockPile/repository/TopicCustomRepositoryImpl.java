@@ -19,6 +19,7 @@ import org.springframework.data.mongodb.core.aggregation.AggregationResults;
 import org.springframework.data.mongodb.core.aggregation.SortOperation;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.support.PageableExecutionUtils;
+import org.springframework.stereotype.Repository;
 
 
 import java.util.ArrayList;
@@ -27,6 +28,7 @@ import java.util.List;
 
 import static org.springframework.data.mongodb.core.aggregation.Aggregation.*;
 
+@Repository
 public class TopicCustomRepositoryImpl implements TopicCustomRepository{
 
     @Autowired

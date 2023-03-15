@@ -74,6 +74,7 @@ public class ApplicationStartUpEventListener {
             saveIfNotExits(Utils.getAllMethodNames(TopicController.class));
             saveIfNotExits(Utils.getAllMethodNames(UserDataController.class));
             saveIfNotExits(Utils.getAllMethodNames(PostController.class));
+            saveIfNotExits(Utils.getAllMethodNames(NotificationController.class));
         }
 
         Date currentDate = new Date();
