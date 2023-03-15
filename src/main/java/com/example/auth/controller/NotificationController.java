@@ -29,7 +29,9 @@ public class NotificationController {
     @RequestMapping(name = "sendNotification",value = "notification",method = RequestMethod.POST)
     @Access(levels = Role.ANONYMOUS)
     public String sendNotification(@RequestBody NotificationMessage notificationMessage){
-        return fireBaseMessagingService.sendNotificationByToken(notificationMessage);
+      String notification=fireBaseMessagingService.sendNotificationByToken(notificationMessage);
+        System.out.println("notification"+notification);
+        return notification;
     }
 
 

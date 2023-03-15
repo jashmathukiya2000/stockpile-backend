@@ -10,12 +10,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 import java.util.Map;
 
 @Data
-@AllArgsConstructor
-@NoArgsConstructor
-@Document(collection = "notification")
 public class NotificationMessage {
-    @Id
-    String id;
     String token;
     String body;
     String title;

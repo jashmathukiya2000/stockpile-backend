@@ -9,9 +9,11 @@ import com.google.firebase.messaging.FirebaseMessaging;
 import com.google.firebase.messaging.FirebaseMessagingException;
 import com.google.firebase.messaging.Message;
 import com.google.firebase.messaging.Notification;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 @Service
+@Slf4j
 public class FireBaseMessagingServiceImpl implements FireBaseMessagingService {
     private final FirebaseMessaging firebaseMessaging;
 private final NotificationRepository notificationRepository;
@@ -31,6 +33,7 @@ private final NotificationRepository notificationRepository;
                 .setNotification(notification)
                 .build();
       try{
+          log.info("message:{}",message);
           firebaseMessaging.send(message);
           return "success";
       }catch (FirebaseMessagingException e){
