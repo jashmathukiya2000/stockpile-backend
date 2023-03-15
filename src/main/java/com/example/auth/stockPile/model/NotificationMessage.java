@@ -11,8 +11,13 @@ import java.util.Map;
 
 @Data
 public class NotificationMessage {
-    String token;
-    String body;
-    String title;
+//    String token;
+//    String body;
+//    String title;
+
+    private String title;
+    private String message;
+    private String topic;
+    private String token;
 
 }

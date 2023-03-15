@@ -18,10 +18,9 @@ public class FirebaseConfig {
     @Bean
     public FirebaseMessaging firebaseMessaging() throws IOException {
         FileInputStream serviceAccount = new FileInputStream(
-                "C:\\Java\\auth\\src\\main\\resources\\stocks-forum-firebase-adminsdk-se0gx-24bca6a5e5.json");
+                "C:\\Java\\auth\\src\\main\\resources\\stocks-forum-firebase-adminsdk-nq1um-390972623d.json");
         GoogleCredentials credentials = GoogleCredentials.fromStream(
-               serviceAccount
-        );
+               serviceAccount);
         log.info("serviceAccount:{}",serviceAccount);
         FirebaseOptions options = FirebaseOptions.builder()
                 .setCredentials(credentials)

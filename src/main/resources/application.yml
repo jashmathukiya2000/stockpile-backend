@@ -10,3 +10,7 @@ spring:
   mvc:
     pathmatch:
       matching-strategy: ant_path_matcher
+  app:
+    firebase-configuration-file=stocks-forum-firebase-adminsdk-nq1um-390972623d.json
+
+
