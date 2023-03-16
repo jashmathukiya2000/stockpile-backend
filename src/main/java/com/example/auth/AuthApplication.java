@@ -7,11 +7,13 @@ import com.google.firebase.messaging.FirebaseMessaging;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.PropertySource;
 import org.springframework.core.io.ClassPathResource;
 
 import java.io.IOException;
 
 @SpringBootApplication
+@PropertySource("classpath:application.yml")
 public class AuthApplication {
 
     public static void main(String[] args) {

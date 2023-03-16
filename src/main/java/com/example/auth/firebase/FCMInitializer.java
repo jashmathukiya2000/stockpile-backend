@@ -1,4 +1,4 @@
-package com.example.demo.service;
+package com.example.auth.firebase;
 
 import java.io.IOException;
 import javax.annotation.PostConstruct;
@@ -13,7 +13,7 @@ import com.google.firebase.FirebaseOptions;
 @Service
 public class FCMInitializer {
 
-    @Value("${app.firebase-configuration-file}")
+    @Value("${firebase-configuration-file}")
     private String firebaseConfigPath;
     Logger logger = LoggerFactory.getLogger(FCMInitializer.class);
     @PostConstruct
@@ -24,6 +24,7 @@ public class FCMInitializer {
             if (FirebaseApp.getApps().isEmpty()) {
                 FirebaseApp.initializeApp(options);
                 logger.info("Firebase application has been initialized");
+
             }
         } catch (IOException e) {
             logger.error(e.getMessage());

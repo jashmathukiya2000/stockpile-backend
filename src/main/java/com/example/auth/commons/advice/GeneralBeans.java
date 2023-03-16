@@ -13,7 +13,7 @@ import com.example.auth.stockPile.model.NotificationMessage;
 import com.example.auth.stockPile.model.Reaction;
 import com.example.auth.stockPile.model.Subscriber;
 import com.example.auth.stockPile.model.UserData;
-import com.example.auth.stockPile.service.FireBaseMessagingService;
+//import com.example.auth.stockPile.service.FireBaseMessagingService;
 //import com.example.auth.stockPile.service.FireBaseMessagingServiceImpl;
 
 import org.modelmapper.ModelMapper;
@@ -109,14 +109,7 @@ import org.springframework.mail.javamail.JavaMailSenderImpl;
         public PurchaseLogHistory purchaseLogHistory(){
             return new PurchaseLogHistory();
        }
-
-//     @Bean
-//    public Interceptor getIntercepter(){
-//            return  new Interceptor();
-//     }
-//
-
-
+    
     }
 
 

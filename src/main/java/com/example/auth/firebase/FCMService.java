@@ -1,4 +1,4 @@
-package com.example.auth.stockPile.service;
+package com.example.auth.firebase;
 import java.time.Duration;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
@@ -24,6 +24,7 @@ public class FCMService {
     public void sendMessageToToken(PushNotificationAddRequest request)
             throws InterruptedException, ExecutionException {
         Message message = getPreconfiguredMessageToToken(request);
+        logger.info("messageInFCMService:{}",message);
         Gson gson = new GsonBuilder().setPrettyPrinting().create();
         String jsonOutput = gson.toJson(message);
         String response = sendAndGetResponse(message);
@@ -59,6 +60,7 @@ public class FCMService {
     }
 
     private Message getPreconfiguredMessageWithData(Map<String, String> data, PushNotificationAddRequest request) {
+        System.out.println("token"+request.getToken());
         return getPreconfiguredMessageBuilder(request).putAllData(data).setToken(request.getToken())
                 .build();
     }
