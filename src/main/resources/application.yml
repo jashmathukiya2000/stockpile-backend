@@ -1,14 +1,16 @@
 server:
- port: 8081
+ port: 5008
 
 spring:
   main:
     allow-circular-references: true
   data:
     mongodb:
-      uri: mongodb://localhost:27017/AuthModule
+     uri: mongodb+srv://nilusroy0:gTKbIhWYQI2Vck80@cluster0.rihh4ek.mongodb.net/AuthModule?retryWrites=true&w=majority
   mvc:
     pathmatch:
       matching-strategy: ant_path_matcher
-  app:
-   firebase-configuration-file: stocks-forum-firebase-adminsdk-se0gx-24bca6a5e5.json
+
+fcm:
+  api:
+    key: AAAAYlP8O7Q:APA91bEjpUefg7PFi3D-TuTH_jOoCGf6cVhU73MwuTMPRjBR4cYZUgDTgm15hFYKOUMUj_GMpysJfVl5Tgsm9xGkcRq2VxVP92Jgp9fuCF2NZeC13I46TCSAHJxwQom9R3DBAb_aETCj

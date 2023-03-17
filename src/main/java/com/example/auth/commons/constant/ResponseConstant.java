@@ -3,7 +3,6 @@ package com.example.auth.commons.constant;
 public class ResponseConstant {
     public static final String OK ="SUCCESS";
     public static final String UPDATED=" UPDATED SUCCESSFULLY";
-//    public static final String NO_DESCRIPTION="NOT FOUND";
     public static final String SAVED_SUCCESSFULLY ="SAVED" ;
     public static final String UPDATED_SUCCESSFULLY = "UPDATED";
     public static final String NOT_FOUND = "id  not found";
@@ -24,5 +23,6 @@ public class ResponseConstant {
     public static final String SUBSCRIBED_SUCESSFULLY = "Subscribed successfully";
     public static final String REACTION_ADDED_SUCCESSFULLY ="Reaction added successfully";
     public static final String REACTION_DELETED_SUCCESSFULLY = "Reaction deleted successfully";
+    public static final String NOTIFICATION_SENT_SUCCESSFULLY = "Notification sent successfully";
 }
 

@@ -3,6 +3,7 @@ package com.example.auth.stockPile.service;
 
 import com.example.auth.commons.advice.NullAwareBeanUtilsBean;
 import com.example.auth.commons.constant.MessageConstant;
+import com.example.auth.commons.exception.InvalidRequestException;
 import com.example.auth.commons.exception.NotFoundException;
 import com.example.auth.commons.helper.UserHelper;
 import com.example.auth.decorator.pagination.FilterSortRequest;
@@ -120,7 +121,9 @@ public class StockServiceImpl implements StockService {
         List<String> subscribers = stock.getSubscribers();
         user.setSubscribe(true);
         String subscribesId = user.getId();
-        if (!subscribers.contains(subscribesId)) {
+        if (subscribers.contains(subscribesId)) {
+           throw  new InvalidRequestException(MessageConstant.YOU_HAVE_ALREDAY_SUBSCRIBED);
+        } else {
             subscribers.add(subscribesId);
         }
         stock.setSubscribers(subscribers);

@@ -50,6 +50,8 @@ public class CustomerController {
     }
 
 
+
+
     @RequestMapping(name = "getCustomerById", value = "/id", method = RequestMethod.GET)
     @Access(levels = Role.ADMIN)
     public DataResponse<CustomerResponse> getCustomerById(@RequestParam String id) {
@@ -108,36 +110,27 @@ public class CustomerController {
             e.printStackTrace();
         }
         tokenResponse.setStatus(Response.getOkResponse(ResponseConstant.TOKEN_GENERATED_SUCCESSFULLY));
-
         return tokenResponse;
     }
 
     @RequestMapping(name = "getIdFromToken", value = "/token", method = RequestMethod.GET)
     @Access(levels = Role.ANONYMOUS)
     public TokenResponse<String> getIdFromToken(@RequestParam String token) {
-
         TokenResponse<String> tokenResponse = new TokenResponse<>();
-
         tokenResponse.setData(customerService.getIdFromToken(token));
-
         tokenResponse.setStatus(Response.getOkResponse(ResponseConstant.OK));
-
         tokenResponse.setToken(token);
-
         return tokenResponse;
     }
 
 
     @RequestMapping(name = "logout", value = "logout/{id}", method = RequestMethod.POST)
+
     @Access(levels = Role.ANONYMOUS)
     public DataResponse<Object> logout(@RequestParam String id) {
-
         DataResponse<Object> dataResponse = new DataResponse<>();
-
         customerService.logout(id);
-
         dataResponse.setStatus(Response.getOkResponse(ResponseConstant.LOGOUT_SUCCESSFULLY));
-
         return dataResponse;
     }
 
@@ -176,13 +169,6 @@ public class CustomerController {
         dataResponse.setStatus(Response.getOkResponse());
         return dataResponse;
     }
-//    @RequestMapping(name = "getCustomerAggregationById",value = "/customerName",method = RequestMethod.POST)
-//    @Access (levels = Role.ANONYMOUS)
-//    public ListResponse<ItemPurchaseAggregationResponse> getPurchaseDetailsByCustomerName(){
-//        ListResponse<ItemPurchaseAggregationResponse> listResponse= new ListResponse<>();
-//        listResponse.setData(customerService.getCustomerAggregationById());
-//        listResponse.setStatus(Response.getOkResponse());
-//        return listResponse;
-//    }
+
 
 }
