@@ -13,6 +13,7 @@ import com.example.auth.decorator.pagination.FilterSortRequest;
 import com.example.auth.decorator.pagination.PageResponse;
 import com.example.auth.model.Customer;
 import com.example.auth.service.CustomerService;
+import com.example.auth.stockPile.decorator.NotificationAddRequest;
 import org.springframework.data.domain.Page;
 import org.springframework.web.bind.annotation.*;
 
@@ -159,6 +160,26 @@ public class CustomerController {
         customerService.setPassword(newPassword, confirmPassword, id);
         dataResponse.setStatus(Response.getOkResponse(ResponseConstant.PASSWORD_UPDATED_SUCCESSFULLY));
         return dataResponse;
+    }
+
+
+    @RequestMapping(name = "addDeviceToken", value = "/addDeviceToken",method = RequestMethod.POST)
+    @Access(levels =Role.ANONYMOUS)
+    public DataResponse<Object> addDeviceToken(@RequestBody NotificationAddRequest notificationAddRequest){
+        DataResponse<Object> dataResponse= new DataResponse<>();
+        customerService.addDeviceToken(notificationAddRequest);
+        dataResponse.setStatus(Response.getOkResponse(ResponseConstant.DEVICE_TOKEN_ADDED_SUCCESSFULLY));
+        return  dataResponse;
+    }
+
+
+    @RequestMapping(name = "deleteDeviceToken", value = "/deleteDeviceToken",method = RequestMethod.POST)
+    @Access(levels =Role.ANONYMOUS)
+    public DataResponse<Object> deleteDeviceToken(@RequestParam String userId ){
+        DataResponse<Object> dataResponse= new DataResponse<>();
+        customerService.deleteDeviceToken(userId);
+        dataResponse.setStatus(Response.getOkResponse(ResponseConstant.DEVICE_TOKEN_DELETED_SUCCESSFULLY));
+        return  dataResponse;
     }
 
     @RequestMapping(name = "getEncryptPassword", value = "/encryptedPassword", method = RequestMethod.POST)

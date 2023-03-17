@@ -4,20 +4,11 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.util.List;
-
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class StockResponse {
+public class NotificationAddRequest {
+    String userId;
+    String deviceToken;
 
-    String id;
-
-    String symbol;
-
-    String name;
-
-    String description;
-
-    List<String> subscribers;
 }

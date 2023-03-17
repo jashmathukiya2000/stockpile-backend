@@ -60,6 +60,16 @@ public class StockController {
         return dataResponse;
     }
 
+
+    @RequestMapping(name = "getStockBySymbol",value = "/symbol", method = RequestMethod.GET)
+    @Access(levels = Role.ANONYMOUS)
+    public DataResponse<StockResponse> getStockBySymbol( @RequestParam String symbol){
+        DataResponse<StockResponse> dataResponse= new DataResponse<>();
+        dataResponse.setData(stockService.getStockBySymbol(symbol));
+        dataResponse.setStatus(Response.getOkResponse());
+        return dataResponse;
+    }
+
     @RequestMapping(name = "getAllStock",value = "/get/all/stock", method = RequestMethod.GET)
     @Access(levels = Role.ANONYMOUS)
     public ListResponse<StockResponse> getAllStock(){

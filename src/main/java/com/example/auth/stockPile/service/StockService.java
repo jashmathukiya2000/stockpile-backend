@@ -34,4 +34,5 @@ public interface StockService {
     Map<String, List<Stock>> allSubscribers();
 
 
+    StockResponse getStockBySymbol(String symbol);
 }

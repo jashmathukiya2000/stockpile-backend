@@ -133,7 +133,6 @@ public class StockServiceImpl implements StockService {
         subscriberRepository.save(subscriber);
         stockRepository.save(stock);
         userDataRepository.save(user);
-
         return subscribesId;
     }
 
@@ -145,12 +144,23 @@ public class StockServiceImpl implements StockService {
                         stock.getSymbol()));
                     }
 
-
+    @Override
+    public StockResponse getStockBySymbol(String symbol) {
+         Stock stock= getBySymbol(symbol);
+       StockResponse stockResponse=  modelMapper.map(stock,StockResponse.class);
+       return stockResponse;
+    }
 
 
     Stock stockById(String id) {
         return stockRepository.findByIdAndSoftDeleteIsFalse(id).orElseThrow(() -> new NotFoundException(MessageConstant.ID_NOT_FOUND));
     }
+
+    Stock stockBySymbol(String symbol) {
+        return stockRepository.findBySymbolAndSoftDeleteIsFalse(symbol).orElseThrow(() -> new NotFoundException(MessageConstant.SYMBOL_NOT_FOUND));
+    }
+
+
 
     private void update(String id, StockAddRequest stockAddRequest) {
         Stock stock = stockById(id);

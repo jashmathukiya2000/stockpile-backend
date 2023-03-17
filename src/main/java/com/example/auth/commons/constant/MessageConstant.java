@@ -49,5 +49,6 @@ public class MessageConstant {
     public static final String TOPIC_NOT_FOUND = "Topic not found";
     public static final String EMAIL_NOT_FOUND = "Email not found";
     public static final String EMPTY = "Empty";
-    public static final String YOU_HAVE_ALREDAY_SUBSCRIBED ="You have alreday subscribed" ;
+    public static final String YOU_HAVE_ALREDAY_SUBSCRIBED ="You have already subscribed" ;
+    public static final String DEVICE_TOKEN_ALREDAY_EXIST ="Device token already exist" ;
 }

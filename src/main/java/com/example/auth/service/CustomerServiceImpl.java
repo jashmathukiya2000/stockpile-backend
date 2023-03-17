@@ -23,6 +23,10 @@ import com.example.auth.decorator.pagination.CustomerSortBy;
 import com.example.auth.decorator.pagination.FilterSortRequest;
 import com.example.auth.model.Customer;
 import com.example.auth.repository.CustomerRepository;
+import com.example.auth.stockPile.decorator.NotificationAddRequest;
+import com.example.auth.stockPile.model.Notification;
+import com.example.auth.stockPile.model.UserData;
+import com.example.auth.stockPile.repository.NotificationRepository;
 import com.google.common.annotations.VisibleForTesting;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
@@ -45,8 +49,9 @@ public class CustomerServiceImpl implements CustomerService {
     private final NullAwareBeanUtilsBean nullAwareBeanUtilsBean;
     private final AdminConfigurationService adminConfigurationService;
     private final Utils utils;
+    private final NotificationRepository notificationRepository;
 
-    public CustomerServiceImpl(CustomerRepository customerRepository, ModelMapper modelMapper, PasswordUtils passwordUtils, JwtTokenUtil jwtTokenUtil, NullAwareBeanUtilsBean nullAwareBeanUtilsBean, AdminConfigurationService adminConfigurationService, Utils utils) {
+    public CustomerServiceImpl(CustomerRepository customerRepository, ModelMapper modelMapper, PasswordUtils passwordUtils, JwtTokenUtil jwtTokenUtil, NullAwareBeanUtilsBean nullAwareBeanUtilsBean, AdminConfigurationService adminConfigurationService, Utils utils, NotificationRepository notificationRepository) {
         this.customerRepository = customerRepository;
         this.modelMapper = modelMapper;
         this.passwordUtils = passwordUtils;
@@ -54,6 +59,7 @@ public class CustomerServiceImpl implements CustomerService {
         this.nullAwareBeanUtilsBean = nullAwareBeanUtilsBean;
         this.adminConfigurationService = adminConfigurationService;
         this.utils = utils;
+        this.notificationRepository = notificationRepository;
     }
 
 
@@ -111,11 +117,8 @@ public class CustomerServiceImpl implements CustomerService {
             throw new InvalidRequestException(MessageConstant.INCORRECT_PASSWORD);
         }
         customerResponse.setRole(customer.getRole());
-
         customerResponse.setId(customer.getId());
-
         JWTUser jwtUser = new JWTUser(customerLoginAddRequest.getEmail(), Collections.singletonList(customerResponse.getRole().toString()));
-
         String token = jwtTokenUtil.generateToken(jwtUser);
 
         try {
@@ -125,38 +128,23 @@ public class CustomerServiceImpl implements CustomerService {
         }
 
         customerResponse.setToken(token);
-
         customer.setDate(new Date());
-
         customer.setOtpSendtime(new Date());
-
         customer.setLoginTime(new Date());
-
         String otp = generateOtp();
-
-//        sendMail();
-
         customer.setOtp(otp);
-
         customer.setLogin(true);
-
         customerResponse.setOtp(customer.getOtp());
-
         customerRepository.save(customer);
-
         return customerResponse;
 
     }
 
     @VisibleForTesting
     public String generateOtp() {
-
         Random rnd = new Random();
-
         int number = rnd.nextInt(999999);
-
         String otp = String.format("%06d", number);
-
         return otp;
     }
 
@@ -168,11 +156,8 @@ public class CustomerServiceImpl implements CustomerService {
 
     @Override
     public CustomerResponse getCustomerById(String id) {
-
         Customer customer = getById(id);
-
         CustomerResponse customerResponse = modelMapper.map(customer, CustomerResponse.class);
-
         return customerResponse;
     }
 
@@ -181,7 +166,6 @@ public class CustomerServiceImpl implements CustomerService {
         List<Customer> customerResponses = customerRepository.findAllBySoftDeleteFalse();
 
         List<CustomerResponse> list = new ArrayList<>();
-
         customerResponses.forEach(customer -> {
             CustomerResponse customerResponse = modelMapper.map(customer, CustomerResponse.class);
             list.add(customerResponse);
@@ -204,9 +188,7 @@ public class CustomerServiceImpl implements CustomerService {
         boolean customer1 = customerRepository.existsByOtpAndEmailAndSoftDeleteIsFalse(otp, email);
         if (customer1) {
             Customer customer = getUserByEmail(email);
-
             if (customer.getOtpSendtime().getTime() + OTP_VALID_DURATION < System.currentTimeMillis()) {
-
                 throw new InvalidRequestException(MessageConstant.OTP_EXPIRED);
             }
         } else {
@@ -226,23 +208,14 @@ public class CustomerServiceImpl implements CustomerService {
 
     @Override
     public void forgetPassword(String email) {
-
         Customer customer = getUserByEmail(email);
-
         String otp = generateOtp();
-
         EmailModel emailModel = new EmailModel();
-
         emailModel.setMessage(otp);
-
         emailModel.setTo("jash.g@techroversolutions.com");
-
         emailModel.setSubject("OTP Verification");
-
         utils.sendEmailNow(emailModel);
-
         customer.setOtp(otp);
-
         customerRepository.save(customer);
 
     }
@@ -261,25 +234,15 @@ public class CustomerServiceImpl implements CustomerService {
 
     public void sendMail() {
         AdminConfiguration adminConfiguration = adminConfigurationService.getConfiguration();
-
         String otp = generateOtp();
-
         EmailModel emailModel = new EmailModel();
-
         emailModel.setMessage(otp);
-
         TemplateParser<EmailModel> templateParser = new TemplateParser<>();
-
         String url = templateParser.compileTemplate(FileLoader.loadHtmlTemplateOrReturnNull("send_otp"), emailModel);
-
         emailModel.setMessage(url);
-
         emailModel.setTo("roynilus@outlook.com");
-
         emailModel.setCc(adminConfiguration.getTechAdmins());
-
         emailModel.setSubject("OTP Verification");
-
         utils.sendEmailNow(emailModel);
 
     }
@@ -347,6 +310,48 @@ public class CustomerServiceImpl implements CustomerService {
         return customerResponse;
     }
 
+//    @Override
+//    public void addDeviceToken(NotificationAddRequest notificationAddRequest) {
+//        Notification notification=modelMapper.map(notificationAddRequest,Notification.class);
+//        Notification existingNotification = getUserId(notification.getUserId());
+//
+//            if (existingNotification != null) {
+//                // If the same user ID is present in the database, update the device token
+//                existingNotification.setDeviceToken(notification.getDeviceToken());
+//                notificationRepository.save(existingNotification);
+//            } else {
+//                // If the user ID is not present in the database, save the new notification
+//                notificationRepository.save(notification);
+//            }
+//        }
+@Override
+public void addDeviceToken(NotificationAddRequest notificationAddRequest) {
+    if (notificationAddRequest.getUserId() == null) {
+        throw new IllegalArgumentException("User ID cannot be null");
+    }
+    Notification notification = modelMapper.map(notificationAddRequest, Notification.class);
+    Notification existingNotification = getUserId(notification.getUserId());
+    if (existingNotification != null) {
+        // If the same user ID is present in the database, update the device token
+        existingNotification.setDeviceToken(notification.getDeviceToken());
+        notificationRepository.save(existingNotification);
+    } else {
+        // If the user ID is not present in the database, save the new notification
+        notificationRepository.save(notification);
+    }
+}
+
+
+
+    @Override
+    public void deleteDeviceToken(String userId) {
+     Notification notification=getUserId(userId);
+            if (notification != null) {
+                notification.setDeviceToken("");
+                notificationRepository.save(notification);
+            }
+        }
+
 
     @VisibleForTesting
 
@@ -395,6 +400,10 @@ public class CustomerServiceImpl implements CustomerService {
     public Customer getById(String id) {
         return customerRepository.findByIdAndSoftDeleteIsFalse(id).orElseThrow(() -> new NotFoundException(MessageConstant.USER_NOT_FOUND));
 
+    }
+
+    public Notification getUserId(String userId){
+        return notificationRepository.findByUserId(userId).orElseThrow(() -> new NotFoundException(MessageConstant.USER_NOT_FOUND));
     }
 
 }

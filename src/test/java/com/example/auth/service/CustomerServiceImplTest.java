@@ -15,6 +15,7 @@ import com.example.auth.decorator.pagination.Pagination;
 import com.example.auth.helper.CustomerServiceTestGenerator;
 import com.example.auth.model.Customer;
 import com.example.auth.repository.CustomerRepository;
+import com.example.auth.stockPile.repository.NotificationRepository;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.modelmapper.ModelMapper;
@@ -46,7 +47,8 @@ public class CustomerServiceImplTest {
     private final PasswordUtils passwordUtils = mock(PasswordUtils.class);
     private final AdminConfigurationService adminConfigurationService = mock(AdminConfigurationService.class);
     private final Utils utils = mock(Utils.class);
-    public CustomerServiceImpl customerService = spy(new CustomerServiceImpl(customerRepository, modelMapper, passwordUtils, jwtTokenUtil, nullAwareBeanUtilsBean, adminConfigurationService, utils));
+    private final NotificationRepository notificationRepository=mock(NotificationRepository.class);
+    public CustomerServiceImpl customerService = spy(new CustomerServiceImpl(customerRepository, modelMapper, passwordUtils, jwtTokenUtil, nullAwareBeanUtilsBean, adminConfigurationService, utils, notificationRepository));
 
     @Test
     void TestSignupUser() throws InvocationTargetException, IllegalAccessException {

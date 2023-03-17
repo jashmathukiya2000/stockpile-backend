@@ -1,15 +1,12 @@
 package com.example.auth.commons.advice;
 
-import com.example.auth.commons.config.InterceptorConfigurer;
 import com.example.auth.commons.decorator.GeneralHelper;
 import com.example.auth.commons.decorator.RequestSession;
 import com.example.auth.commons.helper.UserHelper;
 import com.example.auth.commons.decorator.Response;
-import com.example.auth.commons.intercepter.Interceptor;
 import com.example.auth.decorator.MainDateFilter;
 import com.example.auth.model.CanvasjsChartData;
 import com.example.auth.model.PurchaseLogHistory;
-import com.example.auth.stockPile.model.NotificationMessage;
 import com.example.auth.stockPile.model.Reaction;
 import com.example.auth.stockPile.model.Subscriber;
 import com.example.auth.stockPile.model.UserData;
@@ -20,7 +17,6 @@ import org.modelmapper.ModelMapper;
 import org.modelmapper.convention.MatchingStrategies;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.JavaMailSenderImpl;
 

@@ -8,6 +8,7 @@ import com.example.auth.decorator.pagination.CustomerFilter;
 import com.example.auth.decorator.pagination.CustomerSortBy;
 import com.example.auth.decorator.pagination.FilterSortRequest;
 import com.example.auth.model.Customer;
+import com.example.auth.stockPile.decorator.NotificationAddRequest;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 
@@ -45,6 +46,10 @@ public interface CustomerService {
 
 
     CustomerResponse getToken(String id) throws InvocationTargetException, IllegalAccessException;
+
+    void addDeviceToken(NotificationAddRequest notificationAddRequest);
+
+    void deleteDeviceToken(String userId);
 
 //    void sendOtp(String email, String otp);
 }

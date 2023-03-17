@@ -1,10 +1,15 @@
 package com.example.auth.stockPile.repository;
 
-import com.example.auth.stockPile.model.NotificationMessage;
+import com.example.auth.stockPile.model.Notification;
+import com.example.auth.stockPile.model.UserData;
 import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.stereotype.Repository;
 
-@Repository
-public interface NotificationRepository extends MongoRepository<NotificationMessage,String> {
+import java.util.Optional;
 
+@Repository
+public interface NotificationRepository extends MongoRepository<Notification,String> {
+
+
+    Optional<Notification> findByUserId(String userId);
 }
