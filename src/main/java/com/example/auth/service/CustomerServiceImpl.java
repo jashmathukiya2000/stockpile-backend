@@ -289,14 +289,9 @@ public class CustomerServiceImpl implements CustomerService {
     @Override
     public CustomerResponse getToken(String id) {
         Customer customer = getById(id);
-
         CustomerResponse customerResponse = new CustomerResponse();
-
         customerResponse.setRole(customer.getRole());
-
         JWTUser jwtUser = new JWTUser(id, Collections.singletonList(customerResponse.getRole().toString()));
-
-
         String token = jwtTokenUtil.generateToken(jwtUser);
 
         try {
@@ -305,42 +300,24 @@ public class CustomerServiceImpl implements CustomerService {
             e.printStackTrace();
         }
         customerResponse.setToken(token);
-
-
         return customerResponse;
     }
 
-//    @Override
-//    public void addDeviceToken(NotificationAddRequest notificationAddRequest) {
-//        Notification notification=modelMapper.map(notificationAddRequest,Notification.class);
-//        Notification existingNotification = getUserId(notification.getUserId());
-//
-//            if (existingNotification != null) {
-//                // If the same user ID is present in the database, update the device token
-//                existingNotification.setDeviceToken(notification.getDeviceToken());
-//                notificationRepository.save(existingNotification);
-//            } else {
-//                // If the user ID is not present in the database, save the new notification
-//                notificationRepository.save(notification);
-//            }
-//        }
-@Override
-public void addDeviceToken(NotificationAddRequest notificationAddRequest) {
-    if (notificationAddRequest.getUserId() == null) {
-        throw new IllegalArgumentException("User ID cannot be null");
+    @Override
+    public void addDeviceToken(NotificationAddRequest notificationAddRequest) {
+        Notification notification = modelMapper.map(notificationAddRequest, Notification.class);
+        Notification existingNotification = getUserId(notification.getUserId());
+        if (existingNotification == null) {
+            notificationRepository.save(notification);
+        } else if (notificationAddRequest.getUserId().equals(existingNotification.getUserId()) && notificationAddRequest.getDeviceToken().equals(existingNotification.getDeviceToken())){
+            throw new InvalidRequestException(MessageConstant.DEVICE_TOKEN_ALREDAY_EXIST);
+        }
+        else  {
+            // If the same user ID is present in the database, update the device token
+            existingNotification.setDeviceToken(notification.getDeviceToken());
+            notificationRepository.save(existingNotification);
+        }
     }
-    Notification notification = modelMapper.map(notificationAddRequest, Notification.class);
-    Notification existingNotification = getUserId(notification.getUserId());
-    if (existingNotification != null) {
-        // If the same user ID is present in the database, update the device token
-        existingNotification.setDeviceToken(notification.getDeviceToken());
-        notificationRepository.save(existingNotification);
-    } else {
-        // If the user ID is not present in the database, save the new notification
-        notificationRepository.save(notification);
-    }
-}
-
 
 
     @Override
@@ -403,7 +380,7 @@ public void addDeviceToken(NotificationAddRequest notificationAddRequest) {
     }
 
     public Notification getUserId(String userId){
-        return notificationRepository.findByUserId(userId).orElseThrow(() -> new NotFoundException(MessageConstant.USER_NOT_FOUND));
+        return notificationRepository.findByUserId(userId);
     }
 
 }
