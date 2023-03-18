@@ -309,10 +309,9 @@ public class CustomerServiceImpl implements CustomerService {
         Notification existingNotification = getUserId(notification.getUserId());
         if (existingNotification == null) {
             notificationRepository.save(notification);
-        } else if (notificationAddRequest.getUserId().equals(existingNotification.getUserId()) && notificationAddRequest.getDeviceToken().equals(existingNotification.getDeviceToken())){
+        } else if (notificationAddRequest.getUserId().equals(existingNotification.getUserId()) && notificationAddRequest.getDeviceToken().equals(existingNotification.getDeviceToken())) {
             throw new InvalidRequestException(MessageConstant.DEVICE_TOKEN_ALREDAY_EXIST);
-        }
-        else  {
+        } else {
             // If the same user ID is present in the database, update the device token
             existingNotification.setDeviceToken(notification.getDeviceToken());
             notificationRepository.save(existingNotification);
@@ -322,34 +321,26 @@ public class CustomerServiceImpl implements CustomerService {
 
     @Override
     public void deleteDeviceToken(String userId) {
-     Notification notification=getUserId(userId);
-            if (notification != null) {
-                notification.setDeviceToken("");
-                notificationRepository.save(notification);
-            }
+        Notification notification = getUserId(userId);
+        if (notification != null) {
+            notification.setDeviceToken("");
+            notificationRepository.save(notification);
         }
+    }
 
 
     @VisibleForTesting
-
     public String passwords(String confirmPassword) {
-
         return passwordUtils.encryptPassword(confirmPassword);
-
     }
 
 
     public void checkValidation(CustomerAddRequest customerAddRequest) {
-
-
         AdminConfiguration adminConfiguration = adminConfigurationService.getConfiguration();
-
-
         if (!customerAddRequest.getPassword().equals(customerAddRequest.getConfirmPassword())) {
             throw new InvalidRequestException(MessageConstant.INCORRECT_PASSWORD);
         }
         if (!customerAddRequest.getContact().matches(adminConfiguration.getMobileNoRegex())) {
-
             throw new InvalidRequestException(MessageConstant.INVALID_PHONE_NUMBER);
         }
         if (!customerAddRequest.getName().matches(adminConfiguration.getNameRegex())) {
@@ -379,7 +370,7 @@ public class CustomerServiceImpl implements CustomerService {
 
     }
 
-    public Notification getUserId(String userId){
+    public Notification getUserId(String userId) {
         return notificationRepository.findByUserId(userId);
     }
 

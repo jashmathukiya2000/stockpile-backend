@@ -38,13 +38,15 @@ public class FcmService {
         Map<String, Object> payload = new HashMap<>();
         payload.put("registration_ids", tokenList);
 
+
         Map<String, String> notification = new HashMap<>();
         notification.put("title", title);
         notification.put("body", body);
 
         payload.put("notification", notification);
-
         HttpEntity<Map<String, Object>> request = new HttpEntity<>(payload, headers);
         restTemplate.postForEntity(FCM_API_URL, request, Void.class);
     }
+
+
 }

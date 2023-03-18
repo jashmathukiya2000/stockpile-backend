@@ -7,6 +7,7 @@ import com.example.auth.commons.decorator.Response;
 import com.example.auth.decorator.MainDateFilter;
 import com.example.auth.model.CanvasjsChartData;
 import com.example.auth.model.PurchaseLogHistory;
+import com.example.auth.stockPile.model.Notification;
 import com.example.auth.stockPile.model.Reaction;
 import com.example.auth.stockPile.model.Subscriber;
 import com.example.auth.stockPile.model.UserData;
@@ -105,7 +106,12 @@ import org.springframework.mail.javamail.JavaMailSenderImpl;
         public PurchaseLogHistory purchaseLogHistory(){
             return new PurchaseLogHistory();
        }
-    
+
+
+       @Bean
+    public Notification getNotification(){
+            return  new Notification();
+       }
     }
 
 

@@ -31,7 +31,6 @@ import java.util.stream.Collectors;
 @Service
 @Slf4j
 public class StockServiceImpl implements StockService {
-
     private final StockRepository stockRepository;
     private final NullAwareBeanUtilsBean nullAwareBeanUtilsBean;
     private final UserHelper userHelper;
@@ -42,7 +41,6 @@ public class StockServiceImpl implements StockService {
     private final Subscriber subscriber;
     private final SubscriberRepository subscriberRepository;
 
-
     public StockServiceImpl(StockRepository stockRepository, NullAwareBeanUtilsBean nullAwareBeanUtilsBean, UserHelper userHelper, ModelMapper modelMapper, UserData userData, UserDataServiceImpl userDataService, UserDataRepository userDataRepository, Subscriber subscriber, SubscriberRepository subscriberRepository) {
         this.stockRepository = stockRepository;
         this.nullAwareBeanUtilsBean = nullAwareBeanUtilsBean;
@@ -50,8 +48,6 @@ public class StockServiceImpl implements StockService {
         this.modelMapper = modelMapper;
         this.userData = userData;
         this.userDataService = userDataService;
-
-
         this.userDataRepository = userDataRepository;
         this.subscriber = subscriber;
         this.subscriberRepository = subscriberRepository;
@@ -68,12 +64,8 @@ public class StockServiceImpl implements StockService {
             return stockResponse;
         }
         stockRepository.save(stock);
-
         StockResponse stockResponse = modelMapper.map(stock, StockResponse.class);
-
         return stockResponse;
-
-
     }
 
     @Override
@@ -81,8 +73,8 @@ public class StockServiceImpl implements StockService {
         Stock stock = stockById(id);
         StockResponse stockResponse = modelMapper.map(stock, StockResponse.class);
         return stockResponse;
-
     }
+
 
     @Override
     public void updateStock(String id, StockAddRequest stockAddRequest) throws NoSuchFieldException, IllegalAccessException {
