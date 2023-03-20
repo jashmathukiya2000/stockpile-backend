@@ -36,26 +36,17 @@ public class UserDataServiceImpl implements UserDataService {
 
     @Override
     public UserDataResponse addUser(UserAddRequest userAddRequest) {
-
         checkValidation(userAddRequest);
-
         UserData userData = modelMapper.map(userAddRequest, UserData.class);
-
         userDataRepository.save(userData);
-
         UserDataResponse userDataResponse = modelMapper.map(userData, UserDataResponse.class);
-
-
         return userDataResponse;
     }
 
     @Override
     public void updateUser(UserAddRequest userAddRequest, String id) throws NoSuchFieldException, IllegalAccessException {
-
         UserData userData = userById(id);
-
         update(userAddRequest, id);
-
         userHelper.difference(userAddRequest, userData);
 
 
@@ -128,7 +119,6 @@ public class UserDataServiceImpl implements UserDataService {
 
 
     private void update(UserAddRequest userAddRequest, String id) {
-
         UserData userData = userById(id);
 
         if (userAddRequest.getUserName() != null) {
@@ -145,8 +135,6 @@ public class UserDataServiceImpl implements UserDataService {
             userData.setEmail(userAddRequest.getEmail());
         }
         userDataRepository.save(userData);
-
-
     }
 
 }

@@ -56,7 +56,6 @@ public class StockServiceImpl implements StockService {
     @Override
     public StockResponse addStock(StockAddRequest stockAddRequest) {
         Stock stock = modelMapper.map(stockAddRequest, Stock.class);
-
         if (stockRepository.existsBySymbolAndSoftDeleteIsFalse(stockAddRequest.getSymbol())) {
             Stock existingStock = getBySymbol(stockAddRequest.getSymbol());
             StockResponse stockResponse = new StockResponse();
@@ -154,6 +153,16 @@ public class StockServiceImpl implements StockService {
         Stock stock = getBySymbol(symbol);
         StockResponse stockResponse = modelMapper.map(stock, StockResponse.class);
         return stockResponse;
+    }
+
+    @Override
+    public List<String> subscribedStocksByUserId(String userId) {
+        List<String> list= new ArrayList<>();
+        List<Subscriber> subscriber= subscriberRepository.findAllByUserId(userId);
+        subscriber.forEach(subscriber1 -> {
+            list.add(subscriber1.getStockid());
+        });
+        return list;
     }
 
 

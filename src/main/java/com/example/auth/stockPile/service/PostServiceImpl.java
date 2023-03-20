@@ -74,9 +74,7 @@ public class PostServiceImpl implements PostService {
     @Override
     public PostResponse getPostById(String id) {
         Post post = getById(id);
-        PostResponse postResponse = modelMapper.map(post, PostResponse.class);
-
-        return postResponse;
+       return modelMapper.map(post, PostResponse.class);
     }
 
     @Override
@@ -87,7 +85,6 @@ public class PostServiceImpl implements PostService {
             PostResponse postResponse = modelMapper.map(post, PostResponse.class);
             postResponses.add(postResponse);
         });
-
         return postResponses;
     }
 
@@ -121,7 +118,7 @@ public class PostServiceImpl implements PostService {
 
     @Override
     public List<ReactionResponse> getAllReactionByPostId(String postId) {
-        Post post = getById(postId);
+          Post post = getById(postId);
         List<Reaction> reactions = reactionRepository.findAllByPostIdAndSoftDeleteIsFalse(postId);
         List<ReactionResponse> reactionResponses = new ArrayList<>();
         for (Reaction reaction : reactions) {
@@ -147,7 +144,6 @@ public class PostServiceImpl implements PostService {
             commentResponse.setName(user.getName());
             commentResponse.setComment(comment.getComment());
             commentResponse.setCreatedOn(comment.getCreatedOn());
-            log.info("date:{}",commentResponse);
             commentsResponses.add(commentResponse);
 
         }
@@ -166,7 +162,6 @@ public void addReaction(ReactionType reactionType, ReactionAddRequest reactionAd
     newReaction.setSoftDelete(false);
     reactionRepository.save(newReaction);
 
-    // Increment the count of the new reaction type
 
 }
 
@@ -228,10 +223,8 @@ public void addReaction(ReactionType reactionType, ReactionAddRequest reactionAd
         List<Reaction> reactions = reactionRepository.findAllByPostIdAndSoftDeleteIsFalse(id);
 
         if (!CollectionUtils.isEmpty(reactions)) {
-
-            reactions.forEach(item -> {
-
-                item.setSoftDelete(true);
+            reactions.forEach(reaction -> {
+                reaction.setSoftDelete(true);
             });
             reactionRepository.saveAll(reactions);
         }

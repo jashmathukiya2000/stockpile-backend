@@ -130,5 +130,15 @@ public PageResponse<StockResponse> getAllStockByPagination(@RequestBody FilterSo
           return dataResponse;
       }
 
+      @RequestMapping(name = "subscribedStocksByUserId",value = "subscribedStocks/byUserId",method = RequestMethod.POST)
+      @Access(levels = Role.ANONYMOUS)
+public DataResponse<List<String>> subscribedStocksByUserId(String userId){
+          DataResponse<List<String>> dataResponse= new DataResponse<>();
+          dataResponse.setData(stockService.subscribedStocksByUserId(userId));
+          dataResponse.setStatus(Response.getOkResponse());
+          return dataResponse;
+      }
+
+
 
 }

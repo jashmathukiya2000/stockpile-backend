@@ -33,7 +33,6 @@ public class Post {
 
     int comments;
 
-
     Map<ReactionType,Integer> reaction;
 
     @JsonIgnore

@@ -36,4 +36,6 @@ public interface StockService {
 
 
     StockResponse getStockBySymbol(String symbol);
+
+    List<String> subscribedStocksByUserId(String userId);
 }
