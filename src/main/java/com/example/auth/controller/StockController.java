@@ -15,6 +15,7 @@ import com.example.auth.stockPile.decorator.StockFilter;
 import com.example.auth.stockPile.decorator.StockResponse;
 import com.example.auth.stockPile.decorator.StockSortBy;
 import com.example.auth.stockPile.model.Stock;
+import com.example.auth.stockPile.model.Subscribe;
 import com.example.auth.stockPile.service.StockService;
 import org.springframework.data.domain.Page;
 import org.springframework.web.bind.annotation.*;
@@ -104,12 +105,27 @@ public PageResponse<StockResponse> getAllStockByPagination(@RequestBody FilterSo
 
     }
 
-    @RequestMapping(name = "getStockSubscription",value = "get/stock/subscription",method = RequestMethod.GET)
+//    @RequestMapping(name = "getStockSubscription",value = "get/stock/subscription",method = RequestMethod.GET)
+//     @Access(levels = Role.ANONYMOUS)
+//    public  DataResponse<String> getStockSubscription(@RequestParam String symbol ,@RequestParam String userId ){
+//         DataResponse<String> dataResponse= new DataResponse<>();
+//         dataResponse.setData(stockService.getStockSubscription(symbol,userId));
+//         dataResponse.setStatus(Response.getOkResponse(ResponseConstant.SUBSCRIBED_SUCESSFULLY));
+//         return dataResponse;
+//
+//}
+@RequestMapping(name = "getStockSubscription",value = "get/stock/subscription",method = RequestMethod.GET)
      @Access(levels = Role.ANONYMOUS)
-    public  DataResponse<String> getStockSubscription(@RequestParam String symbol ,@RequestParam String userId ){
+    public  DataResponse<String> getStockSubscription(@RequestParam String symbol , @RequestParam String userId ,@RequestParam Subscribe subscribe){
          DataResponse<String> dataResponse= new DataResponse<>();
-         dataResponse.setData(stockService.getStockSubscription(symbol,userId));
-         dataResponse.setStatus(Response.getOkResponse(ResponseConstant.SUBSCRIBED_SUCESSFULLY));
+         if (subscribe==Subscribe.SUBSCRIBE) {
+             dataResponse.setData(stockService.getStockSubscription(symbol, userId, subscribe));
+             dataResponse.setStatus(Response.getOkResponse(ResponseConstant.SUBSCRIBED_SUCESSFULLY));
+         }
+         else {
+             dataResponse.setData(stockService.getStockSubscription(symbol, userId, subscribe));
+             dataResponse.setStatus(Response.getOkResponse(ResponseConstant.UNSUBSCRIBED_SUCESSFULLY));
+         }
          return dataResponse;
 
 }

@@ -12,6 +12,7 @@ import com.example.auth.stockPile.decorator.StockFilter;
 import com.example.auth.stockPile.decorator.StockResponse;
 import com.example.auth.stockPile.decorator.StockSortBy;
 import com.example.auth.stockPile.model.Stock;
+import com.example.auth.stockPile.model.Subscribe;
 import com.example.auth.stockPile.model.Subscriber;
 import com.example.auth.stockPile.model.UserData;
 import com.example.auth.stockPile.repository.StockRepository;
@@ -22,7 +23,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.data.util.Pair;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
@@ -105,30 +105,103 @@ public class StockServiceImpl implements StockService {
     public Page<StockResponse> getAllStockByPagination(StockFilter filter, FilterSortRequest.SortRequest<StockSortBy> sort, PageRequest pagination) {
         return stockRepository.getAllStockByPagination(filter, sort, pagination);
     }
+//
+//    @Override
+//    public String getStockSubscription(String symbol, String userId, Subscribe subscribe) {
+//        Stock stock = getBySymbol(symbol);
+//        UserData user = userDataService.userById(userId);
+//        List<String> subscribers = stock.getSubscribers();
+//        String subscribesId = user.getId();
+//         subscribers.add(subscribesId);
+//        if (subscribers.contains(subscribesId)) {
+//           throw  new InvalidRequestException(MessageConstant.YOU_HAVE_ALREDAY_SUBSCRIBED);
+//        } else {
+//            user.setSubscribe(true);
+//            subscribers.add(subscribesId);
+//        }
+//        stock.setSubscribers(subscribers);
+//        subscriber.setStockid(stock.getId());
+//        subscriber.setCreatedOn(new Date());
+//        subscriber.setUserId(subscribesId);
+//        subscriberRepository.save(subscriber);
+//        stockRepository.save(stock);
+//        userDataRepository.save(user);
+//        return subscribesId;
+//    }
+//@Override
+//public String getStockSubscription(String symbol, String userId, Subscribe subscribe) {
+//    Stock stock = getBySymbol(symbol);
+//
+//    UserData user = userDataService.userById(userId);
+//    List<String> subscribers = stock.getSubscribers();
+//    String subscribesId = user.getId();
+//    if (subscribe == Subscribe.SUBSCRIBE) {
+//        if (subscribers.contains(subscribesId)) {
+//            throw new InvalidRequestException(MessageConstant.YOU_HAVE_ALREDAY_SUBSCRIBED);
+//        } else {
+//            user.setSubscribe(true);
+//            subscribers.add(subscribesId);
+//        }
+//    } else if (subscribe == Subscribe.UNSUBSCRIBE) {
+//        if (!subscribers.contains(subscribesId)) {
+//            throw new InvalidRequestException(MessageConstant.YOU_HAVE_NOT_SUBSCRIBED);
+//        } else {
+//            user.setSubscribe(false);
+//            subscribers.remove(subscribesId);
+//        }
+//    }
+//
+//    stock.setSubscribers(subscribers);
+//    subscriber.setStockid(stock.getId());
+//    subscriber.setCreatedOn(new Date());
+//    subscriber.setUserId(subscribesId);
+//    subscriberRepository.save(subscriber);
+//    stockRepository.save(stock);
+//    userDataRepository.save(user);
+//    return subscribesId;
+//}
+
 
     @Override
-    public String getStockSubscription(String symbol, String userId) {
+    public String getStockSubscription(String symbol, String userId, Subscribe subscribe) {
         Stock stock = getBySymbol(symbol);
         UserData user = userDataService.userById(userId);
-        List<String> subscribers = stock.getSubscribers();
-        user.setSubscribe(true);
         String subscribesId = user.getId();
-        if (subscribers.contains(subscribesId)) {
-           throw  new InvalidRequestException(MessageConstant.YOU_HAVE_ALREDAY_SUBSCRIBED);
-        } else {
-            subscribers.add(subscribesId);
+        List<String> subscribers = stock.getSubscribers();
+
+//        Subscriber subscriber = subscriberRepository.findByStockidAndUserId(stock.getId(), userId);
+        if (subscribe == Subscribe.SUBSCRIBE) {
+            if (subscribers.contains(subscribesId)) {
+                throw new InvalidRequestException(MessageConstant.YOU_HAVE_ALREDAY_SUBSCRIBED);
+            } else {
+                subscribers.add(subscribesId);
+                user.setSubscribe(true);
+                subscriber.setStockid(stock.getId());
+                 subscriber.setCreatedOn(new Date());
+                  subscriber.setUserId(subscribesId);
+                  subscriberRepository.save(subscriber);
+//                subscriberRepository.save(subscribers);
+            }
+        } else if (subscribe == Subscribe.UNSUBSCRIBE) {
+            if (!subscribers.contains(subscribesId)) {
+                throw new InvalidRequestException(MessageConstant.YOU_HAVE_NOT_SUBSCRIBED);
+            } else {
+                subscribers.remove(subscribesId);
+                user.setSubscribe(false);
+                subscriberRepository.deleteByStockidAndUserId(stock.getId(), subscribesId);
+            }
         }
+
         stock.setSubscribers(subscribers);
-        subscriber.setStockid(stock.getId());
-        subscriber.setCreatedOn(new Date());
-        subscriber.setUserId(subscribesId);
-        subscriberRepository.save(subscriber);
         stockRepository.save(stock);
         userDataRepository.save(user);
         return subscribesId;
     }
 
-        @Override
+
+
+
+    @Override
         public Map<String, List<Stock>> allSubscribers() {
             return stockRepository.findAllBySoftDeleteFalse().stream()
                     .filter(Objects::nonNull)

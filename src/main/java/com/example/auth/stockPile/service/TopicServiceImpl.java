@@ -62,7 +62,6 @@ public class TopicServiceImpl implements TopicService {
         topicResponse.setCreatedBy(userData);
         topicRepository.save(topic);
         List<String> subscribers = stock.getSubscribers();
-        System.out.println("subscribers" + subscribers);
         for (String subscriberId : subscribers) {
             if (subscriberId.equals(userId)) {
                 // Don't send a notification to the user who created the topic
@@ -153,6 +152,5 @@ public class TopicServiceImpl implements TopicService {
     public Topic topicById(String id) {
         return topicRepository.getTopicByIdAndSoftDeleteIsFalse(id).orElseThrow(() -> new NotFoundException(MessageConstant.ID_NOT_FOUND));
     }
-
 
 }

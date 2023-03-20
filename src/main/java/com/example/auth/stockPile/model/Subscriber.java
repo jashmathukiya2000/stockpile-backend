@@ -20,6 +20,7 @@ public class Subscriber {
     String userId;
     String stockid;
     Date createdOn;
+    Subscribe subscribe;
     @JsonIgnore
     boolean softDelete;
 

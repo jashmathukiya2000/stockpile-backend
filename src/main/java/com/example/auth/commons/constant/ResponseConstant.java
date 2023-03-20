@@ -26,5 +26,6 @@ public class ResponseConstant {
     public static final String NOTIFICATION_SENT_SUCCESSFULLY = "Notification sent successfully";
     public static final String DEVICE_TOKEN_ADDED_SUCCESSFULLY ="Device token added successfully" ;
     public static final String DEVICE_TOKEN_DELETED_SUCCESSFULLY ="Device token deleted successfully" ;
+    public static final String UNSUBSCRIBED_SUCESSFULLY = "Unsubscribed successfully";
 }
 
