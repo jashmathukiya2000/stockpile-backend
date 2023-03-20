@@ -7,10 +7,7 @@ import com.example.auth.commons.exception.InvalidRequestException;
 import com.example.auth.commons.exception.NotFoundException;
 import com.example.auth.commons.helper.UserHelper;
 import com.example.auth.decorator.pagination.FilterSortRequest;
-import com.example.auth.stockPile.decorator.StockAddRequest;
-import com.example.auth.stockPile.decorator.StockFilter;
-import com.example.auth.stockPile.decorator.StockResponse;
-import com.example.auth.stockPile.decorator.StockSortBy;
+import com.example.auth.stockPile.decorator.*;
 import com.example.auth.stockPile.model.Stock;
 import com.example.auth.stockPile.model.Subscribe;
 import com.example.auth.stockPile.model.Subscriber;
@@ -156,11 +153,19 @@ public class StockServiceImpl implements StockService {
     }
 
     @Override
-    public List<String> subscribedStocksByUserId(String userId) {
-        List<String> list= new ArrayList<>();
+    public List<StockSubscribed> subscribedStocksByUserId(String userId) {
+        List<StockSubscribed> list= new ArrayList<>();
         List<Subscriber> subscriber= subscriberRepository.findAllByUserId(userId);
         subscriber.forEach(subscriber1 -> {
-            list.add(subscriber1.getStockid());
+            String stockId= subscriber1.getStockid();
+            List<Stock> stock= stockRepository.findAllByIdAndSoftDeleteFalse(stockId);
+           stock.forEach(stock1 -> {
+               StockSubscribed stockSubscribed= new StockSubscribed();
+               stockSubscribed.setStockId(stock1.getId());
+               stockSubscribed.setSymbol(stock1.getSymbol());
+               stockSubscribed.setName(stock1.getName());
+               list.add(stockSubscribed);
+           });
         });
         return list;
     }

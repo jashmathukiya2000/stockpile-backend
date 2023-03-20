@@ -1,11 +1,8 @@
 package com.example.auth.stockPile.service;
 
 import com.example.auth.decorator.pagination.FilterSortRequest;
-import com.example.auth.stockPile.decorator.StockAddRequest;
+import com.example.auth.stockPile.decorator.*;
 
-import com.example.auth.stockPile.decorator.StockFilter;
-import com.example.auth.stockPile.decorator.StockResponse;
-import com.example.auth.stockPile.decorator.StockSortBy;
 import com.example.auth.stockPile.model.Stock;
 import com.example.auth.stockPile.model.Subscribe;
 import org.springframework.data.domain.Page;
@@ -37,5 +34,5 @@ public interface StockService {
 
     StockResponse getStockBySymbol(String symbol);
 
-    List<String> subscribedStocksByUserId(String userId);
+    List<StockSubscribed> subscribedStocksByUserId(String userId);
 }

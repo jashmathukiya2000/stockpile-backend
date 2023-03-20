@@ -10,10 +10,7 @@ import com.example.auth.commons.decorator.Response;
 import com.example.auth.commons.enums.Role;
 import com.example.auth.decorator.pagination.FilterSortRequest;
 import com.example.auth.decorator.pagination.PageResponse;
-import com.example.auth.stockPile.decorator.StockAddRequest;
-import com.example.auth.stockPile.decorator.StockFilter;
-import com.example.auth.stockPile.decorator.StockResponse;
-import com.example.auth.stockPile.decorator.StockSortBy;
+import com.example.auth.stockPile.decorator.*;
 import com.example.auth.stockPile.model.Stock;
 import com.example.auth.stockPile.model.Subscribe;
 import com.example.auth.stockPile.service.StockService;
@@ -132,11 +129,11 @@ public PageResponse<StockResponse> getAllStockByPagination(@RequestBody FilterSo
 
       @RequestMapping(name = "subscribedStocksByUserId",value = "subscribedStocks/byUserId",method = RequestMethod.POST)
       @Access(levels = Role.ANONYMOUS)
-public DataResponse<List<String>> subscribedStocksByUserId(String userId){
-          DataResponse<List<String>> dataResponse= new DataResponse<>();
-          dataResponse.setData(stockService.subscribedStocksByUserId(userId));
-          dataResponse.setStatus(Response.getOkResponse());
-          return dataResponse;
+public ListResponse<StockSubscribed> subscribedStocksByUserId(String userId){
+          ListResponse<StockSubscribed> listResponse= new ListResponse<>();
+          listResponse.setData(stockService.subscribedStocksByUserId(userId));
+          listResponse.setStatus(Response.getOkResponse());
+          return listResponse;
       }
 
 

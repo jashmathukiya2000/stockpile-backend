@@ -20,4 +20,5 @@ public interface StockRepository extends MongoRepository<Stock, String> ,StockCu
 
     List<Stock> findAllBySoftDeleteFalse();
 
+    List<Stock> findAllByIdAndSoftDeleteFalse(String stockId);
 }
