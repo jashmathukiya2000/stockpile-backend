@@ -30,7 +30,7 @@ public interface StockService {
 
     Page<StockResponse> getAllStockByPagination(StockFilter filter, FilterSortRequest.SortRequest<StockSortBy> sort, PageRequest pagination);
 
-    String getStockSubscription(String symbol, String userId, Subscribe subscribe);
+    String subscribeUnsubscribeStock(String symbol, String userId, Subscribe subscribe);
 
     Map<String, List<Stock>> allSubscribers();
 

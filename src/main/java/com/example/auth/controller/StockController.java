@@ -105,25 +105,16 @@ public PageResponse<StockResponse> getAllStockByPagination(@RequestBody FilterSo
 
     }
 
-//    @RequestMapping(name = "getStockSubscription",value = "get/stock/subscription",method = RequestMethod.GET)
-//     @Access(levels = Role.ANONYMOUS)
-//    public  DataResponse<String> getStockSubscription(@RequestParam String symbol ,@RequestParam String userId ){
-//         DataResponse<String> dataResponse= new DataResponse<>();
-//         dataResponse.setData(stockService.getStockSubscription(symbol,userId));
-//         dataResponse.setStatus(Response.getOkResponse(ResponseConstant.SUBSCRIBED_SUCESSFULLY));
-//         return dataResponse;
-//
-//}
-@RequestMapping(name = "getStockSubscription",value = "get/stock/subscription",method = RequestMethod.GET)
+@RequestMapping(name = "subscribeUnsubscribeStock",value = "/subscription/unsubscribe",method = RequestMethod.GET)
      @Access(levels = Role.ANONYMOUS)
     public  DataResponse<String> getStockSubscription(@RequestParam String symbol , @RequestParam String userId ,@RequestParam Subscribe subscribe){
          DataResponse<String> dataResponse= new DataResponse<>();
          if (subscribe==Subscribe.SUBSCRIBE) {
-             dataResponse.setData(stockService.getStockSubscription(symbol, userId, subscribe));
+             dataResponse.setData(stockService.subscribeUnsubscribeStock(symbol, userId, subscribe));
              dataResponse.setStatus(Response.getOkResponse(ResponseConstant.SUBSCRIBED_SUCESSFULLY));
          }
          else {
-             dataResponse.setData(stockService.getStockSubscription(symbol, userId, subscribe));
+             dataResponse.setData(stockService.subscribeUnsubscribeStock(symbol, userId, subscribe));
              dataResponse.setStatus(Response.getOkResponse(ResponseConstant.UNSUBSCRIBED_SUCESSFULLY));
          }
          return dataResponse;
