@@ -1,0 +1,57 @@
+{
+  "match": {
+    "$match": {
+      "softDelete": false
+    }
+  },
+  "findEligibility": {
+    "$project": {
+      "firstName": 1.0,
+      "age": 1.0,
+      "Eligibility": {
+        "$switch": {
+          "branches": [
+            {
+              "case": {
+                "$lte": [
+                  "$age",
+                  15.0
+                ]
+              },
+              "then": "your age is below then upsc age criteria!"
+            },
+            {
+              "case": {
+                "$and": [
+                  {
+                    "$gte": [
+                      "$age",
+                      15.0
+                    ]
+                  },
+                  {
+                    "$lte": [
+                      "$age",
+                      30.0
+                    ]
+                  }
+                ]
+              },
+              "then": "you are eligible for doing upsc prepration!"
+            },
+            {
+              "case": {
+                "$gte": [
+                  "$age",
+                  30.0
+                ]
+              },
+              "then": "you are not  eligible for  upsc prepration!"
+            }
+          ],
+          "default": "No age found,"
+        }
+      }
+    }
+  }
+}

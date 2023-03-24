@@ -1,0 +1,33 @@
+{
+  "unwindResult": {
+    "$unwind": {
+      "path": "$result"
+    }
+  },
+  "matchSpi": {
+    "$match": {
+      "result.spi": 6.5,
+      "softDelete": false
+    }
+  },
+  "groupByResultSpi": {
+    "$group": {
+      "_id": "$result.spi",
+      "auth": {
+        "$push": {
+          "firstName": "$firstName",
+          "email": "$email",
+          "_id": "$_id",
+          "spi": "$result.spi",
+          "semester": "$result.semester"
+        }
+      },
+      "average": {
+        "$avg": "$result.semester"
+      },
+      "sum": {
+        "$sum": "$result.semester"
+      }
+    }
+  }
+}

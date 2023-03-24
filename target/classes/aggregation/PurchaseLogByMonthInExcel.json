@@ -1,0 +1,57 @@
+{
+  "match": {
+    "$match": {
+      "softDelete": false
+    }
+  },
+  "addDate": {
+    "$addFields": {
+      "month": {
+        "$month": "$date"
+      }
+    }
+  },
+  "matchMonth": {
+    "$match": {
+      "month": "NumberInt(1)"
+    }
+  },
+  "groupByMonth": {
+    "$group": {
+      "_id": {
+        "month": "$month",
+        "itemName": "$itemName",
+        "price": "$price"
+      },
+      "customerId": {
+        "$push": "$customerId"
+      },
+      "count": {
+        "$sum": 1.0
+      },
+      "price": {
+        "$sum": "$price"
+      }
+    }
+  },
+  "groupByCustomerId": {
+    "$group": {
+      "_id": {
+        "$first": "$customerId"
+      },
+      "itemDetails": {
+        "$push": {
+          "itemName": "$_id",
+          "count": "$count",
+          "TotalPrice": "$price"
+        }
+      },
+      "totalItem": {
+        "$sum": "$count"
+      }
+    }
+  }
+}
+
+
+

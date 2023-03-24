@@ -1,0 +1,11 @@
+com\example\auth\service\ItemServiceImplTest.class
+com\example\auth\helper\UserServiceImplTestGenerator.class
+com\example\auth\helper\CustomerServiceTestGenerator.class
+com\example\auth\service\CustomerServiceImplTest.class
+com\example\auth\service\ResultServiceImplTest.class
+com\example\auth\helper\CategoryServiceImplGenerator.class
+com\example\auth\helper\ItemServiceImplTestGenerator.class
+com\example\auth\service\UserServiceImplTest.class
+com\example\auth\helper\ResultServiceImplTestGenerator.class
+com\example\auth\service\CategoryServiceImplTest.class
+com\example\auth\helper\PurchaseLogHistoryServiceImplTestGenerator.class

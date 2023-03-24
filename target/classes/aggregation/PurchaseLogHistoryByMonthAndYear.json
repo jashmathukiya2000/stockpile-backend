@@ -1,0 +1,88 @@
+{
+  "match": {
+    "$match": {
+      "softDelete": false
+    }
+  },
+  "setMonthAndYear": {
+    "$set": {
+      "month": {
+        "$month": "$date"
+      },
+      "year": {
+        "$year": "$date"
+      }
+    }
+  },
+  "matchMonthAndYear": {
+    "$match": {
+      "$expr": {
+        "$and": [
+          {
+            "$gte": [
+              {
+                "$month": "$date"
+              },
+              {
+                "$subtract": [
+                  4,
+                  2.0
+                ]
+              }
+            ]
+          },
+          {
+            "$lte": [
+              {
+                "$month": "$date"
+              },
+              4
+            ]
+          }
+        ]
+      }
+    }
+  },
+  "groupByMonthYearItemName": {
+    "$group": {
+      "_id": {
+        "month": "$month",
+        "year": "$year",
+        "itemName": "$itemName"
+      },
+      "itemDetails": {
+        "$push": {
+          "customerId": "$customerId",
+          "price": "$price"
+        }
+      },
+      "count": {
+        "$sum": 1.0
+      },
+      "totalPrice": {
+        "$sum": "$price"
+      }
+    }
+  },
+  "groupByMonthYear": {
+    "$group": {
+      "_id": {
+        "month": "$_id.month",
+        "year": "$_id.year"
+      },
+      "itemDetail": {
+        "$push": {
+          "itemName": "$_id.itemName",
+          "count": "$count",
+          "totalPrice": {
+            "$sum": "$itemDetails.price"
+          }
+        }
+      },
+      "totalItem": {
+        "$sum": "$count"
+      }
+    }
+  }
+}
+

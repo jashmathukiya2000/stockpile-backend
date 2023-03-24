@@ -1,0 +1,28 @@
+{
+  "match":{
+    "$match" : {
+      "softDelete" : false
+    }
+  },
+
+  "groupByTitleAndCreatedOn":{
+    "$group" : {
+      "_id" : {
+        "title" : "$title",
+        "createdOn" : "$createdOn"
+      },
+      "idInfo" : {
+        "$push" :{
+          "_id":"$_id",
+          "title": "$title"
+        }
+      }
+    }
+  },
+
+  "project": {
+  "$project" : {
+    "_id" : 0.0
+  }
+}
+}

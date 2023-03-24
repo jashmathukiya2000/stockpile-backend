@@ -1,0 +1,97 @@
+{
+  "match": {
+    "$match": {
+      "softDelete": false
+    }
+  },
+  "mergeCustomerData": {
+    "$lookup": {
+      "pipeline": [
+        {
+          "$match": {
+            "$expr": {
+              "$and": [
+                {
+                  "$eq": [
+                    {
+                      "$toString": "$_id"
+                    },
+                    "$$customerId"
+                  ]
+                }
+              ]
+            }
+          }
+        }
+      ],
+      "as": "customerDetail",
+      "from": "customer",
+      "let": {
+        "customerId": "$customerId"
+      }
+    }
+  },
+  "unwindCustomer": {
+    "$unwind": {
+      "path": "$customerDetail"
+    }
+  },
+  "setCustomer": {
+    "$set": {
+      "name": "$customerDetail.name",
+      "contact": "$customerDetail.contact"
+    }
+  },
+  "unsetCustomer": {
+    "$unset": "customerDetail"
+  },
+  "groupByItemName": {
+    "$group": {
+      "_id": {
+        "customerName": "$customerName",
+        "itemName": "$itemName"
+      },
+      "itemDetails": {
+        "$push": {
+          "date": {
+            "$dateToString": {
+              "format": "%m-%d-%Y",
+              "date": "$date",
+              "timezone": "America/Chicago"
+            }
+          },
+          "price": "$price"
+        }
+      },
+      "count": {
+        "$sum": 1.0
+      },
+      "price": {
+        "$sum": "$price"
+      }
+    }
+  },
+  "groupByCustomerName": {
+    "$group": {
+      "_id": "$_id.customerName",
+      "itemDetail": {
+        "$push": {
+          "date": {
+            "$last": "$itemDetails.date"
+          },
+          "itemName": "$_id.itemName",
+          "count": {
+            "$sum": "$count"
+          },
+          "totalPrice": {
+            "$sum": "$itemDetails.price"
+          }
+        }
+      }
+    }
+  }
+}
+
+
+
+
