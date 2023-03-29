@@ -164,6 +164,29 @@ public void addReaction(ReactionType reactionType, ReactionAddRequest reactionAd
 
 
 }
+//
+//    public void checkReaction(ReactionType reactionType, ReactionAddRequest reactionAddRequest){
+//        Post post = getById(reactionAddRequest.getPostId());
+//        UserData userData = userDataService.userById(reactionAddRequest.getUserId());
+//        Reaction existingReaction = reactionRepository.findByPostIdAndUserId(post.getId(), userData.getId());
+//
+//        if (existingReaction != null) {
+//            ReactionType existingReactionType = existingReaction.getReactionType();
+//            int existingCount = post.getReaction().getOrDefault(existingReactionType, 0);
+//            if (existingCount > 0) {
+//                existingCount--;
+//                post.getReaction().put(existingReactionType, existingCount);
+//            }
+//            ReactionType otherReactionType = ReactionType.getOtherReactionType(existingReactionType);
+//            post.getReaction().put(otherReactionType, 0);
+//            reactionRepository.delete(existingReaction);
+//        }
+//        int count = post.getReaction().getOrDefault(reactionType, 0);
+//        count++;
+//        post.getReaction().put(reactionType, count);
+//        postRepository.save(post);
+//
+//    }
 
     public void checkReaction(ReactionType reactionType, ReactionAddRequest reactionAddRequest){
         Post post = getById(reactionAddRequest.getPostId());
@@ -175,15 +198,21 @@ public void addReaction(ReactionType reactionType, ReactionAddRequest reactionAd
             int existingCount = post.getReaction().getOrDefault(existingReactionType, 0);
             if (existingCount > 0) {
                 existingCount--;
-                post.getReaction().put(existingReactionType, existingCount);
+                Map<ReactionType, Integer> newReactionMap = new HashMap<>(post.getReaction());
+                newReactionMap.put(existingReactionType, existingCount);
+                post.setReaction(newReactionMap);
             }
             ReactionType otherReactionType = ReactionType.getOtherReactionType(existingReactionType);
-            post.getReaction().put(otherReactionType, 0);
+            Map<ReactionType, Integer> newReactionMap = new HashMap<>(post.getReaction());
+            newReactionMap.put(otherReactionType, 0);
+            post.setReaction(newReactionMap);
             reactionRepository.delete(existingReaction);
         }
         int count = post.getReaction().getOrDefault(reactionType, 0);
         count++;
-        post.getReaction().put(reactionType, count);
+        Map<ReactionType, Integer> newReactionMap = new HashMap<>(post.getReaction());
+        newReactionMap.put(reactionType, count);
+        post.setReaction(newReactionMap);
         postRepository.save(post);
 
     }

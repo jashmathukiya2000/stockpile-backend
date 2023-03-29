@@ -52,4 +52,5 @@ public class MessageConstant {
     public static final String YOU_HAVE_ALREDAY_SUBSCRIBED ="You have already subscribed" ;
     public static final String DEVICE_TOKEN_ALREDAY_EXIST ="Device token already exist" ;
     public static final String YOU_HAVE_NOT_SUBSCRIBED = "you have not subscribed";
+    public static final String WRONG_CREDENTIALS = "Email does not exist";
 }

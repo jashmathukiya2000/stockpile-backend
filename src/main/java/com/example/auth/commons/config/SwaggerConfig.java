@@ -13,6 +13,8 @@ import springfox.documentation.service.*;
 import springfox.documentation.spi.DocumentationType;
 import springfox.documentation.spi.service.contexts.SecurityContext;
 import springfox.documentation.spring.web.plugins.Docket;
+import springfox.documentation.swagger.web.UiConfiguration;
+import springfox.documentation.swagger.web.UiConfigurationBuilder;
 import springfox.documentation.swagger2.annotations.EnableSwagger2;
 
 import java.util.ArrayList;
@@ -32,6 +34,8 @@ public class SwaggerConfig {
                 .apis(basePackage("com.example.auth.controller"))
                 .paths(PathSelectors.regex("/*.*"))
                 .build()
+//                to run on host instead of localhost
+//                .host("171.50.244.205")
                 .globalOperationParameters(getParameters())
                 .pathProvider(new ExtendRelativePathProvider())
                 .securityContexts(Lists.newArrayList(securityContext()))
@@ -85,5 +89,6 @@ public class SwaggerConfig {
                 .version("1.0.0")
                 .build();
     }
+
 }
 

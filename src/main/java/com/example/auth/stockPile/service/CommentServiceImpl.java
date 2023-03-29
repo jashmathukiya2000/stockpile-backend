@@ -12,6 +12,7 @@ import com.example.auth.stockPile.model.Post;
 import com.example.auth.stockPile.model.UserData;
 import com.example.auth.stockPile.repository.CommentRepository;
 import com.example.auth.stockPile.repository.PostRepository;
+import com.google.common.annotations.VisibleForTesting;
 import org.apache.commons.collections.CollectionUtils;
 import org.modelmapper.ModelMapper;
 import org.springframework.context.annotation.Lazy;
@@ -47,7 +48,7 @@ public class CommentServiceImpl implements CommentService {
         Comment comment = modelMapper.map(addComment, Comment.class);
         comment.setCommentId(userData.getId());
         comment.setCommentedBy(userData.getName());
-        comment.setCreatedOn(new Date());
+        comment.setCreatedOn(currentDate());
         comment.setPost(post.getId());
         commentRepository.save(comment);
         int commentCount = post.getComments() == 0 ? 1 : post.getComments() + 1;
@@ -56,6 +57,10 @@ public class CommentServiceImpl implements CommentService {
         CommentResponse commentResponse = modelMapper.map(comment, CommentResponse.class);
         return commentResponse;
 
+    }
+    @VisibleForTesting
+    Date currentDate() {
+        return new Date();
     }
 
 

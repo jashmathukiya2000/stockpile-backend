@@ -4,6 +4,7 @@ import com.example.auth.commons.decorator.GeneralHelper;
 import com.example.auth.commons.decorator.RequestSession;
 import com.example.auth.commons.helper.UserHelper;
 import com.example.auth.commons.decorator.Response;
+import com.example.auth.decorator.ImageUrl;
 import com.example.auth.decorator.MainDateFilter;
 import com.example.auth.model.CanvasjsChartData;
 import com.example.auth.model.PurchaseLogHistory;
@@ -112,6 +113,11 @@ import org.springframework.mail.javamail.JavaMailSenderImpl;
     public Notification getNotification(){
             return  new Notification();
        }
+
+    @Bean
+    public ImageUrl imageUrl() {
+        return ImageUrl.GOOGLE_IMG_URL; // Assuming DEFAULT is one of the enum values
+    }
     }
 
 

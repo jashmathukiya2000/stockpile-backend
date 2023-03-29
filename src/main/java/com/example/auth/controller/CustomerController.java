@@ -4,9 +4,8 @@ import com.example.auth.commons.Access;
 import com.example.auth.commons.constant.ResponseConstant;
 import com.example.auth.commons.decorator.*;
 import com.example.auth.commons.enums.Role;
-import com.example.auth.decorator.customer.CustomerAddRequest;
-import com.example.auth.decorator.customer.CustomerLoginAddRequest;
-import com.example.auth.decorator.customer.CustomerResponse;
+import com.example.auth.decorator.SocialVerify;
+import com.example.auth.decorator.customer.*;
 import com.example.auth.decorator.pagination.CustomerFilter;
 import com.example.auth.decorator.pagination.CustomerSortBy;
 import com.example.auth.decorator.pagination.FilterSortRequest;
@@ -179,6 +178,15 @@ public class CustomerController {
         DataResponse<Object> dataResponse= new DataResponse<>();
         customerService.deleteDeviceToken(userId);
         dataResponse.setStatus(Response.getOkResponse(ResponseConstant.DEVICE_TOKEN_DELETED_SUCCESSFULLY));
+        return  dataResponse;
+    }
+
+    @RequestMapping(name = "socialVerification", value = "/social/verification", method = RequestMethod.POST)
+    @Access(levels = Role.ANONYMOUS)
+    public  DataResponse<SocialVerificationData> socialVerification(@RequestBody SocialVerificationAddRequest socialVerificationAddRequest, @RequestParam SocialVerify socialVerify){
+        DataResponse<SocialVerificationData> dataResponse= new DataResponse<>();
+        dataResponse.setData(customerService.socialVerification(socialVerificationAddRequest, socialVerify));
+        dataResponse.setStatus(Response.getOkResponse(ResponseConstant.VERIFIED_SUCCESSFULLY));
         return  dataResponse;
     }
 

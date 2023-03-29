@@ -154,24 +154,24 @@ public class StockServiceImpl implements StockService {
 
     @Override
     public List<StockSubscribed> subscribedStocksByUserId(String userId) {
-        List<StockSubscribed> list= new ArrayList<>();
-        List<Subscriber> subscriber= subscriberRepository.findAllByUserId(userId);
+        List<StockSubscribed> list = new ArrayList<>();
+        List<Subscriber> subscriber = subscriberRepository.findAllByUserId(userId);
         subscriber.forEach(subscriber1 -> {
-            String stockId= subscriber1.getStockid();
-            List<Stock> stock= stockRepository.findAllByIdAndSoftDeleteFalse(stockId);
-           stock.forEach(stock1 -> {
-               StockSubscribed stockSubscribed= new StockSubscribed();
-               stockSubscribed.setStockId(stock1.getId());
-               stockSubscribed.setSymbol(stock1.getSymbol());
-               stockSubscribed.setName(stock1.getName());
-               list.add(stockSubscribed);
-           });
+            String stockId = subscriber1.getStockid();
+            List<Stock> stock = stockRepository.findAllByIdAndSoftDeleteFalse(stockId);
+            stock.forEach(stock1 -> {
+                StockSubscribed stockSubscribed = new StockSubscribed();
+                stockSubscribed.setStockId(stock1.getId());
+                stockSubscribed.setSymbol(stock1.getSymbol());
+                stockSubscribed.setName(stock1.getName());
+                list.add(stockSubscribed);
+            });
         });
         return list;
     }
 
 
-    Stock stockById(String id) {
+  public   Stock stockById(String id) {
         return stockRepository.findByIdAndSoftDeleteIsFalse(id).orElseThrow(() -> new NotFoundException(MessageConstant.ID_NOT_FOUND));
     }
 

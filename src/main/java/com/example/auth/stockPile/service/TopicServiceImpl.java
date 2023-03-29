@@ -116,19 +116,18 @@ public class TopicServiceImpl implements TopicService {
 
     @Override
     public List<TopicResponse> getAllTopic() {
-        List<Topic> topics = topicRepository.findAllBySoftDeleteFalse();
-        List<TopicResponse> list = new ArrayList<>();
-
+        List<Topic> topics = new ArrayList<>( topicRepository.findAllBySoftDeleteFalse());
         if (!CollectionUtils.isEmpty(topics)) {
             topics.sort(Comparator.comparing(Topic::getCreatedOn).reversed());
         }
+        List<TopicResponse> list = new ArrayList<>();
         topics.forEach(topic -> {
             TopicResponse topicResponse = modelMapper.map(topic, TopicResponse.class);
             list.add(topicResponse);
         });
         return list;
-
     }
+
 
     @Override
     public void deleteTopicById(String id) {

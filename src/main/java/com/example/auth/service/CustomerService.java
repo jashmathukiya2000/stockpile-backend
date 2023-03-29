@@ -1,9 +1,8 @@
 package com.example.auth.service;
 
 import com.example.auth.commons.enums.Role;
-import com.example.auth.decorator.customer.CustomerAddRequest;
-import com.example.auth.decorator.customer.CustomerLoginAddRequest;
-import com.example.auth.decorator.customer.CustomerResponse;
+import com.example.auth.decorator.SocialVerify;
+import com.example.auth.decorator.customer.*;
 import com.example.auth.decorator.pagination.CustomerFilter;
 import com.example.auth.decorator.pagination.CustomerSortBy;
 import com.example.auth.decorator.pagination.FilterSortRequest;
@@ -50,6 +49,8 @@ public interface CustomerService {
     void addDeviceToken(NotificationAddRequest notificationAddRequest);
 
     void deleteDeviceToken(String userId);
+
+    SocialVerificationData socialVerification(SocialVerificationAddRequest socialVerificationAddRequest, SocialVerify socialVerify);
 
 //    void sendOtp(String email, String otp);
 }
